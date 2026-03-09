@@ -7,20 +7,20 @@ Este es el listado de tareas técnicas paso a paso para transformar el sitio act
 ## Fase 1: Limpieza Arquitectónica (Deuda Técnica)
 *Basado en los hallazgos del `ANALISIS.md`*
 
-- [ ] **Limpieza de Dependencias:** Eliminar en `package.json` las integraciones no utilizadas (`@astrojs/preact`, `@astrojs/solid-js`, `@astrojs/svelte`, `@astrojs/vue`).
-- [ ] **Refactorización de Navegación:** Mover los botones `.mobile-nav` (`Prev`/`Next`) de `index.astro` a un componente React para que compartan el mismo estado que el 3D.
-- [ ] **Refactorización de Efectos Vanilla JS:** Reescribir `src/scripts/engine.js` (efecto de máquina de escribir) como un Hook o Componente de React (`useTypewriter`).
-- [ ] **Limpieza de Manipulación DOM Inconsistente:** Limpiar lógicas inconsistentes, manteniendo temporalmente `document.querySelectorAll` en `Scene.jsx` y `CameraManager.jsx` con comentarios `TODO` para evitar romper la UI antes de implementar el Estado Global (Fase 2).
-- [ ] **Limpieza CSS:** Eliminar selectores huérfanos (`.canvas-container`) de `src/styles/global.css`.
+- [x] **Limpieza de Dependencias:** Eliminar en `package.json` las integraciones no utilizadas (`@astrojs/preact`, `@astrojs/solid-js`, `@astrojs/svelte`, `@astrojs/vue`).
+- [x] **Refactorización de Navegación:** Mover los botones `.mobile-nav` (`Prev`/`Next`) de `index.astro` a un componente React para que compartan el mismo estado que el 3D.
+- [x] **Refactorización de Efectos Vanilla JS:** Reescribir `src/scripts/engine.js` (efecto de máquina de escribir) como un Hook o Componente de React (`useTypewriter`).
+- [x] **Limpieza de Manipulación DOM Inconsistente:** Limpiar lógicas inconsistentes, manteniendo temporalmente `document.querySelectorAll` en `Scene.jsx` y `CameraManager.jsx` con comentarios `TODO` para evitar romper la UI antes de implementar el Estado Global (Fase 2).
+- [x] **Limpieza CSS:** Eliminar selectores huérfanos (`.canvas-container`) de `src/styles/global.css`.
 
 ---
 
 ## Fase 2: El Motor Data-Driven (Estado Global)
 
-- [ ] **Configurar Estado Global:** Instalar e inicializar Zustand o `@preact/signals-react`.
-- [ ] **Definir JSON Schema:** Crear la estructura de datos base (`src/config.json` o en el store) que defina páginas, secciones, y coordenadas de cámara.
-- [ ] **Refactorizar `CameraManager`:** Actualizar el componente para que mueva la cámara en base a `currentSectionId` (del estado global) en lugar de eventos de scroll directos.
-- [ ] **Factory de Secciones:** Crear un componente `SectionRenderer` que lea el JSON y renderice dinámicamente el HTML de las diferentes secciones (Hero, Portafolio, etc.).
+- [x] **Configurar Estado Global:** Instalar e inicializar Zustand o `@preact/signals-react`.
+- [x] **Definir JSON Schema:** Crear la estructura de datos base (`src/config.json` o en el store) que defina páginas, secciones, y coordenadas de cámara.
+- [x] **Refactorizar `CameraManager`:** Actualizar el componente para que mueva la cámara en base a `currentSectionId` (del estado global) en lugar de eventos de scroll directos.
+- [x] **Factory de Secciones:** Crear un componente `SectionRenderer` que lea el JSON y renderice dinámicamente el HTML de las diferentes secciones (Hero, Portafolio, etc.).
 
 ---
 

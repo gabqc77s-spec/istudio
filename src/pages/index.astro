@@ -1,8 +1,6 @@
 ---
-import InteractiveCard from '../components/react/InteractiveCard.jsx';
 import Scene from '../components/react/Scene.jsx';
 import Navigation from '../components/react/Navigation.jsx';
-import Typewriter from '../components/react/Typewriter.jsx';
 ---
 <html lang="en">
 <head>
@@ -14,37 +12,7 @@ import Typewriter from '../components/react/Typewriter.jsx';
     <link rel="stylesheet" href="/src/styles/effects.css" />
 </head>
 <body>
-    <Scene client:load>
-        {/* The page-section divs are now the direct children for easier styling */}
-        <div class="page-section" data-section-coord="0,0">
-            <div class="content-wrapper">
-                <img id="main-logo" src="" alt="Logo" style={{display: 'none'}} />
-                <h1 id="main-title"></h1>
-                <p id="main-subtitle" class="subtitle"></p>
-                <div class="typewriter-container">
-                    <span>&gt; </span><Typewriter client:load />
-                </div>
-            </div>
-        </div>
-
-        <div class="page-section" data-section-coord="0,1">
-             <div class="content-wrapper">
-                <h2>Core Services</h2>
-                <div class="services-grid">
-                    <InteractiveCard title="AI-Powered Code" description="Generate robust and efficient code with our advanced AI." />
-                    <InteractiveCard title="3D Environments" description="Create immersive and dynamic 3D worlds for your users." />
-                    <InteractiveCard title="Dynamic UI/UX" description="Design interfaces that adapt, evolve, and feel alive." />
-                </div>
-            </div>
-        </div>
-
-        <div class="page-section" data-section-coord="1,1">
-            <div class="content-wrapper">
-                <h2>Project Showcase</h2>
-                <p class="subtitle">Here we can feature a gallery of 3D projects.</p>
-            </div>
-        </div>
-    </Scene>
+    <Scene client:load />
 
     <Navigation client:load />
 </body>

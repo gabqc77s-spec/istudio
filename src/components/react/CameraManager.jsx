@@ -9,13 +9,19 @@ const sectionMap = {
   "0,1": { position: { x: -1, y: -1, z: 3 }, rotation: { x: 0.2, y: 0.5, z: 0 } }, // Services
   "1,1": { position: { x: 1, y: -1, z: 3 }, rotation: { x: 0.2, y: -0.5, z: 0 } }  // Showcase
 };
+
+// TODO: In Phase 3, camera coordinates should also be moved inside the JSON schema (`config.sections`)
+// so the visual panel can edit them via Theatre.js, instead of hardcoding a `sectionMap`.
 const sectionCoords = Object.keys(sectionMap);
 
 const COOLDOWN_PERIOD = 500;
 
+import useStore from "../../store/useStore";
+
 const CameraManager = ({ animationConfig }) => {
   const { camera } = useThree();
-  const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
+  const currentSectionIndex = useStore((state) => state.currentSectionIndex);
+  const setCurrentSectionIndex = useStore((state) => state.setCurrentSectionIndex);
   const lastAnimated = useRef(0);
 
   const moveToSection = (sectionIndex) => {
@@ -28,15 +34,7 @@ const CameraManager = ({ animationConfig }) => {
     gsap.to(camera.position, { ...targetSection.position, duration, ease: "power3.inOut" });
     gsap.to(camera.rotation, { ...targetSection.rotation, duration, ease: "power3.inOut" });
 
-    // TODO: This direct DOM manipulation will be removed in Phase 2 when Zustand controls CSS visibility.
-    // For now, it must remain to prevent all sections from overlapping visibly on screen.
-    document.querySelectorAll('.page-section').forEach((el) => {
-      gsap.to(el, {
-        autoAlpha: el.dataset.sectionCoord === coordString ? 1 : 0, 
-        duration: duration / 2,
-        ease: "power2.inOut"
-      });
-    });
+    // CSS visibility is now handled completely by SectionRenderer.jsx reacting to Zustand state changes.
   };
 
   const navigate = (direction) => {

@@ -4,8 +4,9 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import { Points, PointMaterial } from '@react-three/drei';
 import CameraManager from './CameraManager';
 import ConfigPanel from './ConfigPanel';
+import SectionRenderer from './SectionRenderer';
 import * as THREE from 'three';
-import initialConfig from '../../config';
+import useStore from '../../store/useStore';
 
 function Starfield({ count, color, size, interactive, mousePos }) {
   const pointsRef = useRef();
@@ -68,36 +69,18 @@ function Starfield({ count, color, size, interactive, mousePos }) {
 const Scene = ({ children }) => {
   const [showPanel, setShowPanel] = useState(false);
   const mousePos = useRef(new THREE.Vector3(0,0,0));
-  const [config, setConfig] = useState(initialConfig);
+
+  // Utilizando el Estado Global (Zustand)
+  const config = useStore((state) => state.config);
+
   const [debouncedConfig, setDebouncedConfig] = useState(config.background);
 
+  // Debounce para evitar recalcular la geometría de partículas con cada letra escrita en el panel
   useEffect(() => {
     const handler = setTimeout(() => setDebouncedConfig(config.background), 250);
     return () => clearTimeout(handler);
   }, [config.background]);
 
-  // TODO: Move this synchronization to a React Context / Zustand global state in Phase 2
-  // For now we keep it working to avoid breaking the App before the State Manager is ready
-  useEffect(() => {
-    const { logoUrl, title, subtitle, justifyContent, alignItems, textAlign } = config.content;
-    const logoEl = document.getElementById('main-logo');
-    const titleEl = document.getElementById('main-title');
-    const subtitleEl = document.getElementById('main-subtitle');
-    
-    document.querySelectorAll('.page-section').forEach(section => {
-        section.style.justifyContent = justifyContent;
-        section.style.alignItems = alignItems;
-        section.style.textAlign = textAlign;
-    });
-
-    if (logoEl) {
-        logoEl.src = logoUrl;
-        logoEl.style.display = logoUrl ? 'block' : 'none';
-    }
-    if (titleEl) titleEl.innerText = title;
-    if (subtitleEl) subtitleEl.innerText = subtitle;
-  }, [config.content]);
-  
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     if (params.get('fondo') === '123') setShowPanel(true);
@@ -114,7 +97,7 @@ const Scene = ({ children }) => {
 
   return (
     <>
-      {showPanel && <ConfigPanel config={config} setConfig={setConfig} />}
+      {showPanel && <ConfigPanel />}
       <Canvas 
         camera={{ position: [0, 0, 1.5], fov: 75 }}
         onPointerMove={handlePointerMove}
@@ -123,9 +106,7 @@ const Scene = ({ children }) => {
         <Starfield key={debouncedConfig.count} {...debouncedConfig} mousePos={mousePos} />
         <CameraManager animationConfig={config.animation} />
       </Canvas>
-      <div className="html-container">
-        {children}
-      </div>
+      <SectionRenderer />
     </>
   );
 };
