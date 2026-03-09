@@ -6,8 +6,10 @@ const useStore = create((set) => ({
   // Estado Inicial basado en config.js
   config: initialConfig,
   currentSectionIndex: 0,
+  isAdminMode: false,
 
   // Acciones
+  toggleAdminMode: () => set((state) => ({ isAdminMode: !state.isAdminMode })),
   setConfig: (newConfig) => set({ config: newConfig }),
 
   updateContent: (key, value) => set((state) => {

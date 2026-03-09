@@ -1,6 +1,7 @@
 // src/components/react/SectionRenderer.jsx
 import React from 'react';
 import useStore from '../../store/useStore';
+import ReactContentEditable from 'react-contenteditable';
 import Typewriter from './Typewriter';
 import InteractiveCard from './InteractiveCard';
 import ChatbotWidget from './ChatbotWidget';
@@ -14,19 +15,56 @@ const WidgetRegistry = {
 const SectionRenderer = () => {
   const config = useStore((state) => state.config);
   const currentSectionIndex = useStore((state) => state.currentSectionIndex);
+  const isAdminMode = useStore((state) => state.isAdminMode);
+  const updateContent = useStore((state) => state.updateContent);
 
-  const renderHero = (data) => (
-    <div className="content-wrapper">
-      <img id="main-logo" src={data.logoUrl} alt="Logo" style={{ display: data.logoUrl ? 'block' : 'none' }} />
-      <h1 id="main-title">{data.title}</h1>
-      <p id="main-subtitle" className="subtitle">{data.subtitle}</p>
-      {data.hasTypewriter && (
-        <div className="typewriter-container">
-          <span>&gt; </span><Typewriter />
-        </div>
-      )}
-    </div>
-  );
+  const handleTitleChange = (e) => {
+    // Phase 5: Inline editing updates the store immediately
+    updateContent('title', e.target.value);
+  };
+
+  const handleSubtitleChange = (e) => {
+    updateContent('subtitle', e.target.value);
+  };
+
+  const renderHero = (data) => {
+    // Workaround for default export differences in SSR/CJS
+    const ContentEditable = ReactContentEditable.default || ReactContentEditable;
+
+    return (
+      <div className="content-wrapper">
+        <img id="main-logo" src={data.logoUrl} alt="Logo" style={{ display: data.logoUrl ? 'block' : 'none' }} />
+        <ContentEditable
+          html={data.title}
+          disabled={!isAdminMode}
+          onChange={handleTitleChange}
+          tagName="h1"
+          style={{
+            outline: isAdminMode ? '2px dashed #9333ea' : 'none',
+            cursor: isAdminMode ? 'text' : 'default',
+            padding: isAdminMode ? '4px' : '0'
+          }}
+        />
+        <ContentEditable
+          html={data.subtitle}
+          disabled={!isAdminMode}
+          onChange={handleSubtitleChange}
+          tagName="p"
+          className="subtitle"
+          style={{
+            outline: isAdminMode ? '2px dashed #9333ea' : 'none',
+            cursor: isAdminMode ? 'text' : 'default',
+            padding: isAdminMode ? '4px' : '0'
+          }}
+        />
+        {data.hasTypewriter && (
+          <div className="typewriter-container">
+            <span>&gt; </span><Typewriter />
+          </div>
+        )}
+      </div>
+    );
+  };
 
   const renderServices = (data) => (
     <div className="content-wrapper">

@@ -37,16 +37,16 @@ Este es el listado de tareas técnicas paso a paso para transformar el sitio act
 
 - [x] **Widget: Tarjetas Interactivas Dinámicas:** Refactorizar `InteractiveCard.jsx` para que reciba sus datos (título, descripción, icono) por props desde el JSON.
 - [x] **Widget: Demo de Chatbot (Ej. Eficell):** Construir o integrar el componente del Chatbot funcional (con conexión a WebSockets o iFrame) aislándolo en su propio componente.
-- [ ] **Widget: App Mockup Android:** Desarrollar el componente visual que muestra la vista de "Agente de Soporte" en tiempo real.
+- [x] **Widget: App Mockup Android:** Desarrollar el componente visual que muestra la vista de "Agente de Soporte" en tiempo real.
 - [x] **Registro de Componentes:** Agregar todos estos nuevos Widgets al `SectionRenderer` para que sean elegibles desde el panel.
 
 ---
 
 ## Fase 5: El Panel de Control Extremo (Edición Visual)
 
-- [ ] **Integrar Editor en Contexto:** Instalar y configurar una librería como `react-contenteditable`.
-- [ ] **Sistema de Autenticación de Admin:** Crear una ruta protegida o botón oculto (ej. Control+Shift+A) que active el "Modo Edición" en la web en vivo.
-- [ ] **Edición de Textos Inline:** Permitir hacer doble clic sobre los textos en pantalla para editarlos y guardar los cambios directamente al Store.
+- [x] **Integrar Editor en Contexto:** Instalar y configurar una librería como `react-contenteditable`.
+- [x] **Sistema de Autenticación de Admin:** Crear una ruta protegida o botón oculto (ej. Control+Shift+A) que active el "Modo Edición" en la web en vivo.
+- [x] **Edición de Textos Inline:** Permitir hacer doble clic sobre los textos en pantalla para editarlos y guardar los cambios directamente al Store.
 - [ ] **Integrar `Theatre.js`:** Instalar `@theatre/core` y `@theatre/studio`.
 - [ ] **Coreografía Visual:** Conectar la cámara de React Three Fiber y las propiedades de las partículas a la línea de tiempo de Theatre.js para poder hacer keyframes visualmente.
 - [ ] **Integración de Mapas de Calor (Heatmaps):** Agregar script de tracking (ej. Hotjar o solución custom basada en clicks/coordenadas) y crear el botón toggle en el panel para visualizar las zonas calientes.

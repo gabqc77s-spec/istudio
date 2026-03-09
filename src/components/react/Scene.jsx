@@ -68,11 +68,12 @@ function Starfield({ count, color, size, interactive, mousePos }) {
 };
 
 const Scene = ({ children }) => {
-  const [showPanel, setShowPanel] = useState(false);
   const mousePos = useRef(new THREE.Vector3(0,0,0));
 
   // Utilizando el Estado Global (Zustand)
   const config = useStore((state) => state.config);
+  const isAdminMode = useStore((state) => state.isAdminMode);
+  const toggleAdminMode = useStore((state) => state.toggleAdminMode);
 
   const [debouncedConfig, setDebouncedConfig] = useState(config.background);
 
@@ -83,9 +84,15 @@ const Scene = ({ children }) => {
   }, [config.background]);
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('fondo') === '123') setShowPanel(true);
-  }, []);
+    const handleKeyDown = (e) => {
+      // Activar Admin Mode con Ctrl + Shift + A
+      if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'a') {
+        toggleAdminMode();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [toggleAdminMode]);
 
   const handlePointerMove = (event) => {
     const vec = new THREE.Vector3();
@@ -98,7 +105,12 @@ const Scene = ({ children }) => {
 
   return (
     <>
-      {showPanel && <ConfigPanel />}
+      {isAdminMode && <ConfigPanel />}
+      {isAdminMode && (
+        <div style={{ position: 'fixed', top: 10, left: 10, zIndex: 1000, background: '#9333ea', padding: '5px 10px', borderRadius: '4px', color: 'white', fontWeight: 'bold' }}>
+          MODO EDICIÓN ACTIVO
+        </div>
+      )}
       <Canvas 
         camera={{ position: [0, 0, 1.5], fov: 75 }}
         onPointerMove={handlePointerMove}
