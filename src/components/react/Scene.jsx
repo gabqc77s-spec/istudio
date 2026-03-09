@@ -5,6 +5,7 @@ import { Points, PointMaterial } from '@react-three/drei';
 import CameraManager from './CameraManager';
 import ConfigPanel from './ConfigPanel';
 import SectionRenderer from './SectionRenderer';
+import PhoneDemo3D from './PhoneDemo3D';
 import * as THREE from 'three';
 import useStore from '../../store/useStore';
 
@@ -105,6 +106,9 @@ const Scene = ({ children }) => {
         <ambientLight intensity={0.5} />
         <Starfield key={debouncedConfig.count} {...debouncedConfig} mousePos={mousePos} />
         <CameraManager animationConfig={config.animation} />
+
+        {/* Showcase Device (Eficell Demo) */}
+        <PhoneDemo3D position={[1, -1, 3]} url="https://www.eficell.cl" />
       </Canvas>
       <SectionRenderer />
     </>

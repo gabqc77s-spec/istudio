@@ -40,6 +40,20 @@ const config = {
                 title: 'Project Showcase',
                 subtitle: 'Here we can feature a gallery of 3D projects.'
             }
+        },
+        {
+            id: 'chatbot-demo',
+            type: 'widget-demo',
+            coord: '-1,1',
+            data: {
+                title: 'Live Widget Integrations',
+                subtitle: 'Experience our AI Chatbot connected to an Android agent app.',
+                widget: 'ChatbotWidget',
+                widgetProps: {
+                    botName: 'Eficell Support',
+                    initialMessage: 'Welcome to the live demo. Ask me anything!'
+                }
+            }
         }
     ],
     animation: {

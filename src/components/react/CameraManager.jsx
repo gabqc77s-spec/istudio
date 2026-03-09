@@ -7,7 +7,8 @@ import { useEffect, useRef, useState } from "react";
 const sectionMap = {
   "0,0": { position: { x: 0, y: 0, z: 1.5 }, rotation: { x: 0, y: 0, z: 0 } },   // Hero
   "0,1": { position: { x: -1, y: -1, z: 3 }, rotation: { x: 0.2, y: 0.5, z: 0 } }, // Services
-  "1,1": { position: { x: 1, y: -1, z: 3 }, rotation: { x: 0.2, y: -0.5, z: 0 } }  // Showcase
+  "1,1": { position: { x: 1, y: -1, z: 3 }, rotation: { x: 0.2, y: -0.5, z: 0 } },  // Showcase
+  "-1,1": { position: { x: -1, y: 1, z: 3 }, rotation: { x: -0.2, y: 0.5, z: 0 } } // Chatbot Demo
 };
 
 // TODO: In Phase 3, camera coordinates should also be moved inside the JSON schema (`config.sections`)

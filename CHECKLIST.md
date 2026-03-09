@@ -26,19 +26,19 @@ Este es el listado de tareas técnicas paso a paso para transformar el sitio act
 
 ## Fase 3: Orquestación del Showroom 3D
 
-- [ ] **Componente `PhoneDemo3D`:** Crear un modelo 3D de teléfono/tablet (`<primitive object={gltf.scene} />`) en React Three Fiber.
-- [ ] **Renderizado de Pantalla 3D:** Implementar `<Html>` o `<RenderTexture>` de `@react-three/drei` para proyectar sitios de clientes (como Eficell) en la pantalla del modelo 3D.
-- [ ] **Eventos de Interacción 3D (Hover/Click):** Conectar los "raycasters" del teléfono 3D para que actualicen el estado global cuando el usuario le hace clic (ej. "enfocar vista").
-- [ ] **Sistema de Señales Visuales (Signals):** Configurar el cambio de color de las partículas y el reposicionamiento de cámara fluido (con GSAP) sincronizado con el componente HTML en pantalla.
+- [x] **Componente `PhoneDemo3D`:** Crear un modelo 3D de teléfono/tablet (`<primitive object={gltf.scene} />`) en React Three Fiber.
+- [x] **Renderizado de Pantalla 3D:** Implementar `<Html>` o `<RenderTexture>` de `@react-three/drei` para proyectar sitios de clientes (como Eficell) en la pantalla del modelo 3D.
+- [x] **Eventos de Interacción 3D (Hover/Click):** Conectar los "raycasters" del teléfono 3D para que actualicen el estado global cuando el usuario le hace clic (ej. "enfocar vista").
+- [x] **Sistema de Señales Visuales (Signals):** Configurar el cambio de color de las partículas y el reposicionamiento de cámara fluido (con GSAP) sincronizado con el componente HTML en pantalla.
 
 ---
 
 ## Fase 4: Catálogo de Widgets (Demos en Vivo)
 
-- [ ] **Widget: Tarjetas Interactivas Dinámicas:** Refactorizar `InteractiveCard.jsx` para que reciba sus datos (título, descripción, icono) por props desde el JSON.
-- [ ] **Widget: Demo de Chatbot (Ej. Eficell):** Construir o integrar el componente del Chatbot funcional (con conexión a WebSockets o iFrame) aislándolo en su propio componente.
+- [x] **Widget: Tarjetas Interactivas Dinámicas:** Refactorizar `InteractiveCard.jsx` para que reciba sus datos (título, descripción, icono) por props desde el JSON.
+- [x] **Widget: Demo de Chatbot (Ej. Eficell):** Construir o integrar el componente del Chatbot funcional (con conexión a WebSockets o iFrame) aislándolo en su propio componente.
 - [ ] **Widget: App Mockup Android:** Desarrollar el componente visual que muestra la vista de "Agente de Soporte" en tiempo real.
-- [ ] **Registro de Componentes:** Agregar todos estos nuevos Widgets al `SectionRenderer` para que sean elegibles desde el panel.
+- [x] **Registro de Componentes:** Agregar todos estos nuevos Widgets al `SectionRenderer` para que sean elegibles desde el panel.
 
 ---
 

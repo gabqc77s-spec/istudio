@@ -3,6 +3,13 @@ import React from 'react';
 import useStore from '../../store/useStore';
 import Typewriter from './Typewriter';
 import InteractiveCard from './InteractiveCard';
+import ChatbotWidget from './ChatbotWidget';
+
+// Widget Registry Map
+const WidgetRegistry = {
+  ChatbotWidget: ChatbotWidget,
+  // Add more widgets here in the future
+};
 
 const SectionRenderer = () => {
   const config = useStore((state) => state.config);
@@ -39,6 +46,19 @@ const SectionRenderer = () => {
     </div>
   );
 
+  const renderWidgetDemo = (data) => {
+    const WidgetComponent = WidgetRegistry[data.widget];
+    return (
+      <div className="content-wrapper">
+        <h2>{data.title}</h2>
+        <p className="subtitle">{data.subtitle}</p>
+        <div style={{ marginTop: '2rem' }}>
+          {WidgetComponent ? <WidgetComponent {...data.widgetProps} /> : <p>Widget not found</p>}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="html-container" style={{ pointerEvents: 'none' }}>
       {config.sections.map((section, index) => {
@@ -62,6 +82,7 @@ const SectionRenderer = () => {
             {section.type === 'hero' && renderHero(section.data)}
             {section.type === 'services' && renderServices(section.data)}
             {section.type === 'showcase' && renderShowcase(section.data)}
+            {section.type === 'widget-demo' && renderWidgetDemo(section.data)}
           </div>
         );
       })}
