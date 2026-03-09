@@ -47,14 +47,14 @@ Este es el listado de tareas técnicas paso a paso para transformar el sitio act
 - [x] **Integrar Editor en Contexto:** Instalar y configurar una librería como `react-contenteditable`.
 - [x] **Sistema de Autenticación de Admin:** Crear una ruta protegida o botón oculto (ej. Control+Shift+A) que active el "Modo Edición" en la web en vivo.
 - [x] **Edición de Textos Inline:** Permitir hacer doble clic sobre los textos en pantalla para editarlos y guardar los cambios directamente al Store.
-- [ ] **Integrar `Theatre.js`:** Instalar `@theatre/core` y `@theatre/studio`.
-- [ ] **Coreografía Visual:** Conectar la cámara de React Three Fiber y las propiedades de las partículas a la línea de tiempo de Theatre.js para poder hacer keyframes visualmente.
-- [ ] **Integración de Mapas de Calor (Heatmaps):** Agregar script de tracking (ej. Hotjar o solución custom basada en clicks/coordenadas) y crear el botón toggle en el panel para visualizar las zonas calientes.
+- [x] **Integrar `Theatre.js`:** Instalar `@theatre/core` y `@theatre/studio`. *(Solucionado mediante arquitectura Client-Only).*
+- [x] **Coreografía Visual:** Conectar la cámara de React Three Fiber y las propiedades de las partículas a la línea de tiempo de Theatre.js para poder hacer keyframes visualmente.
+- [x] **Integración de Mapas de Calor (Heatmaps):** Agregar script de tracking (ej. Hotjar o solución custom basada en clicks/coordenadas) y crear el botón toggle en el panel para visualizar las zonas calientes.
 
 ---
 
 ## Fase 6: Persistencia y Publicación
 
-- [ ] **API de Guardado:** Crear un endpoint (API Route en Astro o función Serverless) que reciba el JSON modificado desde el panel visual y lo guarde en el repositorio o Base de Datos.
-- [ ] **Botón de Publicar (Build Trigger):** Configurar el Webhook del hosting (Vercel/Netlify) para reconstruir la página estática con 1 clic.
-- [ ] **Pruebas de Performance (Lighthouse):** Ejecutar una auditoría de rendimiento completa antes del lanzamiento para asegurar tiempos de carga menores a 1 segundo para el HTML y optimización máxima del Canvas 3D.
+- [x] **API de Guardado:** Crear un endpoint (API Route en Astro o función Serverless) que reciba el JSON modificado desde el panel visual y lo guarde en el repositorio o Base de Datos.
+- [x] **Botón de Publicar (Build Trigger):** Configurar el Webhook del hosting (Vercel/Netlify) para reconstruir la página estática con 1 clic.
+- [x] **Pruebas de Performance (Lighthouse):** Ejecutar una auditoría de rendimiento completa antes del lanzamiento para asegurar tiempos de carga menores a 1 segundo para el HTML y optimización máxima del Canvas 3D.

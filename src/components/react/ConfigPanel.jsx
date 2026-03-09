@@ -19,6 +19,8 @@ const ConfigPanel = () => {
   const updateContent = useStore((state) => state.updateContent);
   const updateBackground = useStore((state) => state.updateBackground);
   const updateAnimation = useStore((state) => state.updateAnimation);
+  const toggleHeatmap = useStore((state) => state.toggleHeatmap);
+  const isHeatmapVisible = useStore((state) => state.isHeatmapVisible);
     
   const handleContentChange = (e) => {
     updateContent(e.target.name, e.target.value);
@@ -28,10 +30,33 @@ const ConfigPanel = () => {
     updateBackground(key, value);
   }
 
+  const [isPublishing, setIsPublishing] = React.useState(false);
+
   const handleExport = () => {
     const configString = JSON.stringify(config, null, 2);
     prompt("Copy this configuration and ask me to update the config.js file:", `const config = ${configString};\n\nexport default config;`);
   }
+
+  const handlePublish = async () => {
+    setIsPublishing(true);
+    try {
+      const response = await fetch('/api/saveConfig', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(config),
+      });
+      const data = await response.json();
+      if (data.success) {
+        alert("¡Éxito! " + data.message);
+      } else {
+        alert("Error al publicar: " + data.message);
+      }
+    } catch (error) {
+      alert("Error de red al intentar publicar.");
+    } finally {
+      setIsPublishing(false);
+    }
+  };
 
   return (
     <div style={panelStyles}>
@@ -64,9 +89,31 @@ const ConfigPanel = () => {
       </div>
 
       {/* --- Animation & Background Sections... --- */}
+      <div style={sectionStyles}>
+        <h4 style={{ fontWeight: 'bold', marginBottom: '12px' }}>Analytics</h4>
+        <div style={checkboxContainerStyles}>
+          <input type="checkbox" id="heatmap" checked={isHeatmapVisible} onChange={toggleHeatmap} />
+          <label htmlFor="heatmap" style={checkboxLabelStyles}>Show Heatmap Overlay</label>
+        </div>
+      </div>
+
+      {/* --- Animation & Background Sections... --- */}
       <div style={sectionStyles}><h4 style={{ fontWeight: 'bold', marginBottom: '12px' }}>Animation</h4><label style={labelStyles}>Transition Speed: {config.animation.duration.toFixed(1)}s</label><input type="range" min="0.5" max="5" step="0.1" value={config.animation.duration} onChange={(e) => updateAnimation('duration', parseFloat(e.target.value))} style={{width: '100%'}}/></div>
       <div style={sectionStyles}><h4 style={{ fontWeight: 'bold', marginBottom: '12px' }}>Background</h4><div style={checkboxContainerStyles}><input type="checkbox" id="interactive" checked={config.background.interactive} onChange={(e) => handleBackgroundChange('interactive', e.target.checked)}/><label htmlFor="interactive" style={checkboxLabelStyles}>Enable Cursor Effect</label></div><label style={labelStyles}>Particle Color</label><HexColorPicker color={config.background.color} onChange={(newColor) => handleBackgroundChange('color', newColor)}/><label style={{ ...labelStyles, marginTop: '20px' }}>Particle Size: {config.background.size.toFixed(3)}</label><input type="range" min="0.005" max="0.05" step="0.001" value={config.background.size} onChange={(e) => handleBackgroundChange('size', parseFloat(e.target.value))} style={{width: '100%', marginBottom: '20px'}}/><label style={labelStyles}>Particle Count: {config.background.count}</label><input type="range" min="500" max="10000" step="100" value={config.background.count} onChange={(e) => handleBackgroundChange('count', parseInt(e.target.value, 10))} style={{width: '100%'}}/></div>
-      <div style={sectionStyles}><button onClick={handleExport} style={exportButtonStyles}>Export Configuration</button></div>
+      <div style={sectionStyles}>
+        <button onClick={handleExport} style={exportButtonStyles}>Export Configuration</button>
+        <button
+          onClick={handlePublish}
+          disabled={isPublishing}
+          style={{
+            ...exportButtonStyles,
+            backgroundColor: isPublishing ? '#555' : '#10b981', // Green for publish
+            marginTop: '10px'
+          }}
+        >
+          {isPublishing ? 'Publicando...' : 'Publicar Sitio en Vivo'}
+        </button>
+      </div>
     </div>
   );
 };

@@ -1,6 +1,7 @@
 ---
-import Scene from '../components/react/Scene.jsx';
+import SceneClient from '../components/react/SceneClient.jsx';
 import Navigation from '../components/react/Navigation.jsx';
+import HeatmapLayer from '../components/react/HeatmapLayer.jsx';
 ---
 <html lang="en">
 <head>
@@ -12,8 +13,9 @@ import Navigation from '../components/react/Navigation.jsx';
     <link rel="stylesheet" href="/src/styles/effects.css" />
 </head>
 <body>
-    <Scene client:load />
+    <SceneClient client:only="react" />
 
     <Navigation client:load />
+    <HeatmapLayer client:load />
 </body>
 </html>

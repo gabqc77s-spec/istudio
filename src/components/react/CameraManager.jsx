@@ -1,14 +1,16 @@
 // src/components/react/CameraManager.jsx
 import { useThree } from "@react-three/fiber";
 import { gsap } from "gsap";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
+import { useCurrentSheet } from "@theatre/r3f";
 
 // --- Configuration ---
 const sectionMap = {
   "0,0": { position: { x: 0, y: 0, z: 1.5 }, rotation: { x: 0, y: 0, z: 0 } },   // Hero
   "0,1": { position: { x: -1, y: -1, z: 3 }, rotation: { x: 0.2, y: 0.5, z: 0 } }, // Services
   "1,1": { position: { x: 1, y: -1, z: 3 }, rotation: { x: 0.2, y: -0.5, z: 0 } },  // Showcase
-  "-1,1": { position: { x: -1, y: 1, z: 3 }, rotation: { x: -0.2, y: 0.5, z: 0 } } // Chatbot Demo
+  "-1,1": { position: { x: -1, y: 1, z: 3 }, rotation: { x: -0.2, y: 0.5, z: 0 } }, // Chatbot Demo
+  "0,2": { position: { x: 0, y: -2, z: 4 }, rotation: { x: 0.5, y: 0, z: 0 } }  // Android App Demo
 };
 
 // TODO: In Phase 3, camera coordinates should also be moved inside the JSON schema (`config.sections`)
@@ -25,17 +27,27 @@ const CameraManager = ({ animationConfig }) => {
   const setCurrentSectionIndex = useStore((state) => state.setCurrentSectionIndex);
   const lastAnimated = useRef(0);
 
-  const moveToSection = (sectionIndex) => {
-    const coordString = sectionCoords[sectionIndex];
-    const targetSection = sectionMap[coordString];
-    if (!targetSection) return;
+  const config = useStore((state) => state.config);
+  const totalSections = config.sections.length;
 
+  const sheet = useCurrentSheet();
+
+  const moveToSection = (sectionIndex) => {
     const duration = animationConfig.duration;
 
-    gsap.to(camera.position, { ...targetSection.position, duration, ease: "power3.inOut" });
-    gsap.to(camera.rotation, { ...targetSection.rotation, duration, ease: "power3.inOut" });
+    // Play the Theatre.js timeline sequence assigned to this section transition.
+    // Assuming each section transition takes `duration` seconds in the Theatre.js sequence:
+    if (sheet) {
+        sheet.sequence.play({ iterationCount: 1, range: [sectionIndex * duration, (sectionIndex + 1) * duration] });
+    }
 
-    // CSS visibility is now handled completely by SectionRenderer.jsx reacting to Zustand state changes.
+    // Fallback GSAP animation for development safety if Theatre.js isn't configured visually yet
+    const coordString = sectionCoords[sectionIndex];
+    const targetSection = sectionMap[coordString];
+    if (targetSection && !sheet) {
+        gsap.to(camera.position, { ...targetSection.position, duration, ease: "power3.inOut" });
+        gsap.to(camera.rotation, { ...targetSection.rotation, duration, ease: "power3.inOut" });
+    }
   };
 
   const navigate = (direction) => {
@@ -48,9 +60,9 @@ const CameraManager = ({ animationConfig }) => {
 
     let nextIndex = currentSectionIndex;
     if (direction === 'next') {
-        nextIndex = (currentSectionIndex + 1) % sectionCoords.length;
+        nextIndex = (currentSectionIndex + 1) % totalSections;
     } else {
-        nextIndex = (currentSectionIndex - 1 + sectionCoords.length) % sectionCoords.length;
+        nextIndex = (currentSectionIndex - 1 + totalSections) % totalSections;
     }
     setCurrentSectionIndex(nextIndex);
   };

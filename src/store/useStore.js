@@ -7,9 +7,13 @@ const useStore = create((set) => ({
   config: initialConfig,
   currentSectionIndex: 0,
   isAdminMode: false,
+  isHeatmapVisible: false,
+  clickData: [], // Stores heatmap click coordinates
 
   // Acciones
   toggleAdminMode: () => set((state) => ({ isAdminMode: !state.isAdminMode })),
+  toggleHeatmap: () => set((state) => ({ isHeatmapVisible: !state.isHeatmapVisible })),
+  addClickData: (x, y) => set((state) => ({ clickData: [...state.clickData, { x, y }] })),
   setConfig: (newConfig) => set({ config: newConfig }),
 
   updateContent: (key, value) => set((state) => {

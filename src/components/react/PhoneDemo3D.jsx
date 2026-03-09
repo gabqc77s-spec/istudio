@@ -2,6 +2,7 @@
 import React, { useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Html, RoundedBox } from '@react-three/drei';
+import { editable as e } from '@theatre/r3f';
 import * as THREE from 'three';
 import useStore from '../../store/useStore';
 
@@ -33,7 +34,8 @@ const PhoneDemo3D = ({ position = [1, -1, 3], url = "https://www.eficell.cl" }) 
   });
 
   return (
-    <group
+    <e.group
+        theatreKey="Eficell Phone 3D"
         ref={phoneRef}
         position={position}
         onPointerOver={() => setHovered(true)}
@@ -67,7 +69,7 @@ const PhoneDemo3D = ({ position = [1, -1, 3], url = "https://www.eficell.cl" }) 
             style={{ width: '100%', height: '100%', border: 'none' }}
         />
       </Html>
-    </group>
+    </e.group>
   );
 };
 
