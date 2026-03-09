@@ -1,13 +1,18 @@
 // src/components/react/SceneClient.jsx
 import React, { useRef, useEffect } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { Points, PointMaterial } from '@react-three/drei';
+import { Points, PointMaterial, Stats } from '@react-three/drei';
 import CameraManager from './CameraManager';
 import ConfigPanel from './ConfigPanel';
 import SectionRenderer from './SectionRenderer';
 import PhoneDemo3D from './PhoneDemo3D';
+import DynamicModel from './DynamicModel';
+import DeviceSimulator from './DeviceSimulator';
+import MicroPageModal from './MicroPageModal';
+import CinematicEffects from './CinematicEffects';
 import * as THREE from 'three';
 import useStore from '../../store/useStore';
+import { Physics } from '@react-three/rapier';
 
 // THEATRE.JS IMPORTS (SAFE HERE BECAUSE THIS FILE IS CLIENT-ONLY)
 import { getProject } from '@theatre/core';
@@ -126,6 +131,10 @@ const SceneClient = () => {
         </div>
       )}
 
+      {/* Fase 10: Performance Auditing Tools */}
+      {isAdminMode && <Stats showPanel={0} className="stats-panel" />}
+
+      <DeviceSimulator>
       <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 0 }}>
         <React.Suspense fallback={null}>
           <Canvas
@@ -133,21 +142,46 @@ const SceneClient = () => {
               onPointerMove={handlePointerMove}
           >
               <SheetProvider sheet={mainSheet}>
-                  <ambientLight intensity={0.5} />
+                  <ambientLight intensity={config.lighting?.ambientIntensity || 0.5} />
+                  <spotLight
+                    position={[10, 10, 10]}
+                    angle={0.15}
+                    penumbra={1}
+                    intensity={config.lighting?.spotlightIntensity || 1.5}
+                    color={config.lighting?.spotlightColor || '#ffffff'}
+                    castShadow
+                  />
                   <Starfield key={debouncedConfig.count} {...debouncedConfig} mousePos={mousePos} />
                   <CameraManager animationConfig={config.animation} />
 
-                  {/* Suspense inside Canvas to prevent heavy 3D models from blocking first paint */}
+                  {/* Phase 14: Physics Engine wrapper */}
                   <React.Suspense fallback={null}>
-                    {/* Showcase Device (Eficell Demo) */}
-                    <PhoneDemo3D position={[1, -1, 3]} url="https://www.eficell.cl" />
+                    {config.physics?.enabled ? (
+                      <Physics debug={config.physics?.debug} gravity={config.physics?.gravity || [0, -9.81, 0]}>
+                        {/* Showcase Device (Eficell Demo) */}
+                        <PhoneDemo3D position={[1, -1, 3]} url="https://www.eficell.cl" />
+                        {/* Dynamically loaded models from Media Library */}
+                        <DynamicModel position={[-1, 0, 1]} />
+                      </Physics>
+                    ) : (
+                      <>
+                        <PhoneDemo3D position={[1, -1, 3]} url="https://www.eficell.cl" />
+                        <DynamicModel position={[-1, 0, 1]} />
+                      </>
+                    )}
                   </React.Suspense>
+
+                {/* Phase 12: Cinematic Post-Processing */}
+                <CinematicEffects />
+
               </SheetProvider>
           </Canvas>
         </React.Suspense>
       </div>
 
       <SectionRenderer />
+      <MicroPageModal />
+      </DeviceSimulator>
     </>
   );
 };

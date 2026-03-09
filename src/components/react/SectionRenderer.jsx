@@ -18,26 +18,31 @@ const SectionRenderer = () => {
   const isAdminMode = useStore((state) => state.isAdminMode);
   const updateContent = useStore((state) => state.updateContent);
 
-  const handleTitleChange = (e) => {
-    // Phase 5: Inline editing updates the store immediately
-    updateContent('title', e.target.value);
+  const handleTitleChange = (e, sectionId) => {
+    updateContent('title', e.target.value, sectionId);
   };
 
-  const handleSubtitleChange = (e) => {
-    updateContent('subtitle', e.target.value);
+  const handleSubtitleChange = (e, sectionId) => {
+    updateContent('subtitle', e.target.value, sectionId);
   };
 
-  const renderHero = (data) => {
+  const renderHero = (data, sectionId) => {
     // Workaround for default export differences in SSR/CJS
     const ContentEditable = ReactContentEditable.default || ReactContentEditable;
 
     return (
       <div className="content-wrapper">
-        <img id="main-logo" src={data.logoUrl} alt="Logo" style={{ display: data.logoUrl ? 'block' : 'none' }} />
+        <img
+          id="main-logo"
+          src={data.logoUrl}
+          alt="Logo"
+          style={{ display: data.logoUrl ? 'block' : 'none', cursor: 'pointer' }}
+          onClick={() => useStore.getState().dispatchAction('click_logo')}
+        />
         <ContentEditable
           html={data.title}
           disabled={!isAdminMode}
-          onChange={handleTitleChange}
+          onChange={(e) => handleTitleChange(e, sectionId)}
           tagName="h1"
           style={{
             outline: isAdminMode ? '2px dashed #9333ea' : 'none',
@@ -48,7 +53,7 @@ const SectionRenderer = () => {
         <ContentEditable
           html={data.subtitle}
           disabled={!isAdminMode}
-          onChange={handleSubtitleChange}
+          onChange={(e) => handleSubtitleChange(e, sectionId)}
           tagName="p"
           className="subtitle"
           style={{
@@ -113,14 +118,16 @@ const SectionRenderer = () => {
               textAlign: config.content.textAlign,
               opacity: isActive ? 1 : 0,
               visibility: isActive ? 'visible' : 'hidden',
-              pointerEvents: isActive ? 'auto' : 'none',
+              pointerEvents: 'none', // El contenedor principal NO debe bloquear clicks en el canvas 3D
               transition: `opacity ${config.animation.duration / 2}s ease-in-out, visibility ${config.animation.duration / 2}s ease-in-out`
             }}
           >
-            {section.type === 'hero' && renderHero(section.data)}
-            {section.type === 'services' && renderServices(section.data)}
-            {section.type === 'showcase' && renderShowcase(section.data)}
-            {section.type === 'widget-demo' && renderWidgetDemo(section.data)}
+            <div style={{ pointerEvents: isActive ? 'auto' : 'none' }}>
+                {section.type === 'hero' && renderHero(section.data, section.id)}
+                {section.type === 'services' && renderServices(section.data)}
+                {section.type === 'showcase' && renderShowcase(section.data)}
+                {section.type === 'widget-demo' && renderWidgetDemo(section.data)}
+            </div>
           </div>
         );
       })}

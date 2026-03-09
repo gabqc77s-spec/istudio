@@ -36,15 +36,19 @@ const CameraManager = ({ animationConfig }) => {
     const duration = animationConfig.duration;
 
     // Play the Theatre.js timeline sequence assigned to this section transition.
-    // Assuming each section transition takes `duration` seconds in the Theatre.js sequence:
     if (sheet) {
         sheet.sequence.play({ iterationCount: 1, range: [sectionIndex * duration, (sectionIndex + 1) * duration] });
     }
 
-    // Fallback GSAP animation for development safety if Theatre.js isn't configured visually yet
-    const coordString = sectionCoords[sectionIndex];
-    const targetSection = sectionMap[coordString];
-    if (targetSection && !sheet) {
+    // Phase 7: Because sections can be reordered via Drag&Drop, we can no longer rely on index-based sequential coords.
+    // Instead, we use the active section's 'coord' string defined dynamically in its JSON state.
+    const activeSection = config.sections[sectionIndex];
+    if (!activeSection) return;
+
+    const targetSection = sectionMap[activeSection.coord];
+    if (targetSection) {
+        // Ejecutamos siempre GSAP como fallback/motor principal para la cámara
+        // ya que la cámara de R3F por defecto no está enlazada aún a Theatre.js (requiere <e.perspectiveCamera>)
         gsap.to(camera.position, { ...targetSection.position, duration, ease: "power3.inOut" });
         gsap.to(camera.rotation, { ...targetSection.rotation, duration, ease: "power3.inOut" });
     }
@@ -65,6 +69,12 @@ const CameraManager = ({ animationConfig }) => {
         nextIndex = (currentSectionIndex - 1 + totalSections) % totalSections;
     }
     setCurrentSectionIndex(nextIndex);
+
+    // Trigger action engine for sections
+    const newSection = config.sections[nextIndex];
+    if (newSection && newSection.id === 'showcase') {
+        useStore.getState().dispatchAction('enter_showcase');
+    }
   };
   
   useEffect(() => {

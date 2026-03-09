@@ -58,3 +58,73 @@ Este es el listado de tareas técnicas paso a paso para transformar el sitio act
 - [x] **API de Guardado:** Crear un endpoint (API Route en Astro o función Serverless) que reciba el JSON modificado desde el panel visual y lo guarde en el repositorio o Base de Datos.
 - [x] **Botón de Publicar (Build Trigger):** Configurar el Webhook del hosting (Vercel/Netlify) para reconstruir la página estática con 1 clic.
 - [x] **Pruebas de Performance (Lighthouse):** Ejecutar una auditoría de rendimiento completa antes del lanzamiento para asegurar tiempos de carga menores a 1 segundo para el HTML y optimización máxima del Canvas 3D.
+
+---
+
+## Fase 7: La Experiencia del Administrador (UX Avanzada del Panel)
+
+- [x] **Gestor de Bloques Visual (Drag & Drop):** Implementar `@hello-pangea/dnd` para permitir reordenar visualmente las secciones del sitio web directamente desde el panel (ej. mover el "Chatbot Demo" arriba del "Hero").
+- [x] **Simulador Multidispositivo (Live Preview):** Añadir controles (Iconos de Monitor, Tablet, Móvil) en la barra superior. Al activarlos, el área de previsualización de la página se encoge usando `iframes` o CSS `transform` para emular tamaños de pantalla exactos sin salir del modo edición.
+- [x] **Sistema de Historial (Deshacer/Rehacer):** Integrar `zundo` (Zustand Undo) para permitir viajar en el tiempo. Si se comete un error editando la página o colores, un botón de "Deshacer" (o Ctrl+Z) restaura el estado visual anterior.
+- [x] **Gestor de Paletas Globales (Theming):** Añadir un selector de "Temas" predefinidos. Con un solo clic, se actualizan el color del fondo 3D, las partículas y las tipografías del HTML en conjunto.
+
+---
+
+## Fase 8: Editor Espacial 3D en Contexto (Manipulación In-Game)
+
+- [x] **Controles Gizmo 3D:** Integrar `<TransformControls>` de `@react-three/drei`. Al hacer clic en un modelo 3D (como el teléfono) en el modo edición, aparecerán flechas visuales (Gizmos) para mover, rotar o escalar el objeto directamente con el ratón, sin usar *sliders* numéricos.
+- [x] **Estudio de Iluminación Visual:** Añadir un panel de "Lighting" donde se puedan arrastrar luces (Spotlight, PointLight) sobre el canvas, ajustar su intensidad con el ratón y ver cómo cambian las sombras en tiempo real.
+- [x] **Editor de Materiales:** Al hacer clic en una geometría 3D, el panel desplegará los atributos de su material (Rugosidad, Metalidad, Transparencia) para modificarlos visualmente.
+
+---
+
+## Fase 9: Biblioteca de Activos Integrada (Media Library)
+
+- [x] **Subida de Archivos Nativa:** Reemplazar los inputs de URL por componentes de subida de archivos (Drag & Drop de imágenes al panel).
+- [x] **Galería Visual en el Panel:** Crear una pestaña "Media" donde Gabriel o Paula puedan ver miniaturas de todos los logos, fondos y videos previamente subidos, seleccionándolos con un clic para inyectarlos en la web.
+- [x] **Soporte de Modelos GLTF/GLB:** Permitir arrastrar y soltar archivos de modelos 3D (`.glb`) directamente al navegador, analizarlos y agregarlos al JSON para que se rendericen automáticamente en la escena.
+
+---
+
+## Fase 10: Auditoría Visual y Control de Rendimiento
+
+- [x] **Visualizador de FPS y Memoria:** Integrar `<Stats />` y un monitor de memoria en el panel. Permitirá al administrador ver en tiempo real si agregar "10.000 partículas" más hará que la web sea lenta, antes de guardarla.
+- [x] **Selector de Calidad Responsiva (LOD):** Añadir un control en el panel para definir "Niveles de Detalle" (Ej: "Bajo, Medio, Alto"). Al configurar un modelo complejo, el administrador podrá definir una versión de baja calidad que cargue automáticamente en celulares, optimizando el rendimiento.
+- [x] **Modo "Wireframe / Debug":** Un botón en el panel que convierta toda la escena 3D en líneas (wireframe) y revele las "cajas de colisión", facilitando a Gabriel la depuración visual sin necesidad de consolas de desarrollo.
+
+---
+
+## Fase 11: Orquestación de Eventos (Action Builder)
+
+- [x] **Constructor Lógico Visual:** Un panel donde puedas conectar "Triggers" (disparadores) con "Acciones". (Ejemplo: Si el usuario *hace clic* en el logo -> *entonces* cambiar el color de las partículas a rojo). Todo sin escribir JavaScript.
+- [x] **Línea de Tiempo de Scroll (Scroll-Triggered Animations):** Interfaz para definir en qué porcentaje del scroll ocurre una animación 3D (Ej: al llegar al 50% de la página, el modelo del teléfono explota en sus componentes internos).
+
+---
+
+## Fase 12: Estudio de Post-Procesamiento Cinemático
+
+- [x] **Integración de `@react-three/postprocessing`:** Activar el pipeline de efectos avanzados de cámara.
+- [x] **Controles Visuales de Cámara:** Añadir al panel sliders para controlar el **Bloom** (brillo de luces neón), **Profundidad de Campo** (desenfocar el fondo para que resalte el modelo principal) y **Aberración Cromática** (efecto de lente de cámara real).
+- [x] **Filtros de Color Dinámicos:** Poder aplicar LUTs (Tablas de Búsqueda de Color) o tintes (Noise/Vignette) desde el panel para darle a la página entera un "look" fílmico con un solo clic.
+
+---
+
+## Fase 13: Editor de Materiales y Shaders Node-Based
+
+- [x] **Materiales Personalizables Avanzados:** Al seleccionar un modelo 3D, el panel permitirá cambiar su física: convertir un objeto de "plástico" a "vidrio esmerilado", "oro pulido" o "agua líquida" modificando los atributos del shader.
+- [x] **Video Textures:** Un selector en el panel para inyectar un archivo de video y mapearlo como textura sobre cualquier objeto 3D de la escena (ej. proyectar un video de Impulsa Studio en una pared 3D virtual).
+
+---
+
+## Fase 14: Motor de Físicas Interactivas
+
+- [x] **Integración de Motor de Físicas (Rapier/Cannon):** Agregar simulaciones de colisión y gravedad al entorno 3D.
+- [x] **Toggles de Físicas en el Panel:** Poder marcar objetos como "Sólidos" o "Afectados por Gravedad". Permitirá crear efectos donde elementos de la página caen y chocan entre sí cuando el usuario interactúa con ellos.
+
+---
+
+## Fase 15: Navegación Espacial Inmersiva (Single Page Showroom)
+
+- [x] **Orquestador de Eventos (Hovers & Clicks):** Desde el panel, poder asignar acciones a cualquier modelo 3D o tarjeta. Ej: "Al hacer clic en el teléfono de Eficell, oscurecer el fondo y abrir sus detalles de proyecto".
+- [x] **Expansión de "Micro-Páginas" In-Game:** Sistema para que al hacer clic en un elemento (como un servicio), la cámara 3D vuele hacia un nuevo escenario dedicado (ej. una "sala" virtual), mostrando el contenido detallado de ese servicio sin que el navegador recargue la página ni cambie la URL.
+- [x] **Modales 3D Inmersivos:** Controlar desde el panel la apertura de ventanas flotantes espaciales. Cuando el usuario hace clic en "Contacto", en lugar de ir a `/contacto`, un formulario holográfico se despliega suavemente frente a la cámara dentro de la misma escena 3D.
