@@ -10,7 +10,7 @@ Este es el listado de tareas técnicas paso a paso para transformar el sitio act
 - [ ] **Limpieza de Dependencias:** Eliminar en `package.json` las integraciones no utilizadas (`@astrojs/preact`, `@astrojs/solid-js`, `@astrojs/svelte`, `@astrojs/vue`).
 - [ ] **Refactorización de Navegación:** Mover los botones `.mobile-nav` (`Prev`/`Next`) de `index.astro` a un componente React para que compartan el mismo estado que el 3D.
 - [ ] **Refactorización de Efectos Vanilla JS:** Reescribir `src/scripts/engine.js` (efecto de máquina de escribir) como un Hook o Componente de React (`useTypewriter`).
-- [ ] **Limpieza de Manipulación DOM Inconsistente:** Eliminar `document.getElementById` y `document.querySelectorAll` dentro de `Scene.jsx` y `CameraManager.jsx`.
+- [ ] **Limpieza de Manipulación DOM Inconsistente:** Limpiar lógicas inconsistentes, manteniendo temporalmente `document.querySelectorAll` en `Scene.jsx` y `CameraManager.jsx` con comentarios `TODO` para evitar romper la UI antes de implementar el Estado Global (Fase 2).
 - [ ] **Limpieza CSS:** Eliminar selectores huérfanos (`.canvas-container`) de `src/styles/global.css`.
 
 ---

@@ -1,23 +1,15 @@
 // @ts-check
 
-import preact from '@astrojs/preact';
 import react from '@astrojs/react';
-import solid from '@astrojs/solid-js';
-import svelte from '@astrojs/svelte';
-import vue from '@astrojs/vue';
 import { defineConfig } from 'astro/config';
 
 import tailwindcss from '@tailwindcss/vite';
 
 // https://astro.build/config
 export default defineConfig({
-  // Enable many frameworks to support all different kinds of components.
+  // Enable React to support all 3D and UI components.
   integrations: [
-      preact({ include: ['**/preact/*'] }),
-      solid({ include: ['**/solid/*'] }),
-      react({ include: ['**/react/*'] }),
-      svelte(),
-      vue(),
+      react(),
 	],
 
   vite: {

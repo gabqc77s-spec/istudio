@@ -28,8 +28,9 @@ const CameraManager = ({ animationConfig }) => {
     gsap.to(camera.position, { ...targetSection.position, duration, ease: "power3.inOut" });
     gsap.to(camera.rotation, { ...targetSection.rotation, duration, ease: "power3.inOut" });
 
+    // TODO: This direct DOM manipulation will be removed in Phase 2 when Zustand controls CSS visibility.
+    // For now, it must remain to prevent all sections from overlapping visibly on screen.
     document.querySelectorAll('.page-section').forEach((el) => {
-      // REVERTED: Inactive sections are now fully invisible again
       gsap.to(el, {
         autoAlpha: el.dataset.sectionCoord === coordString ? 1 : 0, 
         duration: duration / 2,
@@ -64,17 +65,16 @@ const CameraManager = ({ animationConfig }) => {
     const handlePrev = () => navigate('prev');
     const handleNext = () => navigate('next');
 
-    const prevBtn = document.getElementById('prev-section-btn');
-    const nextBtn = document.getElementById('next-section-btn');
-
     window.addEventListener('wheel', handleWheel);
-    prevBtn?.addEventListener('click', handlePrev);
-    nextBtn?.addEventListener('click', handleNext);
+
+    // Listen for custom navigation events emitted from Navigation.jsx
+    window.addEventListener('navigatePrev', handlePrev);
+    window.addEventListener('navigateNext', handleNext);
 
     return () => {
       window.removeEventListener('wheel', handleWheel);
-      prevBtn?.removeEventListener('click', handlePrev);
-      nextBtn?.removeEventListener('click', handleNext);
+      window.removeEventListener('navigatePrev', handlePrev);
+      window.removeEventListener('navigateNext', handleNext);
     };
   }, [currentSectionIndex, animationConfig]);
 

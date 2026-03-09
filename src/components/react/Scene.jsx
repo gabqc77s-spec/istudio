@@ -76,7 +76,8 @@ const Scene = ({ children }) => {
     return () => clearTimeout(handler);
   }, [config.background]);
 
-  // THIS EFFECT NOW ALSO CONTROLS ALIGNMENT
+  // TODO: Move this synchronization to a React Context / Zustand global state in Phase 2
+  // For now we keep it working to avoid breaking the App before the State Manager is ready
   useEffect(() => {
     const { logoUrl, title, subtitle, justifyContent, alignItems, textAlign } = config.content;
     const logoEl = document.getElementById('main-logo');

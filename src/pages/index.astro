@@ -1,6 +1,8 @@
 ---
 import InteractiveCard from '../components/react/InteractiveCard.jsx';
 import Scene from '../components/react/Scene.jsx';
+import Navigation from '../components/react/Navigation.jsx';
+import Typewriter from '../components/react/Typewriter.jsx';
 ---
 <html lang="en">
 <head>
@@ -10,7 +12,6 @@ import Scene from '../components/react/Scene.jsx';
     <title>iStudio Generative 3D</title>
     <link rel="stylesheet" href="/src/styles/global.css" />
     <link rel="stylesheet" href="/src/styles/effects.css" />
-    <script src="/src/scripts/engine.js" type="module"></script>
 </head>
 <body>
     <Scene client:load>
@@ -21,7 +22,7 @@ import Scene from '../components/react/Scene.jsx';
                 <h1 id="main-title"></h1>
                 <p id="main-subtitle" class="subtitle"></p>
                 <div class="typewriter-container">
-                    <span>&gt; </span><span id="typewriter"></span>
+                    <span>&gt; </span><Typewriter client:load />
                 </div>
             </div>
         </div>
@@ -45,9 +46,6 @@ import Scene from '../components/react/Scene.jsx';
         </div>
     </Scene>
 
-    <div class="mobile-nav">
-        <button id="prev-section-btn" class="nav-button">Prev</button>
-        <button id="next-section-btn" class="nav-button">Next</button>
-    </div>
+    <Navigation client:load />
 </body>
 </html>
