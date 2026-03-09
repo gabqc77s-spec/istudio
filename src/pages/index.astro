@@ -1,48 +1,53 @@
 ---
-// Style Imports
-import '../styles/global.css';
-
-import { PreactCounter } from '../components/preact/PreactCounter';
-// Component Imports
-// For JSX components, all the common ways of exporting (under a namespace, specific export, default export etc) are supported!
-import * as react from '../components/react/ReactCounter';
-import SolidCounter from '../components/solid/SolidCounter';
-import SvelteCounter from '../components/svelte/SvelteCounter.svelte';
-import VueCounter from '../components/vue/VueCounter.vue';
-
-// Full Astro Component Syntax:
-// https://docs.astro.build/basics/astro-components/
+import InteractiveCard from '../components/react/InteractiveCard.jsx';
+import Scene from '../components/react/Scene.jsx';
 ---
-
 <html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-	</head>
-	<body>
-		<main>
-			<react.Counter client:visible>
-				<h1>Hello from React!</h1>
-			</react.Counter>
+<head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>iStudio Generative 3D</title>
+    <link rel="stylesheet" href="/src/styles/global.css" />
+    <link rel="stylesheet" href="/src/styles/effects.css" />
+    <script src="/src/scripts/engine.js" type="module"></script>
+</head>
+<body>
+    <Scene client:load>
+        {/* The page-section divs are now the direct children for easier styling */}
+        <div class="page-section" data-section-coord="0,0">
+            <div class="content-wrapper">
+                <img id="main-logo" src="" alt="Logo" style={{display: 'none'}} />
+                <h1 id="main-title"></h1>
+                <p id="main-subtitle" class="subtitle"></p>
+                <div class="typewriter-container">
+                    <span>&gt; </span><span id="typewriter"></span>
+                </div>
+            </div>
+        </div>
 
-			<PreactCounter client:visible>
-				<h1>Hello from Preact!</h1>
-			</PreactCounter>
+        <div class="page-section" data-section-coord="0,1">
+             <div class="content-wrapper">
+                <h2>Core Services</h2>
+                <div class="services-grid">
+                    <InteractiveCard title="AI-Powered Code" description="Generate robust and efficient code with our advanced AI." />
+                    <InteractiveCard title="3D Environments" description="Create immersive and dynamic 3D worlds for your users." />
+                    <InteractiveCard title="Dynamic UI/UX" description="Design interfaces that adapt, evolve, and feel alive." />
+                </div>
+            </div>
+        </div>
 
-			<SolidCounter client:visible>
-				<h1>Hello from Solid!</h1>
-			</SolidCounter>
+        <div class="page-section" data-section-coord="1,1">
+            <div class="content-wrapper">
+                <h2>Project Showcase</h2>
+                <p class="subtitle">Here we can feature a gallery of 3D projects.</p>
+            </div>
+        </div>
+    </Scene>
 
-			<VueCounter client:visible>
-				<h1>Hello from Vue!</h1>
-			</VueCounter>
-
-			<SvelteCounter client:visible>
-				<h1>Hello from Svelte!</h1>
-			</SvelteCounter>
-		</main>
-	</body>
+    <div class="mobile-nav">
+        <button id="prev-section-btn" class="nav-button">Prev</button>
+        <button id="next-section-btn" class="nav-button">Next</button>
+    </div>
+</body>
 </html>
