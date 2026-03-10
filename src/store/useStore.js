@@ -94,7 +94,24 @@ const useStore = create(temporal((set) => ({
     };
   }),
   toggleHeatmap: () => set((state) => ({ isHeatmapVisible: !state.isHeatmapVisible })),
-  addClickData: (x, y) => set((state) => ({ clickData: [...state.clickData, { x, y }] })),
+  // Actualizado para Heatmap Híbrido (X, Y, Sección, Tag, Id)
+  addClickData: (x, y, sectionIndex, targetTag, targetId) => set((state) => {
+    const newClick = { x, y, sectionIndex, targetTag, targetId, timestamp: Date.now() };
+    const newData = [...state.clickData, newClick];
+    // Guardar también en localStorage para persistencia temporal
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('impulsa_heatmap_data', JSON.stringify(newData));
+    }
+    return { clickData: newData };
+  }),
+  // Cargar datos persistidos al iniciar
+  loadHeatmapData: () => set(() => {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('impulsa_heatmap_data');
+      if (stored) return { clickData: JSON.parse(stored) };
+    }
+    return { clickData: [] };
+  }),
   setConfig: (newConfig) => set({ config: newConfig }),
 
   reorderSections: (startIndex, endIndex) => set((state) => {

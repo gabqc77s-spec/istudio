@@ -10,6 +10,8 @@ import DynamicModel from './DynamicModel';
 import DeviceSimulator from './DeviceSimulator';
 import MicroPageModal from './MicroPageModal';
 import CinematicEffects from './CinematicEffects';
+import ClickTracker from './ClickTracker';
+import HeatmapOverlay from './HeatmapOverlay';
 import * as THREE from 'three';
 import useStore from '../../store/useStore';
 import { Physics } from '@react-three/rapier';
@@ -189,6 +191,8 @@ const SceneClient = () => {
 
       <SectionRenderer />
       <MicroPageModal />
+      <ClickTracker />
+      <HeatmapOverlay />
       </DeviceSimulator>
     </>
   );

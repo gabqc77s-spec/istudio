@@ -77,7 +77,7 @@ const ConfigPanel = () => {
   const activeSection = config.sections[activeAdminTab];
 
   return (
-    <div style={panelStyles}>
+    <div id="config-panel" style={panelStyles}>
       {/* Top Bar */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
         <h3 style={{ fontSize: '18px', fontWeight: 'bold', margin: 0 }}>Editor (Fase 16)</h3>
@@ -203,10 +203,17 @@ const ConfigPanel = () => {
 
       <div style={sectionStyles}>
         <h4 style={{ fontWeight: 'bold', marginBottom: '12px' }}>Analytics & Debugging</h4>
-        <div style={checkboxContainerStyles}>
-          <input type="checkbox" id="heatmap" checked={isHeatmapVisible} onChange={toggleHeatmap} />
-          <label htmlFor="heatmap" style={checkboxLabelStyles}>Show Heatmap Overlay</label>
-        </div>
+        <button
+          onClick={toggleHeatmap}
+          style={{
+            ...exportButtonStyles,
+            backgroundColor: isHeatmapVisible ? '#ef4444' : '#374151',
+            marginBottom: '15px'
+          }}
+        >
+          {isHeatmapVisible ? '🔥 Ocultar Heatmap' : '🔥 Ver Mapa de Calor (Sección Actual)'}
+        </button>
+
         <div style={checkboxContainerStyles}>
           <input type="checkbox" id="wireframe" checked={isWireframeMode} onChange={toggleWireframe} />
           <label htmlFor="wireframe" style={checkboxLabelStyles}>3D Wireframe Mode</label>
