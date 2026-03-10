@@ -30,6 +30,7 @@ const ConfigPanel = () => {
   const isWireframeMode = useStore((state) => state.isWireframeMode);
   const qualityLOD = useStore((state) => state.qualityLOD);
   const setQualityLOD = useStore((state) => state.setQualityLOD);
+  const activeTheme = useStore((state) => state.activeTheme);
     
   const handleContentChange = (e) => {
     updateContent(e.target.name, e.target.value);
@@ -134,7 +135,7 @@ const ConfigPanel = () => {
       <div style={sectionStyles}>
         <h4 style={{ fontWeight: 'bold', marginBottom: '12px' }}>Global Theme</h4>
         <select
-          value={useStore((state) => state.activeTheme)}
+          value={activeTheme}
           onChange={(e) => useStore.getState().applyTheme(e.target.value)}
           style={selectStyles}
         >
