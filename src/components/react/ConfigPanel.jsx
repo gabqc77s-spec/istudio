@@ -31,6 +31,12 @@ const ConfigPanel = () => {
   const qualityLOD = useStore((state) => state.qualityLOD);
   const setQualityLOD = useStore((state) => state.setQualityLOD);
   const activeTheme = useStore((state) => state.activeTheme);
+
+  // Novedad: Panel Tabs (Segmentación Visual)
+  const activeAdminTab = useStore((state) => state.activeAdminTab);
+  const setAdminTab = useStore((state) => state.setAdminTab);
+  const isTimePaused = useStore((state) => state.isTimePaused);
+  const toggleTime = useStore((state) => state.toggleTime);
     
   const handleContentChange = (e) => {
     updateContent(e.target.name, e.target.value);
@@ -68,19 +74,69 @@ const ConfigPanel = () => {
     }
   };
 
+  const activeSection = config.sections[activeAdminTab];
+
   return (
     <div style={panelStyles}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-        <h3 style={{ fontSize: '18px', fontWeight: 'bold', margin: 0 }}>iStudio Controls</h3>
+      {/* Top Bar */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
+        <h3 style={{ fontSize: '18px', fontWeight: 'bold', margin: 0 }}>Editor (Fase 16)</h3>
         <div style={{ display: 'flex', gap: '5px' }}>
+          <button
+            onClick={toggleTime}
+            style={{ background: isTimePaused ? '#ff4444' : '#10b981', border: 'none', color: 'white', padding: '4px 8px', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
+            title={isTimePaused ? "Pausado. Clic para dar Play." : "Jugando. Clic para Pausar."}
+          >
+            {isTimePaused ? '▶ Play' : '⏸ Pausa'}
+          </button>
           <button onClick={() => useStore.temporal.getState().undo()} style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: 'white', padding: '4px 8px', borderRadius: '4px', cursor: 'pointer' }} title="Deshacer">↩</button>
           <button onClick={() => useStore.temporal.getState().redo()} style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: 'white', padding: '4px 8px', borderRadius: '4px', cursor: 'pointer' }} title="Rehacer">↪</button>
         </div>
       </div>
 
-      {/* --- Viewport Simulator --- */}
-      <div style={sectionStyles}>
-        <h4 style={{ fontWeight: 'bold', marginBottom: '12px' }}>Live Preview</h4>
+      {/* Tabs Navigation */}
+      <div style={{ display: 'flex', overflowX: 'auto', gap: '5px', paddingBottom: '10px', marginBottom: '10px', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+        {config.sections.map((sec, idx) => (
+          <button
+            key={sec.id}
+            onClick={() => setAdminTab(idx)}
+            style={{
+              padding: '6px 10px',
+              backgroundColor: activeAdminTab === idx ? '#9333ea' : 'transparent',
+              border: '1px solid rgba(255,255,255,0.2)',
+              borderRadius: '20px',
+              color: 'white',
+              cursor: 'pointer',
+              whiteSpace: 'nowrap',
+              fontSize: '11px',
+              fontWeight: activeAdminTab === idx ? 'bold' : 'normal'
+            }}
+          >
+            {sec.id.toUpperCase()}
+          </button>
+        ))}
+        <button
+          onClick={() => setAdminTab(-1)}
+          style={{
+            padding: '6px 10px',
+            backgroundColor: activeAdminTab === -1 ? '#ea33a9' : 'transparent',
+            border: '1px solid rgba(255,255,255,0.2)',
+            borderRadius: '20px',
+            color: 'white',
+            cursor: 'pointer',
+            whiteSpace: 'nowrap',
+            fontSize: '11px'
+          }}
+        >
+          ⚙️ GLOBAL
+        </button>
+      </div>
+
+      {/* --- Global Settings Tab (-1) --- */}
+      {activeAdminTab === -1 && (
+        <>
+          <div style={sectionStyles}>
+            <h4 style={{ fontWeight: 'bold', marginBottom: '12px' }}>Live Preview</h4>
         <div style={{ display: 'flex', gap: '8px' }}>
           {['desktop', 'tablet', 'mobile'].map((mode) => (
             <button
@@ -104,31 +160,31 @@ const ConfigPanel = () => {
         </div>
       </div>
 
-      {/* --- Content Section --- */}
-      <div style={sectionStyles}>
-        <h4 style={{ fontWeight: 'bold', marginBottom: '12px' }}>Hero Section</h4>
-        <label style={labelStyles}>Logo URL</label>
-        <input type="text" name="logoUrl" value={config.sections.find(s => s.id === 'hero')?.data?.logoUrl || ''} onChange={handleContentChange} style={inputStyles} placeholder="https://..."/>
-        <label style={labelStyles}>Main Title</label>
-        <input type="text" name="title" value={config.sections.find(s => s.id === 'hero')?.data?.title || ''} onChange={handleContentChange} style={inputStyles} />
-        <label style={labelStyles}>Subtitle</label>
-        <input type="text" name="subtitle" value={config.sections.find(s => s.id === 'hero')?.data?.subtitle || ''} onChange={handleContentChange} style={inputStyles} />
+          <div style={sectionStyles}>
+            <h4 style={{ fontWeight: 'bold', marginBottom: '12px' }}>Global Alignment</h4>
+            <label style={labelStyles}>Vertical Align</label>
+            <select name="justifyContent" value={config.content.justifyContent} onChange={(e) => useStore.getState().setConfig({ ...config, content: { ...config.content, justifyContent: e.target.value } })} style={selectStyles}>
+                <option value="flex-start">Top</option>
+                <option value="center">Center</option>
+                <option value="flex-end">Bottom</option>
+            </select>
 
-        <h4 style={{ fontWeight: 'bold', marginTop: '20px', marginBottom: '12px' }}>Global Alignment</h4>
-        <label style={labelStyles}>Vertical Align</label>
-        <select name="justifyContent" value={config.content.justifyContent} onChange={(e) => useStore.getState().setConfig({ ...config, content: { ...config.content, justifyContent: e.target.value } })} style={selectStyles}>
-            <option value="flex-start">Top</option>
-            <option value="center">Center</option>
-            <option value="flex-end">Bottom</option>
-        </select>
+            <label style={labelStyles}>Horizontal Align</label>
+            <select name="alignItems" value={config.content.alignItems} onChange={(e) => useStore.getState().setConfig({ ...config, content: { ...config.content, alignItems: e.target.value } })} style={selectStyles}>
+                <option value="flex-start">Left</option>
+                <option value="center">Center</option>
+                <option value="flex-end">Right</option>
+            </select>
+          </div>
 
-        <label style={labelStyles}>Horizontal Align</label>
-        <select name="alignItems" value={config.content.alignItems} onChange={(e) => useStore.getState().setConfig({ ...config, content: { ...config.content, alignItems: e.target.value } })} style={selectStyles}>
-            <option value="flex-start">Left</option>
-            <option value="center">Center</option>
-            <option value="flex-end">Right</option>
-        </select>
-      </div>
+          <SectionManager />
+          <MediaLibrary />
+          <ActionBuilder />
+
+          <div style={sectionStyles}><h4 style={{ fontWeight: 'bold', marginBottom: '12px' }}>Animation</h4><label style={labelStyles}>Transition Speed: {config.animation.duration.toFixed(1)}s</label><input type="range" min="0.5" max="5" step="0.1" value={config.animation.duration} onChange={(e) => updateAnimation('duration', parseFloat(e.target.value))} style={{width: '100%'}}/></div>
+          <div style={sectionStyles}><h4 style={{ fontWeight: 'bold', marginBottom: '12px' }}>Background</h4><div style={checkboxContainerStyles}><input type="checkbox" id="interactive" checked={config.background.interactive} onChange={(e) => handleBackgroundChange('interactive', e.target.checked)}/><label htmlFor="interactive" style={checkboxLabelStyles}>Enable Cursor Effect</label></div><label style={labelStyles}>Particle Color</label><HexColorPicker color={config.background.color} onChange={(newColor) => handleBackgroundChange('color', newColor)}/><label style={{ ...labelStyles, marginTop: '20px' }}>Particle Size: {config.background.size.toFixed(3)}</label><input type="range" min="0.005" max="0.05" step="0.001" value={config.background.size} onChange={(e) => handleBackgroundChange('size', parseFloat(e.target.value))} style={{width: '100%', marginBottom: '20px'}}/><label style={labelStyles}>Particle Count: {config.background.count}</label><input type="range" min="500" max="10000" step="100" value={config.background.count} onChange={(e) => handleBackgroundChange('count', parseInt(e.target.value, 10))} style={{width: '100%'}}/></div>
+        </>
+      )}
 
       {/* --- Animation & Background Sections... --- */}
       {/* --- Theming --- */}
@@ -168,14 +224,39 @@ const ConfigPanel = () => {
       {/* --- Media Library (Phase 9) --- */}
       <MediaLibrary />
 
-      {/* --- Action Builder / Events (Phase 11) --- */}
-      <ActionBuilder />
+      {/* --- Per-Section Tabs (0, 1, 2...) --- */}
+      {activeAdminTab >= 0 && activeSection && (
+        <div style={sectionStyles}>
+          <h4 style={{ fontWeight: 'bold', marginBottom: '12px', color: '#9333ea' }}>Editando: {activeSection.id.toUpperCase()}</h4>
 
-      {/* --- Animation & Background Sections... --- */}
-      <div style={sectionStyles}><h4 style={{ fontWeight: 'bold', marginBottom: '12px' }}>Animation</h4><label style={labelStyles}>Transition Speed: {config.animation.duration.toFixed(1)}s</label><input type="range" min="0.5" max="5" step="0.1" value={config.animation.duration} onChange={(e) => updateAnimation('duration', parseFloat(e.target.value))} style={{width: '100%'}}/></div>
-      <div style={sectionStyles}><h4 style={{ fontWeight: 'bold', marginBottom: '12px' }}>Background</h4><div style={checkboxContainerStyles}><input type="checkbox" id="interactive" checked={config.background.interactive} onChange={(e) => handleBackgroundChange('interactive', e.target.checked)}/><label htmlFor="interactive" style={checkboxLabelStyles}>Enable Cursor Effect</label></div><label style={labelStyles}>Particle Color</label><HexColorPicker color={config.background.color} onChange={(newColor) => handleBackgroundChange('color', newColor)}/><label style={{ ...labelStyles, marginTop: '20px' }}>Particle Size: {config.background.size.toFixed(3)}</label><input type="range" min="0.005" max="0.05" step="0.001" value={config.background.size} onChange={(e) => handleBackgroundChange('size', parseFloat(e.target.value))} style={{width: '100%', marginBottom: '20px'}}/><label style={labelStyles}>Particle Count: {config.background.count}</label><input type="range" min="500" max="10000" step="100" value={config.background.count} onChange={(e) => handleBackgroundChange('count', parseInt(e.target.value, 10))} style={{width: '100%'}}/></div>
+          {/* Simple form generation based on the data schema of the active section */}
+          {Object.keys(activeSection.data).map((key) => {
+            // Very basic dynamic input rendering for string values (like title, subtitle, logoUrl)
+            if (typeof activeSection.data[key] === 'string') {
+              return (
+                <div key={key} style={{ marginBottom: '10px' }}>
+                  <label style={labelStyles}>{key}</label>
+                  <input
+                    type="text"
+                    value={activeSection.data[key]}
+                    onChange={(e) => useStore.getState().updateContent(key, e.target.value, activeSection.id)}
+                    style={inputStyles}
+                  />
+                </div>
+              );
+            }
+            return null; // Ignore complex objects like arrays of cards for now in this simple UI
+          })}
 
-      {/* --- In-Game Visual Editor & Shaders (Phase 8 & 13) --- */}
+          <p style={{ fontSize: '12px', opacity: 0.6, marginTop: '10px' }}>
+            Tip: Recuerda que puedes editar los textos directamente haciendo clic en la pantalla principal (WYSIWYG).
+          </p>
+        </div>
+      )}
+
+      {/* Show 3D and FX controls ONLY when modifying sections that contain 3D features (like Showcase) */}
+      {activeAdminTab >= 0 && activeSection?.id === 'showcase' && (
+      <>
       <div style={sectionStyles}>
         <h4 style={{ fontWeight: 'bold', marginBottom: '12px' }}>Materials (Phone)</h4>
 
@@ -248,7 +329,10 @@ const ConfigPanel = () => {
             disabled={!config.physics?.enabled}
         />
       </div>
+      </>
+      )}
 
+      {/* Global save button is always visible at the bottom */}
       <div style={sectionStyles}>
         <button onClick={handleExport} style={exportButtonStyles}>Export Configuration</button>
         <button

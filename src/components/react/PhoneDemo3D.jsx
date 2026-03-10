@@ -26,11 +26,14 @@ const PhoneDemo3D = ({ position = [1, -1, 3], url = "https://www.eficell.cl" }) 
 
   // Section index 2 corresponds to "Showcase" in our config.js
   const isShowcaseActive = currentSectionIndex === 2;
+  const isTimePaused = useStore((state) => state.isTimePaused);
 
   useFrame((state, delta) => {
     if (phoneRef.current) {
-      // Idle floating animation
-      phoneRef.current.position.y = position[1] + Math.sin(state.clock.elapsedTime) * 0.1;
+      if (!isTimePaused) {
+        // Idle floating animation (Frozen when time is paused for editing)
+        phoneRef.current.position.y = position[1] + Math.sin(state.clock.elapsedTime) * 0.1;
+      }
 
       // Target rotation based on hover and active section
       const targetRotationX = isShowcaseActive ? (hovered ? -0.1 : 0) : 0.2;

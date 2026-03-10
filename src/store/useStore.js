@@ -44,6 +44,8 @@ const useStore = create(temporal((set) => ({
   currentSectionIndex: 0,
   activeTheme: 'default',
   isAdminMode: false,
+  isTimePaused: false, // Freeze 3D animations during edit mode
+  activeAdminTab: 0, // Which section is currently being edited
   isHeatmapVisible: false,
   isWireframeMode: false,
   qualityLOD: 'high', // 'low' | 'high'
@@ -53,6 +55,8 @@ const useStore = create(temporal((set) => ({
 
   // Acciones
   setActiveMicroPage: (pageId) => set({ activeMicroPage: pageId }),
+  toggleTime: () => set((state) => ({ isTimePaused: !state.isTimePaused })),
+  setAdminTab: (index) => set({ activeAdminTab: index, currentSectionIndex: index }),
   toggleWireframe: () => set((state) => ({ isWireframeMode: !state.isWireframeMode })),
   setQualityLOD: (quality) => set({ qualityLOD: quality }),
   addMediaFile: (mediaObj) => set((state) => ({
@@ -82,7 +86,13 @@ const useStore = create(temporal((set) => ({
     };
   }),
   setPreviewMode: (mode) => set({ previewMode: mode }),
-  toggleAdminMode: () => set((state) => ({ isAdminMode: !state.isAdminMode })),
+  toggleAdminMode: () => set((state) => {
+    const nextAdminState = !state.isAdminMode;
+    return {
+      isAdminMode: nextAdminState,
+      isTimePaused: nextAdminState // Auto-pause time when entering admin mode
+    };
+  }),
   toggleHeatmap: () => set((state) => ({ isHeatmapVisible: !state.isHeatmapVisible })),
   addClickData: (x, y) => set((state) => ({ clickData: [...state.clickData, { x, y }] })),
   setConfig: (newConfig) => set({ config: newConfig }),

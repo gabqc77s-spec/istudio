@@ -27,6 +27,7 @@ const mainSheet = theatreProject.sheet('Main Scene');
 function Starfield({ count, color, size, interactive, mousePos }) {
   const pointsRef = useRef();
   const radius = 5;
+  const isTimePaused = useStore((state) => state.isTimePaused);
 
   const initialPositions = React.useMemo(() => {
     const points = new Float32Array(count * 3);
@@ -43,7 +44,7 @@ function Starfield({ count, color, size, interactive, mousePos }) {
   }, [count, radius]);
 
   useFrame((state, delta) => {
-    if (pointsRef.current) {
+    if (pointsRef.current && !isTimePaused) {
         pointsRef.current.rotation.x += delta / 20;
         pointsRef.current.rotation.y += delta / 25;
     }
@@ -114,8 +115,15 @@ const SceneClient = () => {
   }, [isAdminMode]);
 
   const handlePointerMove = (event) => {
+    // Safety check: ensure camera is fully initialized before unprojecting
+    if (!event.camera || !event.camera.projectionMatrixInverse) return;
+
     const vec = new THREE.Vector3();
-    vec.set((event.clientX / window.innerWidth) * 2 - 1, -(event.clientY / window.innerHeight) * 2 + 1, 0.5);
+    // Normalize coordinates based on the pointer event inside the canvas
+    const x = (event.clientX / window.innerWidth) * 2 - 1;
+    const y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+    vec.set(x, y, 0.5);
     vec.unproject(event.camera);
     const dir = vec.sub(event.camera.position).normalize();
     const distance = -event.camera.position.z / dir.z;
