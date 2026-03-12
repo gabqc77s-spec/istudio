@@ -112,8 +112,15 @@
 
         inject.onclick = () => {
             try {
-                const partial = JSON.parse(data.value);
-                window.postMessage({ type: 'inject-partial', partial }, '*');
+                const input = JSON.parse(data.value);
+                // Usamos el punto de entrada global inteligente
+                if (window.inyectar_cambios_v4) {
+                    window.inyectar_cambios_v4(input);
+                } else {
+                    // Fallback
+                    const partial = input.args ? input.args.partial : (input.partial || input);
+                    window.postMessage({ type: 'inject-partial', partial }, '*');
+                }
                 // Optional: visual feedback
                 inject.textContent = '¡Inyectado!';
                 inject.style.background = '#10b981';
