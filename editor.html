@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>V4 Editor</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: #0f0f1a;
+            color: #e0e0e0;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* ─── Sidebar ─── */
+        .sidebar {
+            width: 380px;
+            min-width: 380px;
+            background: #14142a;
+            border-right: 1px solid rgba(255,255,255,0.06);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        .sidebar-header {
+            padding: 14px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0,0,0,0.2);
+        }
+
+        .sidebar-header h1 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #4ade80;
+            letter-spacing: -0.02em;
+        }
+
+        .btn-save {
+            background: linear-gradient(135deg, #2d8a4e, #22c55e);
+            color: #fff;
+            border: none;
+            padding: 7px 18px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            transition: opacity 0.2s;
+        }
+        .btn-save:hover { opacity: 0.85; }
+
+        /* ─── Tree ─── */
+        .tree-panel {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px 8px;
+        }
+
+        .tree-node { margin-left: 14px; }
+
+        .tree-node-label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            transition: background 0.15s;
+            user-select: none;
+        }
+
+        .tree-node-label:hover { background: rgba(255,255,255,0.04); }
+
+        .tree-node-label.selected {
+            background: rgba(74, 222, 128, 0.12);
+            color: #4ade80;
+        }
+
+        .tree-toggle { font-size: 0.65rem; color: #555; width: 12px; text-align: center; }
+        .tree-key { font-weight: 500; }
+        .tree-nombre { color: #666; font-size: 0.7rem; font-style: italic; }
+
+        /* ─── Properties Panel ─── */
+        .props-panel {
+            border-top: 1px solid rgba(255,255,255,0.06);
+            max-height: 55%;
+            overflow-y: auto;
+            padding: 14px 16px;
+            background: rgba(0,0,0,0.15);
+        }
+
+        .props-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .props-title {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #4ade80;
+        }
+
+        .props-empty {
+            color: #555;
+            font-size: 0.78rem;
+            font-style: italic;
+        }
+
+        /* ─── Groups ─── */
+        .prop-group {
+            margin-bottom: 14px;
+        }
+
+        .prop-group-title {
+            font-size: 0.68rem;
+            font-weight: 600;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 8px;
+            padding-bottom: 4px;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+        }
+
+        /* ─── Property Rows ─── */
+        .prop-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 5px;
+            min-height: 30px;
+        }
+
+        .prop-key {
+            font-size: 0.72rem;
+            color: #888;
+            min-width: 110px;
+            flex-shrink: 0;
+        }
+
+        .prop-controls {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* ─── Input base ─── */
+        .prop-input {
+            flex: 1;
+            background: rgba(0,0,0,0.35);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 4px;
+            color: #e0e0e0;
+            padding: 5px 8px;
+            font-size: 0.75rem;
+            font-family: 'JetBrains Mono', monospace, monospace;
+            transition: border-color 0.2s;
+        }
+        .prop-input:focus { outline: none; border-color: #4ade80; }
+
+        /* ─── Color picker ─── */
+        .prop-color-wrap {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex: 1;
+        }
+        .prop-color-picker {
+            width: 28px;
+            height: 28px;
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 5px;
+            cursor: pointer;
+            padding: 0;
+            background: transparent;
+            flex-shrink: 0;
+        }
+        .prop-color-picker::-webkit-color-swatch-wrapper { padding: 0; }
+        .prop-color-picker::-webkit-color-swatch { border: none; border-radius: 3px; }
+
+        /* ─── Slider ─── */
+        .prop-slider-wrap {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex: 1;
+        }
+        .prop-slider {
+            flex: 1;
+            -webkit-appearance: none;
+            appearance: none;
+            height: 4px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 2px;
+            outline: none;
+        }
+        .prop-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 14px;
+            height: 14px;
+            background: #4ade80;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        .prop-slider-val {
+            width: 56px;
+            text-align: right;
+            background: rgba(0,0,0,0.35);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 4px;
+            color: #e0e0e0;
+            padding: 4px 6px;
+            font-size: 0.72rem;
+            font-family: monospace;
+        }
+        .prop-slider-val:focus { outline: none; border-color: #4ade80; }
+
+        /* ─── Dropdown ─── */
+        .prop-select {
+            flex: 1;
+            background: rgba(0,0,0,0.35);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 4px;
+            color: #e0e0e0;
+            padding: 5px 8px;
+            font-size: 0.75rem;
+            cursor: pointer;
+        }
+        .prop-select:focus { outline: none; border-color: #4ade80; }
+
+        /* ─── Textarea ─── */
+        .prop-textarea {
+            flex: 1;
+            background: rgba(0,0,0,0.35);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 4px;
+            color: #e0e0e0;
+            padding: 6px 8px;
+            font-size: 0.75rem;
+            font-family: 'Inter', sans-serif;
+            resize: vertical;
+            min-height: 50px;
+        }
+        .prop-textarea:focus { outline: none; border-color: #4ade80; }
+
+        /* ─── Sub-panel button ─── */
+        .prop-subpanel-btn {
+            flex: 1;
+            background: rgba(74, 222, 128, 0.08);
+            border: 1px solid rgba(74, 222, 128, 0.2);
+            border-radius: 5px;
+            color: #4ade80;
+            padding: 6px 12px;
+            font-size: 0.72rem;
+            cursor: pointer;
+            text-align: left;
+            transition: background 0.15s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .prop-subpanel-btn:hover { background: rgba(74, 222, 128, 0.15); }
+        .prop-subpanel-btn .arrow { font-size: 0.65rem; opacity: 0.6; }
+
+        /* ─── Sub-panel inline ─── */
+        .subpanel {
+            margin-top: 4px;
+            margin-left: 12px;
+            padding: 8px 10px;
+            border-left: 2px solid rgba(74, 222, 128, 0.2);
+            background: rgba(0,0,0,0.15);
+            border-radius: 0 6px 6px 0;
+        }
+        .subpanel .prop-group-title { color: #4ade80; font-size: 0.65rem; }
+
+        /* ─── Add property ─── */
+        .btn-add-prop {
+            background: rgba(255,255,255,0.04);
+            border: 1px dashed rgba(255,255,255,0.1);
+            border-radius: 5px;
+            color: #666;
+            padding: 6px;
+            font-size: 0.72rem;
+            cursor: pointer;
+            width: 100%;
+            text-align: center;
+            transition: all 0.15s;
+            margin-top: 8px;
+        }
+        .btn-add-prop:hover { border-color: #4ade80; color: #4ade80; background: rgba(74,222,128,0.05); }
+
+        .btn-delete {
+            background: none;
+            border: none;
+            color: #555;
+            font-size: 0.7rem;
+            cursor: pointer;
+            padding: 2px 4px;
+            border-radius: 3px;
+            transition: all 0.15s;
+        }
+        .btn-delete:hover { color: #ef4444; background: rgba(239,68,68,0.1); }
+
+        /* ─── Property Catalog ─── */
+        .catalog-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            z-index: 99;
+        }
+        .catalog {
+            position: absolute;
+            bottom: 100%;
+            left: 0; right: 0;
+            background: #1a1a35;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            max-height: 320px;
+            overflow-y: auto;
+            box-shadow: 0 -8px 32px rgba(0,0,0,0.5);
+            z-index: 100;
+            margin-bottom: 6px;
+        }
+        .catalog-search {
+            width: 100%;
+            background: rgba(0,0,0,0.3);
+            border: none;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            color: #e0e0e0;
+            padding: 10px 12px;
+            font-size: 0.78rem;
+            outline: none;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+        .catalog-search::placeholder { color: #555; }
+        .catalog-group { padding: 4px 0; }
+        .catalog-group-title {
+            font-size: 0.65rem;
+            font-weight: 600;
+            color: #4ade80;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            padding: 6px 12px 4px;
+        }
+        .catalog-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 5px 12px 5px 20px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            transition: background 0.1s;
+        }
+        .catalog-item:hover { background: rgba(255,255,255,0.05); }
+        .catalog-item .check { color: #4ade80; font-size: 0.65rem; width: 14px; }
+        .catalog-item .name { flex: 1; }
+        .catalog-item .default-val { color: #555; font-size: 0.65rem; font-family: monospace; }
+
+        /* ─── Transition Builder ─── */
+        .transition-table { width: 100%; border-collapse: collapse; margin-top: 4px; }
+        .transition-table th {
+            font-size: 0.6rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            text-align: left;
+            padding: 2px 4px 4px;
+            font-weight: 500;
+        }
+        .transition-table td { padding: 2px 3px; }
+        .transition-table input, .transition-table select {
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 3px;
+            color: #e0e0e0;
+            padding: 3px 5px;
+            font-size: 0.7rem;
+            width: 100%;
+        }
+        .transition-table input:focus, .transition-table select:focus { outline: none; border-color: #4ade80; }
+        .transition-row-del {
+            background: none; border: none; color: #555; cursor: pointer;
+            font-size: 0.65rem; padding: 2px;
+        }
+        .transition-row-del:hover { color: #ef4444; }
+        .btn-add-transition {
+            background: none;
+            border: 1px dashed rgba(255,255,255,0.08);
+            border-radius: 3px;
+            color: #666;
+            padding: 3px 8px;
+            font-size: 0.65rem;
+            cursor: pointer;
+            margin-top: 4px;
+        }
+        .btn-add-transition:hover { border-color: #4ade80; color: #4ade80; }
+
+        /* ─── Preview ─── */
+        .preview { flex: 1; position: relative; }
+        .preview iframe { width: 100%; height: 100%; border: none; }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 3px; }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h1>V4 Editor</h1>
+            <button class="btn-save" id="btnSave">Guardar JSON</button>
+        </div>
+        <div class="tree-panel" id="tree"></div>
+        <div class="props-panel" id="props">
+            <div class="props-empty">Selecciona un contenedor</div>
+        </div>
+    </div>
+    <div class="preview">
+        <!-- Iframe points to the site dev server or built file -->
+        <iframe id="preview" src="/"></iframe>
+    </div>
+
+    <script>
+        var contentData = null;
+        var selectedPath = null;
+        var RESERVED = { nombre: 1, hover: 1, 'hover-hermanos': 1, click: 1, scroll: 1, texto: 1 };
+
+        // CSS value options for dropdowns
+        var CSS_OPTIONS = {
+            'display': ['flex', 'grid', 'block', 'inline-block', 'inline-flex', 'none'],
+            'flex-direction': ['row', 'column', 'row-reverse', 'column-reverse'],
+            'justify-content': ['flex-start', 'center', 'flex-end', 'space-between', 'space-around', 'space-evenly'],
+            'align-items': ['stretch', 'center', 'flex-start', 'flex-end', 'baseline'],
+            'flex-wrap': ['nowrap', 'wrap', 'wrap-reverse'],
+            'text-align': ['left', 'center', 'right', 'justify'],
+            'position': ['static', 'relative', 'absolute', 'fixed', 'sticky'],
+            'overflow': ['visible', 'hidden', 'scroll', 'auto'],
+            'font-style': ['normal', 'italic'],
+            'text-decoration': ['none', 'underline', 'line-through'],
+            'cursor': ['pointer', 'default', 'grab', 'text', 'not-allowed'],
+            'transform-style': ['flat', 'preserve-3d']
+        };
+
+        // Slider ranges por propiedad
+        var SLIDER_RANGES = {
+            'font-size': { min: 0.5, max: 10, step: 0.05 },
+            'font-weight': { min: 100, max: 900, step: 100 },
+            'padding': { min: 0, max: 20, step: 0.1 },
+            'margin': { min: -10, max: 20, step: 0.1 },
+            'gap': { min: 0, max: 10, step: 0.1 },
+            'border-radius': { min: 0, max: 100, step: 1 },
+            'opacity': { min: 0, max: 1, step: 0.05 },
+            'line-height': { min: 0.8, max: 3, step: 0.05 },
+            'width': { min: 0, max: 100, step: 1 },
+            'height': { min: 0, max: 1000, step: 5 },
+            'max-width': { min: 0, max: 2000, step: 10 },
+            'min-height': { min: 0, max: 1000, step: 5 },
+            'letter-spacing': { min: -0.1, max: 0.3, step: 0.01 },
+            'perspective': { min: 0, max: 3000, step: 10}
+        };
+
+        // ─── Property Catalog ───
+        var PROP_CATALOG = {
+            'Layout': {
+                'display': 'flex',
+                'flex-direction': 'column',
+                'justify-content': 'center',
+                'align-items': 'center',
+                'flex-wrap': 'wrap',
+                'gap': '1rem',
+                'position': 'relative'
+            },
+            'Tamaño': {
+                'width': '100%',
+                'height': 'auto',
+                'max-width': '1200px',
+                'min-height': '100px',
+                'padding': '1rem',
+                'margin': '0 auto'
+            },
+            'Tipografía': {
+                'font-size': '1rem',
+                'font-weight': '400',
+                'font-style': 'normal',
+                'color': '#ffffff',
+                'text-align': 'left',
+                'line-height': '1.5',
+                'letter-spacing': '0em',
+                'text-decoration': 'none'
+            },
+            'Fondo y Bordes': {
+                'background': 'rgba(255, 255, 255, 0.05)',
+                'border': '1px solid rgba(255,255,255,0.1)',
+                'border-radius': '12px',
+                'box-shadow': '0 4px 20px rgba(0,0,0,0.2)',
+                'outline': 'none'
+            },
+            'Efectos Espaciales 3D': {
+                'transform': 'rotateX(0deg) rotateY(0deg) translateZ(0px)',
+                'perspective': '1000px',
+                'transform-style': 'preserve-3d',
+                'transition': 'all 0.3s ease',
+                'opacity': '1',
+                'cursor': 'pointer',
+                'overflow': 'visible',
+                'z-index': '1'
+            },
+            'Motor Lógica': {
+                'nombre': 'nuevo elemento',
+                'texto': 'Texto aquí',
+                'hover': {},
+                'click': {},
+                'hover-hermanos': {},
+                'scroll': { 'direccion': 'horizontal' }
+            }
+        };
+
+        async function loadContent() {
+            var res = await fetch('/src/content.json');
+            contentData = await res.json();
+            renderTree();
+            sendToPreview();
+        }
+
+        // ─── Type Detection ───
+        function detectType(key, val) {
+            if (key === 'texto') return 'textarea';
+            if (key === 'nombre') return 'text';
+            if (key === 'hover' || key === 'hover-hermanos' || key === 'click') return 'interaction';
+            if (key === 'scroll') return 'scroll';
+            if (key === 'transition') return 'transition';
+            if (typeof val === 'object' && !Array.isArray(val)) return 'object';
+            var s = String(val);
+            if (/^#[0-9a-fA-F]{3,8}$/.test(s)) return 'color';
+            if (/^rgba?\(/.test(s)) return 'color-text';
+            if (CSS_OPTIONS[key]) return 'dropdown';
+            var sizeMatch = s.match(/^(-?\d+\.?\d*)(px|rem|em|%|vh|vw|deg)$/);
+            if (sizeMatch && key !== 'transform') return 'slider';
+            if (/^\d+$/.test(s) && key === 'font-weight') return 'slider';
+            return 'text';
+        }
+
+        function parseSize(val) {
+            var m = String(val).match(/^(-?\d+\.?\d*)(px|rem|em|%|vh|vw|deg)?$/);
+            if (m) return { num: parseFloat(m[1]), unit: m[2] || '' };
+            return null;
+        }
+
+        function rgbaToHex(rgba) {
+            var m = rgba.match(/\d+/g);
+            if (!m || m.length < 3) return '#000000';
+            return '#' + m.slice(0, 3).map(function (x) {
+                return ('0' + parseInt(x).toString(16)).slice(-2);
+            }).join('');
+        }
+
+        // ─── Tree Rendering ───
+        function renderTree() {
+            var tree = document.getElementById('tree');
+            tree.innerHTML = '';
+            tree.appendChild(buildTreeNode(contentData, ''));
+        }
+
+        function buildTreeNode(obj, path) {
+            var container = document.createElement('div');
+            container.className = 'tree-node';
+
+            var label = document.createElement('div');
+            label.className = 'tree-node-label' + (path === selectedPath ? ' selected' : '');
+
+            var childKeys = [];
+            for (var key in obj) {
+                if (typeof obj[key] === 'object' && obj[key] !== null && !RESERVED[key] && !Array.isArray(obj[key])) {
+                    childKeys.push(key);
+                }
+            }
+
+            var toggle = document.createElement('span');
+            toggle.className = 'tree-toggle';
+            toggle.textContent = childKeys.length > 0 ? '▼' : '•';
+            label.appendChild(toggle);
+
+            var keyName = path.split('.').pop() || 'raíz';
+            var nameSpan = document.createElement('span');
+            nameSpan.className = 'tree-key';
+            nameSpan.textContent = keyName;
+            label.appendChild(nameSpan);
+
+            if (obj.nombre) {
+                var nombreSpan = document.createElement('span');
+                nombreSpan.className = 'tree-nombre';
+                nombreSpan.textContent = '(' + obj.nombre + ')';
+                label.appendChild(nombreSpan);
+            }
+
+            label.addEventListener('click', function (e) {
+                e.stopPropagation();
+                selectedPath = path;
+                renderTree();
+                renderProps(obj, path);
+            });
+
+            container.appendChild(label);
+
+            for (var i = 0; i < childKeys.length; i++) {
+                var childPath = path ? path + '.' + childKeys[i] : childKeys[i];
+                container.appendChild(buildTreeNode(obj[childKeys[i]], childPath));
+            }
+
+            return container;
+        }
+
+        // ─── Properties Panel ───
+        function renderProps(obj, path) {
+            var panel = document.getElementById('props');
+            panel.innerHTML = '';
+
+            var header = document.createElement('div');
+            header.className = 'props-header';
+            var title = document.createElement('div');
+            title.className = 'props-title';
+            title.textContent = obj.nombre || path.split('.').pop() || 'raíz';
+            header.appendChild(title);
+            panel.appendChild(header);
+
+            var groups = { identity: [], style: [], layout: [], typography: [], interaction: [], math_3d: [] };
+
+            for (var key in obj) {
+                var val = obj[key];
+                if (typeof val === 'object' && val !== null && !RESERVED[key]) continue; // skip child containers
+
+                var type = detectType(key, val);
+                if (key === 'nombre' || key === 'texto') groups.identity.push({ key: key, val: val, type: type });
+                else if (type === 'interaction' || type === 'scroll') groups.interaction.push({ key: key, val: val, type: type });
+                else if (['display', 'flex-direction', 'justify-content', 'align-items', 'flex-wrap', 'gap', 'position', 'overflow', 'top', 'bottom', 'left', 'right', 'z-index'].indexOf(key) >= 0)
+                    groups.layout.push({ key: key, val: val, type: type });
+                else if (['font-size', 'font-weight', 'font-style', 'color', 'text-align', 'line-height', 'letter-spacing', 'text-decoration'].indexOf(key) >= 0)
+                    groups.typography.push({ key: key, val: val, type: type });
+                else if (['transform', 'perspective', 'transform-style'].indexOf(key) >= 0)
+                    groups.math_3d.push({ key: key, val: val, type: type});
+                else groups.style.push({ key: key, val: val, type: type });
+            }
+
+            var groupLabels = { identity: 'Identidad', layout: 'Layout', math_3d: 'Fórmulas 3D Espaciales', typography: 'Tipografía', style: 'Estilo Visual', interaction: 'Interacción / Eventos' };
+            var groupOrder = ['identity', 'layout', 'math_3d', 'typography', 'style', 'interaction'];
+
+            for (var g = 0; g < groupOrder.length; g++) {
+                var gKey = groupOrder[g];
+                var items = groups[gKey];
+                if (items.length === 0) continue;
+
+                var group = document.createElement('div');
+                group.className = 'prop-group';
+                var gTitle = document.createElement('div');
+                gTitle.className = 'prop-group-title';
+                gTitle.textContent = groupLabels[gKey];
+                group.appendChild(gTitle);
+
+                for (var p = 0; p < items.length; p++) {
+                    group.appendChild(buildPropRow(items[p], obj, path));
+                }
+
+                panel.appendChild(group);
+            }
+
+            // ─── Container management buttons ───
+            var actions = document.createElement('div');
+            actions.style.cssText = 'display:flex;gap:6px;margin-bottom:12px;';
+
+            var btnAddChild = document.createElement('button');
+            btnAddChild.className = 'btn-add-prop';
+            btnAddChild.style.cssText = 'margin:0;flex:1;font-size:0.68rem;padding:5px;';
+            btnAddChild.textContent = '+ Hijo';
+            btnAddChild.addEventListener('click', function () {
+                showInlineInput(actions, 'Clave del hijo JSON:', function (name) {
+                    if (name && !obj[name]) {
+                        obj[name] = { nombre: name };
+                        renderTree();
+                        renderProps(obj, path);
+                        sendToPreview();
+                    }
+                });
+            });
+
+            var btnDuplicate = document.createElement('button');
+            btnDuplicate.className = 'btn-add-prop';
+            btnDuplicate.style.cssText = 'margin:0;flex:1;font-size:0.68rem;padding:5px;';
+            btnDuplicate.textContent = 'Duplicar';
+            btnDuplicate.addEventListener('click', function () {
+                if (!path) return;
+                var parts = path.split('.');
+                var keyName = parts.pop();
+                var parent = getObjAtPath(parts.join('.'));
+                if (parent) {
+                    var newKey = keyName + '_copia';
+                    parent[newKey] = JSON.parse(JSON.stringify(obj));
+                    renderTree();
+                    sendToPreview();
+                }
+            });
+
+            var btnDelete = document.createElement('button');
+            btnDelete.className = 'btn-add-prop';
+            btnDelete.style.cssText = 'margin:0;flex:0.4;font-size:0.68rem;padding:5px;color:#ef4444;border-color:rgba(239,68,68,0.2);';
+            btnDelete.textContent = '🗑';
+            btnDelete.addEventListener('click', function () {
+                if (!path) return;
+                var parts = path.split('.');
+                var keyName = parts.pop();
+                var parent = getObjAtPath(parts.join('.'));
+                if (parent) {
+                    delete parent[keyName];
+                    selectedPath = null;
+                    renderTree();
+                    panel.innerHTML = '<div class="props-empty">Selecciona un contenedor</div>';
+                    sendToPreview();
+                }
+            });
+
+            if (path) { actions.appendChild(btnAddChild); actions.appendChild(btnDuplicate); actions.appendChild(btnDelete); }
+            else { actions.appendChild(btnAddChild); }
+            panel.appendChild(actions);
+
+            // ─── Add property via catalog ───
+            var addWrap = document.createElement('div');
+            addWrap.style.cssText = 'position:relative;';
+
+            var addBtn = document.createElement('button');
+            addBtn.className = 'btn-add-prop';
+            addBtn.textContent = '+ Agregar propiedad CSS/Lógica';
+            addBtn.addEventListener('click', function () {
+                toggleCatalog(addWrap, obj, path);
+            });
+            addWrap.appendChild(addBtn);
+            panel.appendChild(addWrap);
+        }
+
+        function showInlineInput(refEl, placeholder, callback) {
+            var existing = refEl.parentElement.querySelector('.inline-input-wrap');
+            if (existing) existing.remove();
+
+            var wrap = document.createElement('div');
+            wrap.className = 'inline-input-wrap';
+            wrap.style.cssText = 'display:flex;gap:4px;margin-top:6px;margin-bottom:6px;';
+
+            var input = document.createElement('input');
+            input.className = 'prop-input';
+            input.placeholder = placeholder;
+            input.style.cssText = 'flex:1;';
+
+            var okBtn = document.createElement('button');
+            okBtn.className = 'btn-save';
+            okBtn.style.cssText = 'padding:4px 10px;font-size:0.7rem;';
+            okBtn.textContent = '✓';
+
+            function submit() {
+                var val = input.value.trim().replace(/ /g, '_').toLowerCase();
+                wrap.remove();
+                if (val) callback(val);
+            }
+
+            input.addEventListener('keydown', function (e) { if (e.key === 'Enter') submit(); if (e.key === 'Escape') wrap.remove(); });
+            okBtn.addEventListener('click', submit);
+
+            wrap.appendChild(input);
+            wrap.appendChild(okBtn);
+            refEl.after(wrap);
+            input.focus();
+        }
+
+        function toggleCatalog(wrapEl, obj, path) {
+            var existing = wrapEl.querySelector('.catalog');
+            if (existing) { closeCatalog(wrapEl); return; }
+
+            var overlay = document.createElement('div');
+            overlay.className = 'catalog-overlay';
+            overlay.addEventListener('click', function () { closeCatalog(wrapEl); });
+            document.body.appendChild(overlay);
+            wrapEl._overlay = overlay;
+
+            var catalog = document.createElement('div');
+            catalog.className = 'catalog';
+
+            var search = document.createElement('input');
+            search.className = 'catalog-search';
+            search.placeholder = '🔍 Buscar propiedad CSS...';
+            search.addEventListener('input', function () {
+                filterCatalog(catalog, search.value.toLowerCase());
+            });
+            catalog.appendChild(search);
+
+            for (var cat in PROP_CATALOG) {
+                var group = document.createElement('div');
+                group.className = 'catalog-group';
+                var title = document.createElement('div');
+                title.className = 'catalog-group-title';
+                title.textContent = cat;
+                group.appendChild(title);
+
+                var props = PROP_CATALOG[cat];
+                for (var prop in props) {
+                    (function (propName, defaultVal) {
+                        var item = document.createElement('div');
+                        item.className = 'catalog-item';
+                        item.dataset.prop = propName;
+
+                        var exists = obj.hasOwnProperty(propName);
+
+                        var check = document.createElement('span');
+                        check.className = 'check';
+                        check.textContent = exists ? '✓' : '';
+
+                        var name = document.createElement('span');
+                        name.className = 'name';
+                        name.textContent = propName;
+
+                        var defSpan = document.createElement('span');
+                        defSpan.className = 'default-val';
+                        var displayVal = typeof defaultVal === 'object' ? JSON.stringify(defaultVal) : defaultVal;
+                        defSpan.textContent = displayVal.length > 25 ? displayVal.substring(0, 25) + '…' : displayVal;
+
+                        item.appendChild(check);
+                        item.appendChild(name);
+                        item.appendChild(defSpan);
+
+                        item.addEventListener('click', function () {
+                            if (!exists) {
+                                obj[propName] = typeof defaultVal === 'object' ? JSON.parse(JSON.stringify(defaultVal)) : defaultVal;
+                                closeCatalog(wrapEl);
+                                renderProps(obj, path);
+                                sendToPreview();
+                            }
+                        });
+
+                        group.appendChild(item);
+                    })(prop, props[prop]);
+                }
+
+                catalog.appendChild(group);
+            }
+
+            wrapEl.appendChild(catalog);
+            search.focus();
+        }
+
+        function closeCatalog(wrapEl) {
+            var cat = wrapEl.querySelector('.catalog');
+            if (cat) cat.remove();
+            if (wrapEl._overlay) { wrapEl._overlay.remove(); wrapEl._overlay = null; }
+        }
+
+        function filterCatalog(catalog, query) {
+            var groups = catalog.querySelectorAll('.catalog-group');
+            for (var g = 0; g < groups.length; g++) {
+                var items = groups[g].querySelectorAll('.catalog-item');
+                var visibleCount = 0;
+                for (var i = 0; i < items.length; i++) {
+                    var match = items[i].dataset.prop.indexOf(query) >= 0;
+                    items[i].style.display = match ? '' : 'none';
+                    if (match) visibleCount++;
+                }
+                groups[g].style.display = visibleCount > 0 ? '' : 'none';
+            }
+        }
+
+        function getObjAtPath(path) {
+            if (!path) return contentData;
+            var obj = contentData;
+            var parts = path.split('.');
+            for (var i = 0; i < parts.length; i++) {
+                obj = obj[parts[i]];
+                if (!obj) return null;
+            }
+            return obj;
+        }
+
+        function buildPropRow(item, obj, path) {
+            var row = document.createElement('div');
+            row.className = 'prop-row';
+
+            var keyLabel = document.createElement('span');
+            keyLabel.className = 'prop-key';
+            keyLabel.textContent = item.key;
+            row.appendChild(keyLabel);
+
+            var controls = document.createElement('div');
+            controls.className = 'prop-controls';
+
+            switch (item.type) {
+                case 'color': buildColorControl(controls, item, obj, path); break;
+                case 'color-text': buildColorTextControl(controls, item, obj, path); break;
+                case 'slider': buildSliderControl(controls, item, obj, path); break;
+                case 'dropdown': buildDropdownControl(controls, item, obj, path); break;
+                case 'textarea': buildTextareaControl(controls, item, obj, path); break;
+                case 'interaction': buildInteractionControl(controls, item, obj, path, row); break;
+                case 'scroll': buildScrollControl(controls, item, obj, path, row); break;
+                case 'transition': buildTransitionControl(controls, item, obj, path, row); break;
+                default: buildTextControl(controls, item, obj, path);
+            }
+
+            if (item.key !== 'nombre') {
+                var del = document.createElement('button');
+                del.className = 'btn-delete';
+                del.textContent = '✕';
+                del.addEventListener('click', function () {
+                    delete obj[item.key];
+                    renderProps(obj, path);
+                    sendToPreview();
+                });
+                controls.appendChild(del);
+            }
+
+            row.appendChild(controls);
+            return row;
+        }
+
+        // Simplificación de Control Builders para el entorno Web (reutilizan lógica original V4)
+        function buildColorControl(c, item, obj) {
+            var w = document.createElement('div'); w.className = 'prop-color-wrap';
+            var p = document.createElement('input'); p.type = 'color'; p.className = 'prop-color-picker'; p.value = item.val;
+            var t = document.createElement('input'); t.className = 'prop-input'; t.value = item.val;
+            p.addEventListener('input', () => { t.value = p.value; obj[item.key] = p.value; sendToPreview(); });
+            t.addEventListener('input', () => { obj[item.key] = t.value; if (/^#[0-9a-fA-F]{3,8}$/.test(t.value)) p.value = t.value; sendToPreview(); });
+            w.appendChild(p); w.appendChild(t); c.appendChild(w);
+        }
+
+        function buildColorTextControl(c, item, obj) {
+            var w = document.createElement('div'); w.className = 'prop-color-wrap';
+            var p = document.createElement('input'); p.type = 'color'; p.className = 'prop-color-picker'; p.value = rgbaToHex(item.val);
+            var t = document.createElement('input'); t.className = 'prop-input'; t.value = item.val;
+            p.addEventListener('input', () => { t.value = p.value; obj[item.key] = p.value; sendToPreview(); });
+            t.addEventListener('input', () => { obj[item.key] = t.value; sendToPreview(); });
+            w.appendChild(p); w.appendChild(t); c.appendChild(w);
+        }
+
+        function buildSliderControl(c, item, obj) {
+            var w = document.createElement('div'); w.className = 'prop-slider-wrap';
+            var parsed = parseSize(item.val);
+            var range = SLIDER_RANGES[item.key] || { min: 0, max: 100, step: 1 };
+            if (parsed && parsed.unit === 'rem') range = SLIDER_RANGES[item.key] || { min: 0, max: 10, step: 0.1 };
+            else if (parsed && parsed.unit === 'px') range = SLIDER_RANGES[item.key] || { min: 0, max: 1000, step: 1 };
+            else if (parsed && parsed.unit === '%') range = SLIDER_RANGES[item.key] || { min: 0, max: 100, step: 1 };
+
+            var s = document.createElement('input'); s.type = 'range'; s.className = 'prop-slider';
+            s.min = range.min; s.max = range.max; s.step = range.step; s.value = parsed ? parsed.num : 0;
+            var t = document.createElement('input'); t.className = 'prop-slider-val'; t.value = item.val;
+
+            s.addEventListener('input', () => { var newVal = s.value + (parsed ? parsed.unit : ''); t.value = newVal; obj[item.key] = newVal; sendToPreview(); });
+            t.addEventListener('input', () => { obj[item.key] = t.value; var p = parseSize(t.value); if (p) s.value = p.num; sendToPreview(); });
+            w.appendChild(s); w.appendChild(t); c.appendChild(w);
+        }
+
+        function buildDropdownControl(c, item, obj) {
+            var s = document.createElement('select'); s.className = 'prop-select';
+            var opts = CSS_OPTIONS[item.key] || [];
+            opts.forEach(optVal => { var o = document.createElement('option'); o.value = optVal; o.textContent = optVal; if(optVal===item.val) o.selected=true; s.appendChild(o); });
+            if (opts.indexOf(String(item.val)) < 0) { var cu = document.createElement('option'); cu.value = item.val; cu.textContent = item.val + ' (custom)'; cu.selected = true; s.insertBefore(cu, s.firstChild); }
+            s.addEventListener('change', () => { obj[item.key] = s.value; sendToPreview(); });
+            c.appendChild(s);
+        }
+
+        function buildTextareaControl(c, item, obj) {
+            var ta = document.createElement('textarea'); ta.className = 'prop-textarea'; ta.value = item.val; ta.rows = 3;
+            ta.addEventListener('input', () => { obj[item.key] = ta.value; sendToPreview(); });
+            c.appendChild(ta);
+        }
+
+        function buildTextControl(c, item, obj) {
+            var i = document.createElement('input'); i.className = 'prop-input'; i.value = String(item.val);
+            i.addEventListener('input', () => { obj[item.key] = i.value; sendToPreview(); });
+            c.appendChild(i);
+        }
+
+        function buildInteractionControl(c, item, obj, path, parentRow) {
+            var btn = document.createElement('button'); btn.className = 'prop-subpanel-btn';
+            var count = item.val ? Object.keys(item.val).length : 0;
+            btn.innerHTML = count + ' propiedades <span class="arrow">▸</span>';
+            var exp = false, sub = null;
+
+            btn.addEventListener('click', () => {
+                exp = !exp;
+                if (exp) {
+                    btn.querySelector('.arrow').textContent = '▾';
+                    sub = document.createElement('div'); sub.className = 'subpanel';
+                    if (item.val && typeof item.val === 'object') {
+                        for (var k in item.val) {
+                            sub.appendChild(buildPropRow({ key: k, val: item.val[k], type: detectType(k, item.val[k]) }, item.val, path + '.' + item.key));
+                        }
+                    }
+                    var add = document.createElement('button'); add.className = 'btn-add-prop'; add.textContent = '+ Prop CSS';
+                    add.addEventListener('click', () => { var nk = prompt('Prop CSS (ej: background, transform):'); if (nk) { if (!item.val) { obj[item.key] = {}; item.val = obj[item.key]; } item.val[nk] = ''; renderProps(obj, path); sendToPreview(); } });
+                    sub.appendChild(add);
+                    parentRow.after(sub);
+                } else {
+                    btn.querySelector('.arrow').textContent = '▸';
+                    if (sub) { sub.remove(); sub = null; }
+                }
+            });
+            c.appendChild(btn);
+        }
+
+        function buildScrollControl(c, item, obj, path, parentRow) {
+            var btn = document.createElement('button'); btn.className = 'prop-subpanel-btn';
+            btn.innerHTML = (item.val ? (item.val.direccion || '?') : '?') + ' <span class="arrow">▸</span>';
+            c.appendChild(btn);
+            // (La expansión simplificada se obvia aquí por concisión del parche, usar JSON directo para config avanzada si es necesario, o expandir similar a InteractionControl)
+        }
+
+        function buildTransitionControl(c, item, obj, path, parentRow) {
+             buildTextControl(c, item, obj); // Fallback a texto simple para transición en esta versión purista UI
+        }
+
+        // ─── Preview Communication ───
+        function sendToPreview() {
+            var iframe = document.getElementById('preview');
+            iframe.contentWindow.postMessage({
+                type: 'update-content',
+                content: contentData
+            }, '*');
+        }
+
+        // ─── Save ───
+        document.getElementById('btnSave').addEventListener('click', function () {
+            var blob = new Blob([JSON.stringify(contentData, null, 4)], { type: 'application/json' });
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = 'content.json';
+            a.click();
+            URL.revokeObjectURL(url);
+        });
+
+        loadContent();
+    </script>
+</body>
+</html>
