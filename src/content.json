@@ -479,16 +479,166 @@
             }
         },
 
+        "seccion_faq": {
+            "nombre": "Acordeón Interactivo FAQ (Native Click)",
+            "width": "100%",
+            "max-width": "800px",
+            "margin": "4rem auto",
+            "padding": "0 2rem",
+            "display": "flex",
+            "flex-direction": "column",
+            "gap": "1rem",
+
+            "faq_1": {
+                "nombre": "Pregunta 1",
+                "background": "rgba(255,255,255,0.02)",
+                "border": "1px solid rgba(255,255,255,0.05)",
+                "border-radius": "16px",
+                "padding": "1.5rem",
+                "cursor": "pointer",
+                "transition": "all 0.3s ease",
+                "click": {
+                    "background": "rgba(168,85,247,0.1)",
+                    "border-color": "rgba(168,85,247,0.3)"
+                },
+                "hover": { "background": "rgba(255,255,255,0.05)" },
+
+                "titulo": {
+                    "texto": "¿Es realmente Vanilla JS?",
+                    "font-size": "1.2rem",
+                    "font-weight": "600",
+                    "color": "#fff",
+                    "display": "flex",
+                    "justify-content": "space-between"
+                },
+                "contenido": {
+                    "texto": "Sí. Absolutamente todo el framework de React y WebGL fue reemplazado por un motor purista V4 de menos de 400 líneas de código, que interpreta recursivamente este mismo JSON para construir la interfaz.",
+                    "color": "#9ca3af",
+                    "line-height": "1.6",
+                    "margin-top": "0",
+                    "max-height": "0",
+                    "opacity": "0",
+                    "overflow": "hidden",
+                    "transition": "all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1)",
+                    "click": {
+                        "max-height": "200px",
+                        "opacity": "1",
+                        "margin-top": "1rem"
+                    }
+                }
+            },
+            "faq_2": {
+                "nombre": "Pregunta 2",
+                "background": "rgba(255,255,255,0.02)",
+                "border": "1px solid rgba(255,255,255,0.05)",
+                "border-radius": "16px",
+                "padding": "1.5rem",
+                "cursor": "pointer",
+                "transition": "all 0.3s ease",
+                "click": { "background": "rgba(236,72,153,0.1)", "border-color": "rgba(236,72,153,0.3)" },
+                "hover": { "background": "rgba(255,255,255,0.05)" },
+
+                "titulo": {
+                    "texto": "¿Cómo funciona el Teléfono 3D?",
+                    "font-size": "1.2rem",
+                    "font-weight": "600",
+                    "color": "#fff",
+                    "display": "flex",
+                    "justify-content": "space-between"
+                },
+                "contenido": {
+                    "texto": "Es un prisma rectangular creado íntegramente con HTML y transformaciones CSS espaciales (translateZ y rotateY). Lo más increíble es que dentro de la 'pantalla' anidamos otro contenedor con la propiedad 'scroll', creando un carrusel vertical funcional dentro de un objeto 3D.",
+                    "color": "#9ca3af",
+                    "line-height": "1.6",
+                    "margin-top": "0",
+                    "max-height": "0",
+                    "opacity": "0",
+                    "overflow": "hidden",
+                    "transition": "all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1)",
+                    "click": { "max-height": "200px", "opacity": "1", "margin-top": "1rem" }
+                }
+            }
+        },
+
+        "galeria_3d": {
+            "nombre": "Galería Transformaciones 3D",
+            "width": "100%",
+            "padding": "4rem 0",
+            "display": "flex",
+            "justify-content": "center",
+            "gap": "2rem",
+            "perspective": "1000px",
+            "transform-style": "preserve-3d",
+
+            "tarjeta_izq": {
+                "width": "250px", "height": "350px", "background": "linear-gradient(135deg, #4f46e5, #ec4899)",
+                "border-radius": "20px", "transform": "rotateY(30deg) translateZ(-100px)", "transition": "transform 0.5s",
+                "box-shadow": "20px 20px 40px rgba(0,0,0,0.5)",
+                "hover": { "transform": "rotateY(0deg) translateZ(50px) scale(1.1)", "z-index": "10" }
+            },
+            "tarjeta_centro": {
+                "width": "250px", "height": "350px", "background": "linear-gradient(135deg, #a855f7, #6366f1)",
+                "border-radius": "20px", "transform": "translateZ(50px)", "transition": "transform 0.5s", "z-index": "5",
+                "box-shadow": "0px 30px 60px rgba(0,0,0,0.6)",
+                "hover": { "transform": "translateZ(100px) scale(1.1)", "z-index": "10" }
+            },
+            "tarjeta_der": {
+                "width": "250px", "height": "350px", "background": "linear-gradient(135deg, #10b981, #3b82f6)",
+                "border-radius": "20px", "transform": "rotateY(-30deg) translateZ(-100px)", "transition": "transform 0.5s",
+                "box-shadow": "-20px 20px 40px rgba(0,0,0,0.5)",
+                "hover": { "transform": "rotateY(0deg) translateZ(50px) scale(1.1)", "z-index": "10" }
+            }
+        },
+
+        "dock_navegacion": {
+            "nombre": "Dock Inferior (Hover Hermanos)",
+            "position": "fixed",
+            "bottom": "2rem",
+            "left": "50%",
+            "transform": "translateX(-50%) translateZ(200px)",
+            "display": "flex",
+            "align-items": "flex-end",
+            "gap": "0.5rem",
+            "padding": "1rem 2rem",
+            "background": "rgba(255, 255, 255, 0.05)",
+            "border": "1px solid rgba(255,255,255,0.1)",
+            "border-radius": "2rem",
+            "backdrop-filter": "blur(20px)",
+            "z-index": "100",
+
+            "icon_1": {
+                "width": "50px", "height": "50px", "background": "rgba(255,255,255,0.1)", "border-radius": "50%", "cursor": "pointer",
+                "display": "flex", "justify-content": "center", "align-items": "center", "font-size": "1.5rem", "texto": "🏠",
+                "transition": "all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)", "transform-origin": "bottom",
+                "hover-hermanos": { "transform": "scale(1.2)", "margin": "0 10px", "opacity": "0.8" },
+                "hover": { "transform": "scale(1.5) translateY(-10px)", "background": "rgba(168,85,247,0.5)", "box-shadow": "0 10px 20px rgba(168,85,247,0.4)" }
+            },
+            "icon_2": {
+                "width": "50px", "height": "50px", "background": "rgba(255,255,255,0.1)", "border-radius": "50%", "cursor": "pointer",
+                "display": "flex", "justify-content": "center", "align-items": "center", "font-size": "1.5rem", "texto": "📱",
+                "transition": "all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)", "transform-origin": "bottom",
+                "hover-hermanos": { "transform": "scale(1.2)", "margin": "0 10px", "opacity": "0.8" },
+                "hover": { "transform": "scale(1.5) translateY(-10px)", "background": "rgba(236,72,153,0.5)", "box-shadow": "0 10px 20px rgba(236,72,153,0.4)" }
+            },
+            "icon_3": {
+                "width": "50px", "height": "50px", "background": "rgba(255,255,255,0.1)", "border-radius": "50%", "cursor": "pointer",
+                "display": "flex", "justify-content": "center", "align-items": "center", "font-size": "1.5rem", "texto": "⚙️",
+                "transition": "all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)", "transform-origin": "bottom",
+                "hover-hermanos": { "transform": "scale(1.2)", "margin": "0 10px", "opacity": "0.8" },
+                "hover": { "transform": "scale(1.5) translateY(-10px)", "background": "rgba(59,130,246,0.5)", "box-shadow": "0 10px 20px rgba(59,130,246,0.4)" }
+            }
+        },
+
         "footer_nativo": {
             "nombre": "Footer Sencillo",
             "width": "100%",
-            "padding": "4rem 2rem",
+            "padding": "4rem 2rem 8rem 2rem",
             "border-top": "1px solid rgba(255,255,255,0.05)",
             "text-align": "center",
             "color": "#6b7280",
             "font-size": "0.9rem",
             "margin-top": "4rem",
-            "texto": "Construido con el Motor V4. El poder del DOM absoluto."
+            "texto": "Construido con el Editor V4 Pro. Interfaz Espacial y Motor Data-Driven."
         }
     }
 }
