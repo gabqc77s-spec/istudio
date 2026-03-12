@@ -678,6 +678,16 @@
                         <option value="hover-hermanos" ${currentState==='hover-hermanos'?'selected':''}>Hover Hermanos (Grupo)</option>
                     </select>
                 </div>
+                ${currentState !== 'normal' ? `
+                    <div style="margin-top:10px; display:flex; gap:6px;">
+                        <button class="btn" style="flex:1; padding:4px; font-size:10px; border-style:dashed;" onclick="applyQuickAction('${path}', 'pop-up')">Efecto: Salto 3D</button>
+                        <button class="btn" style="flex:1; padding:4px; font-size:10px; border-style:dashed;" onclick="applyQuickAction('${path}', 'accordion')">Efecto: Acordeón</button>
+                    </div>
+                    <div style="margin-top:6px; display:flex; gap:6px;">
+                        <button class="btn" style="flex:1; padding:4px; font-size:10px; border-style:dashed; border-color:#06b6d4;" onclick="applyQuickAction('${path}', 'app-fullscreen')">App: Pantalla Completa</button>
+                        <button class="btn" style="flex:1; padding:4px; font-size:10px; border-style:dashed; border-color:#8b5cf6;" onclick="applyQuickAction('${path}', 'app-popout')">App: Pop-out 3D</button>
+                    </div>
+                ` : ''}
             `;
             panel.appendChild(stateSelector);
             stateSelector.querySelector('#stateSelect').addEventListener('change', (e) => {
@@ -754,13 +764,34 @@
                 </div>
             `;
 
+            var extraLayoutGroup = document.createElement('div');
+            extraLayoutGroup.innerHTML = `
+                <div class="row" style="margin-top: 12px;"><div class="label">Overflow</div>
+                    <div class="toggle-group">
+                        <button class="toggle-btn ${obj.overflow==='visible'?'active':''}" onclick="updateValue('overflow','visible'); renderInspector(getObjAtPath('${path}'),'${path}')" title="Visible">visibility</button>
+                        <button class="toggle-btn ${obj.overflow==='hidden'?'active':''}" onclick="updateValue('overflow','hidden'); renderInspector(getObjAtPath('${path}'),'${path}')" title="Hidden">visibility_off</button>
+                        <button class="toggle-btn ${obj.overflow==='scroll'?'active':''}" onclick="updateValue('overflow','scroll'); renderInspector(getObjAtPath('${path}'),'${path}')" title="Scroll">swap_vert</button>
+                    </div>
+                </div>
+                <div class="row" style="margin-top: 8px;"><div class="label">Cursor</div>
+                    <select class="select" onchange="updateValue('cursor', this.value); renderInspector(getObjAtPath('${path}'),'${path}')">
+                        <option value="">Default (Auto)</option>
+                        <option value="pointer" ${obj.cursor==='pointer'?'selected':''}>Pointer (Mano)</option>
+                        <option value="default" ${obj.cursor==='default'?'selected':''}>Flecha (Default)</option>
+                        <option value="text" ${obj.cursor==='text'?'selected':''}>Texto (I-Beam)</option>
+                        <option value="not-allowed" ${obj.cursor==='not-allowed'?'selected':''}>Not Allowed</option>
+                    </select>
+                </div>
+            `;
+
             panel.appendChild(buildSection('Diseño (Layout)', [
                 flexGroup,
                 buildInputRow('Width', obj.width || '', false, (v) => updateValue('width', v)),
                 buildInputRow('Height', obj.height || '', false, (v) => updateValue('height', v)),
                 buildInputRow('Position', obj.position || '', false, (v) => updateValue('position', v)),
                 positionGroup,
-                buildInputRow('Z-Index', obj['z-index'] || '', false, (v) => updateValue('z-index', v), 'number')
+                buildInputRow('Z-Index', obj['z-index'] || '', false, (v) => updateValue('z-index', v), 'number'),
+                extraLayoutGroup
             ]));
 
             // CAJA VISUAL (Box Model)
@@ -792,17 +823,50 @@
                         <button class="toggle-btn ${obj['text-align']==='right'?'active':''}" onclick="updateValue('text-align','right'); renderInspector(getObjAtPath('${path}'),'${path}')">format_align_right</button>
                     </div>
                 </div>
+                <div class="row" style="margin-top: 8px;"><div class="label">Transform</div>
+                    <div class="toggle-group">
+                        <button class="toggle-btn ${obj['text-transform']==='uppercase'?'active':''}" onclick="updateValue('text-transform','uppercase'); renderInspector(getObjAtPath('${path}'),'${path}')" style="font-size:11px; font-weight:700;">UP</button>
+                        <button class="toggle-btn ${obj['text-transform']==='lowercase'?'active':''}" onclick="updateValue('text-transform','lowercase'); renderInspector(getObjAtPath('${path}'),'${path}')" style="font-size:11px;">low</button>
+                        <button class="toggle-btn ${obj['text-transform']==='capitalize'?'active':''}" onclick="updateValue('text-transform','capitalize'); renderInspector(getObjAtPath('${path}'),'${path}')" style="font-size:11px;">Cap</button>
+                        <button class="toggle-btn ${obj['font-style']==='italic'?'active':''}" onclick="updateValue('font-style', obj['font-style']==='italic'?'':'italic'); renderInspector(getObjAtPath('${path}'),'${path}')" style="font-style:italic; font-family:serif;">I</button>
+                    </div>
+                </div>
             `;
+
+            // Extraer letter-spacing numerico para el slider
+            var lSpacing = 0;
+            if(obj['letter-spacing']) {
+                var m = obj['letter-spacing'].match(/([-.\d]+)(px|em|rem)/);
+                if(m) lSpacing = parseFloat(m[1]);
+            }
+
             panel.appendChild(buildSection('Tipografía', [
                 buildInputRow('Font Size', obj['font-size'] || '', false, (v) => updateValue('font-size', v)),
                 buildInputRow('Font Weight', obj['font-weight'] || '', false, (v) => updateValue('font-weight', v)),
                 buildInputRow('Line Height', obj['line-height'] || '', false, (v) => updateValue('line-height', v)),
                 buildInputRow('Color', obj.color || '', false, (v) => updateValue('color', v), 'color'),
-                typoGroup
+                typoGroup,
+                document.createRange ? (function(){
+                    var d = document.createElement('div');
+                    d.innerHTML = `<div style="margin-top:12px;">${buildSliderRow('Spcg', lSpacing, -10, 50, (v) => updateValue('letter-spacing', v+'px'), 0.5)}</div>`;
+                    return d;
+                })() : null
             ]));
 
             // TRANSFORM 3D (Sliders)
             var tValues = parseTransform(obj.transform || '');
+
+            // Transform Origin parser (default 50% 50%)
+            var oX = 50, oY = 50;
+            if(obj['transform-origin']) {
+                var oMatch = obj['transform-origin'].match(/([-.\d]+)%\s+([-.\d]+)%/);
+                if(oMatch) { oX = parseFloat(oMatch[1]); oY = parseFloat(oMatch[2]); }
+                else {
+                    var sMatch = obj['transform-origin'].match(/([-.\d]+)%/);
+                    if(sMatch) { oX = parseFloat(sMatch[1]); oY = 50; }
+                }
+            }
+
             var transform3D = document.createElement('div');
             transform3D.innerHTML = `
                 <div class="row"><div class="label">3D Engine</div>
@@ -812,6 +876,10 @@
                     </div>
                 </div>
                 ${buildInputRow('Perspective (Cámara)', obj.perspective || '', false, (v) => updateValue('perspective', v)).outerHTML}
+
+                <div style="margin-top:16px;" class="label">Punto de Anclaje (Origin %)</div>
+                ${buildSliderRow('Ox', oX, 0, 100, (v) => updateOrigin(path, 'x', v), 1)}
+                ${buildSliderRow('Oy', oY, 0, 100, (v) => updateOrigin(path, 'y', v), 1)}
 
                 <div style="margin-top:16px;" class="label">Rotación (grados)</div>
                 ${buildSliderRow('X', tValues.rx, -360, 360, (v) => updateTransform(path, 'rotateX', v, 'deg'))}
@@ -935,12 +1003,35 @@
                 </div>
             `;
 
+            var blendGroup = document.createElement('div');
+            blendGroup.innerHTML = `
+                <div class="row" style="margin-bottom: 8px;"><div class="label">Mix Blend Mode</div>
+                    <select class="select" onchange="updateValue('mix-blend-mode', this.value); renderInspector(getObjAtPath('${path}'),'${path}')">
+                        <option value="">Normal (Auto)</option>
+                        <option value="multiply" ${obj['mix-blend-mode']==='multiply'?'selected':''}>Multiply</option>
+                        <option value="screen" ${obj['mix-blend-mode']==='screen'?'selected':''}>Screen</option>
+                        <option value="overlay" ${obj['mix-blend-mode']==='overlay'?'selected':''}>Overlay</option>
+                        <option value="darken" ${obj['mix-blend-mode']==='darken'?'selected':''}>Darken</option>
+                        <option value="lighten" ${obj['mix-blend-mode']==='lighten'?'selected':''}>Lighten</option>
+                        <option value="color-dodge" ${obj['mix-blend-mode']==='color-dodge'?'selected':''}>Color Dodge</option>
+                        <option value="color-burn" ${obj['mix-blend-mode']==='color-burn'?'selected':''}>Color Burn</option>
+                        <option value="difference" ${obj['mix-blend-mode']==='difference'?'selected':''}>Difference</option>
+                        <option value="exclusion" ${obj['mix-blend-mode']==='exclusion'?'selected':''}>Exclusion</option>
+                        <option value="hue" ${obj['mix-blend-mode']==='hue'?'selected':''}>Hue</option>
+                        <option value="saturation" ${obj['mix-blend-mode']==='saturation'?'selected':''}>Saturation</option>
+                        <option value="color" ${obj['mix-blend-mode']==='color'?'selected':''}>Color</option>
+                        <option value="luminosity" ${obj['mix-blend-mode']==='luminosity'?'selected':''}>Luminosity</option>
+                    </select>
+                </div>
+            `;
+
             panel.appendChild(buildSection('Apariencia Visual', [
                 bgGroup,
                 borderGroup,
                 buildInputRow('Border Radius', obj['border-radius'] || '', false, (v) => updateValue('border-radius', v)),
                 shadowGroup,
                 filterGroup,
+                blendGroup,
                 buildInputRow('Opacity', obj.opacity || '', false, (v) => updateValue('opacity', v)),
                 buildInputRow('Transition', obj.transition || '', false, (v) => updateValue('transition', v))
             ]));
@@ -1092,6 +1183,18 @@
             sendToPreview();
         }
 
+        window.updateOrigin = function(path, axis, val) {
+            var baseObj = getObjAtPath(path);
+            var obj = getTargetObj(baseObj);
+            var current = obj['transform-origin'] ? obj['transform-origin'].split(' ') : ['50%', '50%'];
+            if(current.length === 1) current = [current[0], '50%'];
+            if(axis === 'x') current[0] = val + '%';
+            if(axis === 'y') current[1] = val + '%';
+            obj['transform-origin'] = current.join(' ');
+            if(obj['transform-origin'] === '50% 50%') delete obj['transform-origin'];
+            sendToPreview();
+        }
+
         window.updateScroll = function(path, prop, val) {
             var obj = getObjAtPath(path);
             if(!obj.scroll) obj.scroll = {};
@@ -1188,6 +1291,85 @@
                 }
                 sendToPreview();
             }, 0);
+        }
+
+        // BUILDER DE INTERACCIONES (QUICK ACTIONS)
+        window.applyQuickAction = function(path, actionType) {
+            var baseObj = getObjAtPath(path);
+            var node = baseObj; // Working with the base node
+            if (!node) return;
+
+            // Asegurar que el objeto del estado exista
+            if (currentState === 'normal') {
+                alert("Selecciona el estado 'hover' o 'click' primero para aplicar una interacción.");
+                return;
+            }
+
+            if (!node[currentState]) {
+                node[currentState] = {};
+            }
+
+            var stateObj = node[currentState];
+
+            if (actionType === 'pop-up') {
+                // Efecto de salto 3D (Hover o Click)
+                stateObj['transform'] = "translateY(-10px) scale(1.05)";
+                stateObj['box-shadow'] = "0 20px 40px -10px rgba(0,0,0,0.5)";
+                stateObj['border'] = "1px solid rgba(255,255,255,0.2)";
+                stateObj['z-index'] = "10";
+
+                // Asegurar transición en normal
+                if (!node['transition']) node['transition'] = "all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
+            }
+            else if (actionType === 'accordion') {
+                // Efecto Acordeón (expandir, revelar)
+                stateObj['height'] = "auto";
+                stateObj['opacity'] = "1";
+                stateObj['padding'] = "16px";
+                stateObj['margin-top'] = "10px";
+
+                // Preparar el estado normal para estar colapsado
+                node['height'] = "0px";
+                node['opacity'] = "0";
+                node['padding'] = "0px 16px";
+                node['margin-top'] = "0px";
+                node['overflow'] = "hidden";
+                if (!node['transition']) node['transition'] = "all 0.3s ease-in-out";
+            }
+            else if (actionType === 'app-fullscreen') {
+                // Efecto de abrir App a pantalla completa dentro del teléfono
+                stateObj['position'] = "absolute";
+                stateObj['top'] = "0";
+                stateObj['left'] = "0";
+                stateObj['width'] = "100%";
+                stateObj['height'] = "100%";
+                stateObj['z-index'] = "100";
+                stateObj['border-radius'] = "30px";
+                stateObj['transform'] = "none";
+                stateObj['margin'] = "0";
+                stateObj['padding'] = "40px 20px 20px 20px";
+
+                if (!node['transition']) node['transition'] = "all 0.5s cubic-bezier(0.85, 0, 0.15, 1)";
+            }
+            else if (actionType === 'app-popout') {
+                // Efecto de módulo flotante 3D saliendo de la pantalla
+                stateObj['position'] = "absolute";
+                stateObj['top'] = "10%";
+                stateObj['left'] = "5%";
+                stateObj['width'] = "90%";
+                stateObj['height'] = "80%";
+                stateObj['z-index'] = "200";
+                stateObj['border-radius'] = "16px";
+                stateObj['transform'] = "translateZ(100px) scale(1.1)";
+                stateObj['box-shadow'] = "0 30px 60px rgba(0,0,0,0.6), 0 0 40px rgba(139, 92, 246, 0.3)";
+                stateObj['border'] = "1px solid rgba(255,255,255,0.2)";
+                stateObj['backdrop-filter'] = "blur(10px)";
+
+                if (!node['transition']) node['transition'] = "all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)";
+            }
+
+            sendToPreview();
+            renderInspector(baseObj, path);
         }
 
         // Init
