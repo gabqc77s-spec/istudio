@@ -327,10 +327,12 @@
             </div>
             <button class="btn" id="btnSave" style="padding: 4px 8px; font-size: 11px; border-color: #a855f7; color: #a855f7; background: transparent;"><i class="material-icons-round" style="font-size: 12px;">save</i> Guardar</button>
         </div>
-        <div class="tree-panel" id="tree"></div>
-        <div class="actions-panel">
-            <button class="btn btn-primary" onclick="openComponentsModal()"><i class="material-icons-round">add_circle</i> Añadir Nodo</button>
+        <div class="actions-panel" style="border-bottom: 1px solid #27272a; border-top: none; background: #09090b; padding: 8px 12px; gap: 4px;">
+            <button class="btn" style="flex: 0; padding: 4px 8px;" onclick="moveNode(-1)" title="Mover Arriba (↑)"><i class="material-icons-round" style="font-size: 16px;">keyboard_arrow_up</i></button>
+            <button class="btn" style="flex: 0; padding: 4px 8px;" onclick="moveNode(1)" title="Mover Abajo (↓)"><i class="material-icons-round" style="font-size: 16px;">keyboard_arrow_down</i></button>
+            <button class="btn btn-primary" style="flex: 1;" onclick="openComponentsModal()"><i class="material-icons-round" style="font-size: 16px;">add</i> Añadir</button>
         </div>
+        <div class="tree-panel" id="tree"></div>
     </div>
 
     <!-- CENTER: PREVIEW -->
@@ -359,7 +361,13 @@
     <div class="modal-overlay" id="compModal">
         <div class="modal">
             <div class="modal-header">
-                <div class="modal-title">Añadir Componente Prediseñado</div>
+                <div class="modal-title" style="display:flex; align-items:center; gap:16px;">
+                    Añadir Componente
+                    <select id="insertPosition" class="select" style="width:140px; padding:4px 8px;">
+                        <option value="inside">Como Hijo (Dentro)</option>
+                        <option value="after">Como Hermano (Abajo)</option>
+                    </select>
+                </div>
                 <button class="modal-close" onclick="closeComponentsModal()">&times;</button>
             </div>
             <div class="modal-body">
@@ -387,6 +395,22 @@
                     <div class="comp-icon">view_in_ar</div>
                     <div class="comp-info"><h4>Cubo Geométrico CSS</h4><p>Base para construir modelos 3D.</p></div>
                 </div>
+                <div class="component-card" onclick="addComponent('Carrusel V4 (Drag)', { 'display': 'flex', 'gap': '1rem', 'padding': '2rem', 'width': '100%', 'height': '250px', 'overflow': 'hidden', 'scroll': { 'direccion': 'horizontal', 'fade': 0.15, 'fade-inicio': 0.05, 'fade-min': 0.3 }, 'tarjeta_1': {'min-width': '200px', 'height': '100%', 'background': '#18181b', 'border-radius': '16px'}, 'tarjeta_2': {'min-width': '200px', 'height': '100%', 'background': '#18181b', 'border-radius': '16px'} })">
+                    <div class="comp-icon">swipe</div>
+                    <div class="comp-info"><h4>Carrusel Horizontal V4</h4><p>Deslizador nativo Data-Driven.</p></div>
+                </div>
+                <div class="component-card" onclick="addComponent('Tarjeta Glassmorphism', { 'padding': '2rem', 'background': 'rgba(255, 255, 255, 0.05)', 'border': '1px solid rgba(255, 255, 255, 0.1)', 'border-radius': '24px', 'backdrop-filter': 'blur(20px)', 'box-shadow': '0 10px 30px rgba(0,0,0,0.5)', 'texto': 'Glassmorphism Card', 'color': '#fff' })">
+                    <div class="comp-icon">filter_b_and_w</div>
+                    <div class="comp-info"><h4>Tarjeta Glassmorphism</h4><p>Translúcida con blur espacial.</p></div>
+                </div>
+                <div class="component-card" onclick="addComponent('Botón Neumórfico', { 'padding': '12px 24px', 'background': '#1e1e24', 'border-radius': '12px', 'color': '#a1a1aa', 'font-weight': '600', 'cursor': 'pointer', 'box-shadow': '5px 5px 10px #111115, -5px -5px 10px #2b2b33', 'transition': 'all 0.2s', 'click': { 'box-shadow': 'inset 5px 5px 10px #111115, inset -5px -5px 10px #2b2b33', 'color': '#a855f7' }, 'texto': 'Press Me' })">
+                    <div class="comp-icon">touch_app</div>
+                    <div class="comp-info"><h4>Botón Neumórfico</h4><p>Efectos 3D de luz y sombra (Click).</p></div>
+                </div>
+                <div class="component-card" onclick="addComponent('Cuadrícula CSS Grid', { 'display': 'grid', 'grid-template-columns': 'repeat(auto-fit, minmax(200px, 1fr))', 'gap': '1rem', 'padding': '1rem', 'width': '100%', 'item_1': {'height': '100px', 'background': '#27272a', 'border-radius': '8px'}, 'item_2': {'height': '100px', 'background': '#27272a', 'border-radius': '8px'}, 'item_3': {'height': '100px', 'background': '#27272a', 'border-radius': '8px'} })">
+                    <div class="comp-icon">grid_view</div>
+                    <div class="comp-info"><h4>Contenedor Grid</h4><p>Columnas auto-ajustables (auto-fit).</p></div>
+                </div>
             </div>
         </div>
     </div>
@@ -402,6 +426,27 @@
             contentData = await res.json();
             renderTree();
             document.getElementById('btnSave').addEventListener('click', saveJSON);
+
+            // Listen for direct selection from iframe
+            window.addEventListener('message', (e) => {
+                if (e.data && e.data.type === 'select-node' && e.data.path) {
+                    selectedPath = e.data.path;
+                    renderTree();
+
+                    var obj = getObjAtPath(selectedPath);
+                    if (obj) {
+                        renderInspector(obj, selectedPath);
+                    }
+
+                    // Optional: scroll tree to selected item
+                    setTimeout(() => {
+                        var selectedEl = document.querySelector('.tree-node-label.selected');
+                        if (selectedEl) {
+                            selectedEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }
+                    }, 50);
+                }
+            });
         }
 
         // ─── UI INTERACTIONS ───
@@ -422,17 +467,68 @@
         function closeComponentsModal() { document.getElementById('compModal').style.display = 'none'; }
 
         function addComponent(name, template) {
-            var parent = getObjAtPath(selectedPath);
-            if (!parent) parent = contentData; // root
-
-            // Generar ID único
+            var position = document.getElementById('insertPosition').value;
             var id = name.toLowerCase().replace(/\s+/g, '_') + '_' + Math.floor(Math.random()*1000);
             template.nombre = name;
-            parent[id] = template;
+
+            if (position === 'inside' || !selectedPath) {
+                var parent = getObjAtPath(selectedPath) || contentData;
+                parent[id] = template;
+            } else {
+                // Como Hermano (Después)
+                var parts = selectedPath.split('.');
+                var childKey = parts.pop();
+                var parentPath = parts.join('.');
+                var parent = getObjAtPath(parentPath) || contentData;
+
+                var newObj = {};
+                for (var key in parent) {
+                    newObj[key] = parent[key];
+                    if (key === childKey) {
+                        newObj[id] = template; // Insert right after
+                    }
+                }
+
+                // Replace parent properties in order
+                for (var k in parent) delete parent[k];
+                for (var k in newObj) parent[k] = newObj[k];
+            }
 
             closeComponentsModal();
             renderTree();
             if(selectedPath) renderInspector(getObjAtPath(selectedPath), selectedPath);
+            sendToPreview();
+        }
+
+        function moveNode(direction) {
+            if (!selectedPath) return;
+            var parts = selectedPath.split('.');
+            var keyToMove = parts.pop();
+            var parentPath = parts.join('.');
+            var parent = getObjAtPath(parentPath) || contentData;
+
+            var keys = Object.keys(parent);
+            var index = keys.indexOf(keyToMove);
+            if (index < 0) return;
+
+            var newIndex = index + direction;
+            if (newIndex < 0 || newIndex >= keys.length) return; // Out of bounds
+
+            // Swap keys
+            var temp = keys[index];
+            keys[index] = keys[newIndex];
+            keys[newIndex] = temp;
+
+            // Rebuild object in new order
+            var newObj = {};
+            for (var i = 0; i < keys.length; i++) {
+                newObj[keys[i]] = parent[keys[i]];
+            }
+
+            for (var k in parent) delete parent[k];
+            for (var k in newObj) parent[k] = newObj[k];
+
+            renderTree();
             sendToPreview();
         }
 
@@ -456,7 +552,7 @@
 
         function sendToPreview() {
             var iframe = document.getElementById('preview');
-            iframe.contentWindow.postMessage({ type: 'update-content', content: contentData }, '*');
+            iframe.contentWindow.postMessage({ type: 'update-content', content: contentData, selectedPath: selectedPath }, '*');
         }
 
         function saveJSON() {
@@ -680,14 +776,14 @@
         }
 
         function buildInputRow(label, value, readonly, callback, type='text') {
-            var r = document.createElement('div'); r.className = 'col'; style="margin-bottom:8px;";
+            var r = document.createElement('div'); r.className = 'col'; r.style.marginBottom = '8px';
             r.innerHTML = `<div class="label">${label}</div><input class="input" type="${type}" value="${value}" ${readonly?'readonly style="opacity:0.5"':''}>`;
             if(callback) r.querySelector('input').addEventListener('input', (e) => callback(e.target.value));
             return r;
         }
 
         function buildTextareaRow(label, value, callback) {
-            var r = document.createElement('div'); r.className = 'col'; style="margin-bottom:8px;";
+            var r = document.createElement('div'); r.className = 'col'; r.style.marginBottom = '8px';
             r.innerHTML = `<div class="label">${label}</div><textarea class="textarea" rows="3">${value}</textarea>`;
             if(callback) r.querySelector('textarea').addEventListener('input', (e) => callback(e.target.value));
             return r;

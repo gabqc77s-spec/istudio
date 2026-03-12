@@ -15,11 +15,54 @@ export async function init() {
         app.innerHTML = '';
         construir(data, app, 0);
 
+        // Check if we are running inside an iframe (Editor Mode)
+        const isEditorMode = window.self !== window.top;
+
+        if (isEditorMode) {
+            // Global click interceptor for direct selection in the 3D Canvas
+            document.body.addEventListener('click', (e) => {
+                // Ignore clicks on links or elements with 'ignore-editor' class
+                if (e.target.closest('a') || e.target.closest('.ignore-editor')) return;
+
+                // Find the nearest generated container that has a dataset.path
+                const targetNode = e.target.closest('[data-path]');
+                if (targetNode) {
+                    // Prevent normal click actions (like accordions or links) while in pure edit selection mode
+                    // Only prevent if we actually holding shift or clicking to select. For now, default click selects.
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    // Send path to parent editor
+                    window.parent.postMessage({
+                        type: 'select-node',
+                        path: targetNode.dataset.path
+                    }, '*');
+
+                    // Visual Feedback in Canvas
+                    document.querySelectorAll('[data-path]').forEach(el => el.style.outline = '');
+                    targetNode.style.outline = '2px dashed #a855f7';
+                    targetNode.style.outlineOffset = '2px';
+                }
+            }, true); // Use capture phase to intercept before component logic
+        }
+
         // Listen for live updates from editor.html
         window.addEventListener('message', (e) => {
             if (e.data && e.data.type === 'update-content') {
                 app.innerHTML = '';
-                construir(e.data.content, app, 0);
+                // Pass empty string as initial path
+                construir(e.data.content, app, 0, '');
+
+                // Re-apply highlight if a node is selected
+                if (isEditorMode && e.data.selectedPath) {
+                    setTimeout(() => {
+                        const selectedNode = document.querySelector(`[data-path="${e.data.selectedPath}"]`);
+                        if (selectedNode) {
+                            selectedNode.style.outline = '2px dashed #a855f7';
+                            selectedNode.style.outlineOffset = '2px';
+                        }
+                    }, 50);
+                }
             }
         });
 
@@ -30,16 +73,21 @@ export async function init() {
 }
 
 // Recursive builder
-export function construir(config, parent, profundidad) {
+export function construir(config, parent, profundidad, pathPrefix = '') {
     // Si la config es un array (ej. lista de tarjetas), la iteramos.
     if (Array.isArray(config)) {
-         config.forEach(c => construir(c, parent, profundidad));
+         config.forEach((c, idx) => construir(c, parent, profundidad, `${pathPrefix}[${idx}]`));
          return;
     }
 
     const el = document.createElement('div');
     // Set base z-index for layering, though CSS 3D transform (translateZ) will primarily handle depth
     el.style.zIndex = profundidad;
+
+    // Asignar dataset.path para que el Editor sepa qué elemento es en el JSON
+    if (pathPrefix) {
+        el.dataset.path = pathPrefix;
+    }
 
     let hoverData = null;
     let hoverHermanosData = null;
@@ -61,15 +109,18 @@ export function construir(config, parent, profundidad) {
 
         // Si es un objeto, es un nodo hijo (ej: { "boton_comprar": { ... } })
         if (typeof val === 'object' && val !== null && !Array.isArray(val)) {
-            const hijo = construir(val, el, profundidad + 1);
+            // Compute current object path
+            const childPath = pathPrefix ? `${pathPrefix}.${key}` : key;
+            const hijo = construir(val, el, profundidad + 1, childPath);
             hijos.push(hijo);
             continue;
         }
 
         // Si es array (lista de hijos directos en JSON sin nombrar la llave como objeto)
         if (Array.isArray(val)) {
-             val.forEach(item => {
-                  const hijo = construir(item, el, profundidad + 1);
+             val.forEach((item, index) => {
+                  const childPath = pathPrefix ? `${pathPrefix}.${key}[${index}]` : `${key}[${index}]`;
+                  const hijo = construir(item, el, profundidad + 1, childPath);
                   hijos.push(hijo);
              });
              continue;
