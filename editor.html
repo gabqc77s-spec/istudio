@@ -419,11 +419,26 @@
         // ─── STATE & DATA ───
         var contentData = null;
         var selectedPath = null;
+        var currentState = 'normal'; // 'normal', 'hover', 'click', 'hover-hermanos'
         var RESERVED = { nombre: 1, hover: 1, 'hover-hermanos': 1, click: 1, scroll: 1, texto: 1 };
 
+        function saveToLocal() {
+            localStorage.setItem('v4_editor_content', JSON.stringify(contentData));
+        }
+
         async function init() {
-            var res = await fetch('./src/content.json');
-            contentData = await res.json();
+            var localData = localStorage.getItem('v4_editor_content');
+            if (localData) {
+                try {
+                    contentData = JSON.parse(localData);
+                } catch(e) { console.error("Error parsing local storage"); }
+            }
+
+            if (!contentData) {
+                var res = await fetch('./src/content.json');
+                contentData = await res.json();
+            }
+
             renderTree();
             document.getElementById('btnSave').addEventListener('click', saveJSON);
 
@@ -541,11 +556,24 @@
             return obj;
         }
 
+        function getTargetObj(baseObj) {
+            if (currentState === 'normal') return baseObj;
+            if (!baseObj[currentState]) baseObj[currentState] = {};
+            return baseObj[currentState];
+        }
+
         function updateValue(key, val) {
-            var obj = getObjAtPath(selectedPath);
-            if(obj) {
+            var baseObj = getObjAtPath(selectedPath);
+            if(baseObj) {
+                var obj = getTargetObj(baseObj);
                 if(val === '' && key !== 'texto') delete obj[key];
                 else obj[key] = val;
+
+                // Cleanup empty states
+                if (currentState !== 'normal' && Object.keys(obj).length === 0) {
+                    delete baseObj[currentState];
+                }
+
                 sendToPreview();
             }
         }
@@ -553,6 +581,7 @@
         function sendToPreview() {
             var iframe = document.getElementById('preview');
             iframe.contentWindow.postMessage({ type: 'update-content', content: contentData, selectedPath: selectedPath }, '*');
+            saveToLocal(); // Auto-save on every change
         }
 
         function saveJSON() {
@@ -619,7 +648,7 @@
         }
 
         // ─── INSPECTOR RENDERER ───
-        function renderInspector(obj, path) {
+        function renderInspector(baseObj, path) {
             var panel = document.getElementById('inspector');
             panel.innerHTML = '';
 
@@ -637,12 +666,44 @@
                 if(parent) { delete parent[keyName]; selectedPath = null; renderTree(); panel.innerHTML = '<div class="inspector-empty"><i class="material-icons-round">touch_app</i><p>Seleccionado eliminado.</p></div>'; sendToPreview(); }
             });
 
-            // IDENTIDAD
-            panel.appendChild(buildSection('Identidad', [
-                buildInputRow('Clave (JSON)', path.split('.').pop(), true), // readonly
-                buildInputRow('Nombre AMigable', obj.nombre || '', false, (v) => updateValue('nombre', v)),
-                buildTextareaRow('Contenido (HTML)', obj.texto || '', (v) => updateValue('texto', v))
-            ]));
+            // ESTADOS (Normal, Hover, etc)
+            var stateSelector = document.createElement('div');
+            stateSelector.style.cssText = 'padding: 10px 16px; background: #09090b; border-bottom: 1px solid #27272a;';
+            stateSelector.innerHTML = `
+                <div class="row" style="margin:0;"><div class="label" style="width: 50px;">Estado:</div>
+                    <select class="select" id="stateSelect" style="color: #a855f7; font-weight: 600; border-color: #3f3f46;">
+                        <option value="normal" ${currentState==='normal'?'selected':''}>Normal</option>
+                        <option value="hover" ${currentState==='hover'?'selected':''}>Hover</option>
+                        <option value="click" ${currentState==='click'?'selected':''}>Click (Toggle)</option>
+                        <option value="hover-hermanos" ${currentState==='hover-hermanos'?'selected':''}>Hover Hermanos (Grupo)</option>
+                    </select>
+                </div>
+            `;
+            panel.appendChild(stateSelector);
+            stateSelector.querySelector('#stateSelect').addEventListener('change', (e) => {
+                currentState = e.target.value;
+                renderInspector(baseObj, path);
+            });
+
+            // Target Object based on State
+            var obj = getTargetObj(baseObj);
+
+            // Si estamos en un estado, advertir visualmente
+            if (currentState !== 'normal') {
+                var stateWarn = document.createElement('div');
+                stateWarn.style.cssText = 'padding: 8px 16px; background: rgba(168,85,247,0.1); color: #c084fc; font-size: 11px; text-align: center; border-bottom: 1px solid #27272a;';
+                stateWarn.textContent = `Editando propiedades para el estado: ${currentState.toUpperCase()}`;
+                panel.appendChild(stateWarn);
+            }
+
+            // IDENTIDAD (Solo visible en Normal)
+            if (currentState === 'normal') {
+                panel.appendChild(buildSection('Identidad', [
+                    buildInputRow('Clave (JSON)', path.split('.').pop(), true), // readonly
+                    buildInputRow('Nombre Amigable', obj.nombre || '', false, (v) => { baseObj.nombre = v; sendToPreview(); renderTree(); }),
+                    buildTextareaRow('Contenido (HTML)', obj.texto || '', (v) => { baseObj.texto = v; sendToPreview(); })
+                ]));
+            }
 
             // LAYOUT & FLEXBOX (Botones visuales)
             var flexGroup = document.createElement('div');
@@ -707,6 +768,25 @@
             `;
             panel.appendChild(buildSection('Box Model', [boxModel]));
 
+            // TYPOGRAPHY
+            var typoGroup = document.createElement('div');
+            typoGroup.innerHTML = `
+                <div class="row"><div class="label">Text Align</div>
+                    <div class="toggle-group">
+                        <button class="toggle-btn ${obj['text-align']==='left'?'active':''}" onclick="updateValue('text-align','left'); renderInspector(getObjAtPath('${path}'),'${path}')">format_align_left</button>
+                        <button class="toggle-btn ${obj['text-align']==='center'?'active':''}" onclick="updateValue('text-align','center'); renderInspector(getObjAtPath('${path}'),'${path}')">format_align_center</button>
+                        <button class="toggle-btn ${obj['text-align']==='right'?'active':''}" onclick="updateValue('text-align','right'); renderInspector(getObjAtPath('${path}'),'${path}')">format_align_right</button>
+                    </div>
+                </div>
+            `;
+            panel.appendChild(buildSection('Tipografía', [
+                buildInputRow('Font Size', obj['font-size'] || '', false, (v) => updateValue('font-size', v)),
+                buildInputRow('Font Weight', obj['font-weight'] || '', false, (v) => updateValue('font-weight', v)),
+                buildInputRow('Line Height', obj['line-height'] || '', false, (v) => updateValue('line-height', v)),
+                buildInputRow('Color', obj.color || '', false, (v) => updateValue('color', v), 'color'),
+                typoGroup
+            ]));
+
             // TRANSFORM 3D (Sliders)
             var tValues = parseTransform(obj.transform || '');
             var transform3D = document.createElement('div');
@@ -736,13 +816,58 @@
 
             // APARIENCIA (Color, Fondo, Bordes)
             panel.appendChild(buildSection('Apariencia Visual', [
-                buildInputRow('Color Texto', obj.color || '', false, (v) => updateValue('color', v), 'color'),
                 buildInputRow('Background', obj.background || '', false, (v) => updateValue('background', v)),
                 buildInputRow('Border Radius', obj['border-radius'] || '', false, (v) => updateValue('border-radius', v)),
                 buildInputRow('Box Shadow', obj['box-shadow'] || '', false, (v) => updateValue('box-shadow', v)),
-                buildInputRow('Filtro CSS', obj.filter || '', false, (v) => updateValue('filter', v)),
-                buildInputRow('Transición', obj.transition || '', false, (v) => updateValue('transition', v))
+                buildInputRow('Filter (CSS)', obj.filter || '', false, (v) => updateValue('filter', v)),
+                buildInputRow('Backdrop Filter', obj['backdrop-filter'] || '', false, (v) => updateValue('backdrop-filter', v)),
+                buildInputRow('Opacity', obj.opacity || '', false, (v) => updateValue('opacity', v)),
+                buildInputRow('Transition', obj.transition || '', false, (v) => updateValue('transition', v))
             ]));
+
+            // MOTOR SCROLL V4 (Solo en Normal)
+            if (currentState === 'normal') {
+                var scrollObj = obj.scroll || {};
+                var scrollDiv = document.createElement('div');
+                scrollDiv.innerHTML = `
+                    <div class="row" style="margin-bottom:12px;"><div class="label">Activar Scroll</div>
+                        <select class="select" id="scrollDir">
+                            <option value="">Desactivado</option>
+                            <option value="horizontal" ${scrollObj.direccion==='horizontal'?'selected':''}>Horizontal</option>
+                            <option value="vertical" ${scrollObj.direccion==='vertical'?'selected':''}>Vertical</option>
+                            <option value="ambos" ${scrollObj.direccion==='ambos'?'selected':''}>Ambos</option>
+                        </select>
+                    </div>
+                    ${buildSliderRow('F-Zone', scrollObj.fade !== undefined ? scrollObj.fade : 0.15, 0, 1, (v)=>updateScroll(path, 'fade', v), 0.05)}
+                    ${buildSliderRow('F-Min', scrollObj['fade-min'] !== undefined ? scrollObj['fade-min'] : 0.3, 0, 1, (v)=>updateScroll(path, 'fade-min', v), 0.05)}
+                    ${buildSliderRow('F-Init', scrollObj['fade-inicio'] !== undefined ? scrollObj['fade-inicio'] : 0, 0, 0.5, (v)=>updateScroll(path, 'fade-inicio', v), 0.05)}
+                `;
+                panel.appendChild(buildSection('⚙️ Motor Scroll V4', [scrollDiv]));
+
+                scrollDiv.querySelector('#scrollDir').addEventListener('change', (e) => {
+                    if(!e.target.value) { updateValue('scroll', ''); }
+                    else {
+                        if(!obj.scroll) obj.scroll = {};
+                        obj.scroll.direccion = e.target.value;
+                        updateValue('scroll', obj.scroll);
+                    }
+                });
+            }
+
+            // CUSTOM CSS INJECTOR
+            var customBtn = document.createElement('button');
+            customBtn.className = 'btn';
+            customBtn.style.cssText = 'width: 100%; margin-bottom: 16px; border-style: dashed; color: #a855f7; border-color: rgba(168,85,247,0.3);';
+            customBtn.innerHTML = '+ Añadir Custom CSS';
+            customBtn.addEventListener('click', () => {
+                var propName = prompt('Nombre de la propiedad CSS nativa (ej: mix-blend-mode):');
+                if (propName) {
+                    var targetObj = getTargetObj(baseObj);
+                    targetObj[propName] = '';
+                    renderInspector(baseObj, path);
+                }
+            });
+            panel.appendChild(customBtn);
 
             // DATA CRUDA (Avanzado)
             var rawDiv = document.createElement('div');
@@ -811,7 +936,8 @@
             return '-';
         }
         window.updateBoxModel = function(path, prop, index, val) {
-            var obj = getObjAtPath(path);
+            var baseObj = getObjAtPath(path);
+            var obj = getTargetObj(baseObj);
             var current = obj[prop] ? obj[prop].split(' ') : ['0px','0px','0px','0px'];
             if(current.length === 1) current = [current[0],current[0],current[0],current[0]];
             if(current.length === 2) current = [current[0],current[1],current[0],current[1]];
@@ -835,13 +961,21 @@
             return res;
         }
         window.updateTransform = function(path, func, val, unit) {
-            var obj = getObjAtPath(path);
+            var baseObj = getObjAtPath(path);
+            var obj = getTargetObj(baseObj);
             var str = obj.transform || '';
             var regex = new RegExp(func + '\\([^\\)]+\\)');
             var newVal = func + '(' + val + unit + ')';
             if(str.match(regex)) str = str.replace(regex, newVal);
             else str = str + ' ' + newVal;
             obj.transform = str.trim();
+            sendToPreview();
+        }
+
+        window.updateScroll = function(path, prop, val) {
+            var obj = getObjAtPath(path);
+            if(!obj.scroll) obj.scroll = {};
+            obj.scroll[prop] = parseFloat(val);
             sendToPreview();
         }
 
