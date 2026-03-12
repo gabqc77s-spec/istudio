@@ -9,6 +9,53 @@
 </head>
 <body style="background: #030014; color: #ffffff; font-family: 'Inter', system-ui, sans-serif; min-height: 100vh; perspective: 1000px; transform-style: preserve-3d; position: relative;">
     <div id="app" style="width: 100%; min-height: 100vh; position: relative; transform-style: preserve-3d; overflow-x: hidden;"></div>
+
+    <!-- UI Inyector -->
+    <div id="injector-btn" style="position: fixed; bottom: 20px; right: 20px; z-index: 1000; background: #a855f7; color: white; padding: 12px 20px; border-radius: 50px; cursor: pointer; font-weight: bold; box-shadow: 0 4px 15px rgba(0,0,0,0.3); transition: transform 0.3s ease;">
+        💉 Inyector JSON
+    </div>
+
+    <div id="injector-panel" style="display: none; position: fixed; bottom: 80px; right: 20px; z-index: 1000; background: #18181b; border: 1px solid #27272a; border-radius: 12px; width: 350px; padding: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+        <h3 style="margin-top: 0; font-size: 14px; color: #a855f7;">Inyectar JSON Parcial</h3>
+        <textarea id="injector-data" style="width: 100%; height: 200px; background: #09090b; border: 1px solid #27272a; border-radius: 6px; color: #e4e4e7; padding: 10px; font-family: monospace; font-size: 11px; resize: vertical;" placeholder='{ "pagina_principal": { ... } }'></textarea>
+        <div style="margin-top: 10px; display: flex; gap: 10px;">
+            <button id="inject-now" style="flex: 1; background: #9333ea; color: white; border: none; padding: 8px; border-radius: 6px; cursor: pointer; font-weight: 600;">Inyectar Cambios</button>
+            <button id="close-injector" style="background: #27272a; color: #e4e4e7; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer;">Cerrar</button>
+        </div>
+    </div>
+
+    <script type="module">
+        const btn = document.getElementById('injector-btn');
+        const panel = document.getElementById('injector-panel');
+        const close = document.getElementById('close-injector');
+        const inject = document.getElementById('inject-now');
+        const data = document.getElementById('injector-data');
+
+        btn.onclick = () => {
+            panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+        };
+
+        close.onclick = () => {
+            panel.style.display = 'none';
+        };
+
+        inject.onclick = () => {
+            try {
+                const partial = JSON.parse(data.value);
+                window.postMessage({ type: 'inject-partial', partial }, '*');
+                // Optional: visual feedback
+                inject.textContent = '¡Inyectado!';
+                inject.style.background = '#10b981';
+                setTimeout(() => {
+                    inject.textContent = 'Inyectar Cambios';
+                    inject.style.background = '#9333ea';
+                }, 2000);
+            } catch (e) {
+                alert('Error en el JSON: ' + e.message);
+            }
+        };
+    </script>
+
     <script type="module" src="./src/showcase.js"></script>
 </body>
 </html>
