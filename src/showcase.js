@@ -90,6 +90,30 @@ export async function init() {
             }
         });
 
+        // Punto de entrada global compatible con AI Studio Function Calling
+        window.inyectar_cambios_v4 = (input) => {
+            let partial = null;
+
+            // Caso 1: Viene el objeto de llamada completo { name, args: { partial } }
+            if (input.args && input.args.partial) {
+                partial = input.args.partial;
+            }
+            // Caso 2: Viene solo el objeto partial
+            else if (input.partial) {
+                partial = input.partial;
+            }
+            // Caso 3: Es el JSON crudo
+            else {
+                partial = input;
+            }
+
+            if (partial && typeof partial === 'object') {
+                window.postMessage({ type: 'inject-partial', partial }, '*');
+            } else {
+                console.warn("Inyector V4: El formato recibido no es un JSON válido o partial está vacío.");
+            }
+        };
+
     } catch (e) {
         console.error("Error starting V4 Engine:", e);
         document.getElementById('app').innerHTML = `<div style="padding: 2rem; color: #ff5555;">Error loading content.json: ${e.message}</div>`;
