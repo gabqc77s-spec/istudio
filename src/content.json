@@ -1,303 +1,494 @@
 {
-    "hero_section": {
-        "nombre": "Sección Hero",
+    "pagina_principal": {
+        "nombre": "App Wrapper Principal",
         "display": "flex",
         "flex-direction": "column",
         "align-items": "center",
-        "justify-content": "center",
-        "min-height": "100vh",
         "width": "100%",
-        "position": "relative",
-        "transform-style": "preserve-3d",
-        "gap": "2rem",
-        "padding": "2rem",
-
-        "background_stars": {
-            "nombre": "Fondo Partículas",
-            "position": "absolute",
-            "width": "100%",
-            "height": "100%",
-            "top": "0",
-            "left": "0",
-            "z-index": "-1",
-            "background": "radial-gradient(circle at center, #1b1b3a 0%, #030014 100%)"
-        },
-
-        "titulo": {
-            "nombre": "Título Principal",
-            "texto": "iStudio Generative",
-            "font-size": "5rem",
-            "font-weight": "800",
-            "color": "transparent",
-            "background-image": "linear-gradient(to right, #a855f7, #ec4899)",
-            "-webkit-background-clip": "text",
-            "text-align": "center",
-            "letter-spacing": "-0.05em",
-            "transform": "translateZ(50px)",
-            "transition": "transform 0.5s ease"
-        },
-
-        "subtitulo": {
-            "nombre": "Subtítulo",
-            "texto": "A new dimension of web development.",
-            "font-size": "1.5rem",
-            "color": "#9ca3af",
-            "transform": "translateZ(30px)",
-            "transition": "transform 0.5s ease"
-        },
-
-        "botones_container": {
-            "nombre": "Contenedor Botones",
-            "display": "flex",
-            "gap": "1.5rem",
-            "transform": "translateZ(40px)",
-            "margin-top": "2rem",
-
-            "btn_empezar": {
-                "nombre": "Botón Empezar",
-                "texto": "Comenzar Ahora",
-                "padding": "1rem 2rem",
-                "background": "rgba(168, 85, 247, 0.2)",
-                "border": "1px solid #a855f7",
-                "border-radius": "9999px",
-                "color": "#fff",
-                "font-weight": "600",
-                "cursor": "pointer",
-                "transition": "all 0.3s ease",
-                "hover": {
-                    "background": "#a855f7",
-                    "transform": "scale(1.05) translateZ(10px)",
-                    "box-shadow": "0 0 20px rgba(168, 85, 247, 0.5)"
-                }
-            },
-
-            "btn_info": {
-                "nombre": "Botón Info",
-                "texto": "Ver Demo",
-                "padding": "1rem 2rem",
-                "background": "rgba(255, 255, 255, 0.05)",
-                "border": "1px solid rgba(255, 255, 255, 0.1)",
-                "border-radius": "9999px",
-                "color": "#fff",
-                "font-weight": "600",
-                "cursor": "pointer",
-                "transition": "all 0.3s ease",
-                "hover": {
-                    "background": "rgba(255, 255, 255, 0.1)",
-                    "transform": "scale(1.05) translateZ(10px)"
-                }
-            }
-        }
-    },
-
-    "showcase_section": {
-        "nombre": "Sección Showcase",
-        "display": "flex",
-        "flex-direction": "column",
-        "align-items": "center",
-        "justify-content": "center",
         "min-height": "100vh",
-        "width": "100%",
-        "padding": "4rem 2rem",
-        "gap": "3rem",
         "perspective": "1500px",
+        "transform-style": "preserve-3d",
+        "background": "radial-gradient(circle at 50% 10%, #151025 0%, #030014 100%)",
+        "overflow-x": "hidden",
 
-        "showcase_titulo": {
-            "nombre": "Título Showcase",
-            "texto": "Nuestros Modelos 3D en CSS",
-            "font-size": "3rem",
-            "font-weight": "700",
-            "color": "#fff",
-            "margin-bottom": "2rem"
-        },
+        "header_nav": {
+            "nombre": "Barra Navegación 3D",
+            "position": "fixed",
+            "top": "0",
+            "width": "100%",
+            "max-width": "1200px",
+            "display": "flex",
+            "justify-content": "space-between",
+            "align-items": "center",
+            "padding": "1.5rem 2rem",
+            "z-index": "100",
+            "transform": "translateZ(100px)",
+            "backdrop-filter": "blur(10px)",
+            "border-bottom": "1px solid rgba(255, 255, 255, 0.05)",
 
-        "cubo_3d": {
-            "nombre": "Cubo 3D (Simulador de Teléfono)",
-            "position": "relative",
-            "width": "150px",
-            "height": "300px",
-            "transform-style": "preserve-3d",
-            "transform": "rotateX(-15deg) rotateY(25deg)",
-            "transition": "transform 1s cubic-bezier(0.4, 0, 0.2, 1)",
-            "cursor": "pointer",
-            "hover": {
-                "transform": "rotateX(15deg) rotateY(-45deg) scale(1.1)"
-            },
-
-            "cara_frontal": {
-                "nombre": "Pantalla",
-                "position": "absolute",
-                "width": "100%",
-                "height": "100%",
-                "background": "linear-gradient(135deg, #1e1e38, #0a0a1a)",
-                "border": "2px solid #3b3b58",
-                "border-radius": "20px",
-                "transform": "translateZ(10px)",
-                "display": "flex",
-                "align-items": "center",
-                "justify-content": "center",
-                "box-shadow": "inset 0 0 20px rgba(0,0,0,0.8)",
-                "texto_pantalla": {
-                    "texto": "12:00",
-                    "color": "#fff",
-                    "font-size": "1.5rem",
-                    "font-weight": "300"
+            "logo": {
+                "texto": "IMPULSA<span style='color: #a855f7;'>.</span>",
+                "font-size": "1.5rem",
+                "font-weight": "800",
+                "letter-spacing": "2px",
+                "cursor": "pointer",
+                "transition": "transform 0.3s ease, text-shadow 0.3s ease",
+                "hover": {
+                    "transform": "scale(1.1) rotateX(10deg)",
+                    "text-shadow": "0 0 15px rgba(168, 85, 247, 0.8)"
                 }
             },
+            "menu_links": {
+                "display": "flex",
+                "gap": "2rem",
+                "link1": { "texto": "Home", "cursor": "pointer", "font-size": "0.9rem", "font-weight": "500", "color": "#a855f7", "transition": "all 0.3s ease", "hover": { "transform": "translateY(-2px)" } },
+                "link2": { "texto": "Showcase", "cursor": "pointer", "font-size": "0.9rem", "font-weight": "500", "color": "#9ca3af", "transition": "all 0.3s ease", "hover": { "color": "#fff", "transform": "translateY(-2px)" } },
+                "link3": { "texto": "Editor V4", "cursor": "pointer", "font-size": "0.9rem", "font-weight": "500", "color": "#9ca3af", "transition": "all 0.3s ease", "hover": { "color": "#fff", "transform": "translateY(-2px)" } }
+            }
+        },
 
-            "cara_trasera": {
-                "nombre": "Tapa Trasera",
+        "seccion_hero": {
+            "nombre": "Hero Parallax 3D",
+            "position": "relative",
+            "width": "100%",
+            "min-height": "100vh",
+            "display": "flex",
+            "flex-direction": "column",
+            "align-items": "center",
+            "justify-content": "center",
+            "transform-style": "preserve-3d",
+
+            "orbe_luminoso": {
                 "position": "absolute",
-                "width": "100%",
-                "height": "100%",
-                "background": "#121222",
-                "border": "1px solid #3b3b58",
-                "border-radius": "20px",
-                "transform": "rotateY(180deg) translateZ(10px)",
+                "width": "600px",
+                "height": "600px",
+                "border-radius": "50%",
+                "background": "radial-gradient(circle, rgba(168,85,247,0.15) 0%, rgba(3,0,20,0) 70%)",
+                "transform": "translateZ(-500px)",
+                "z-index": "-1"
+            },
+
+            "contenedor_titulos": {
                 "display": "flex",
                 "flex-direction": "column",
-                "padding": "1rem",
+                "align-items": "center",
+                "transform-style": "preserve-3d",
+                "cursor": "pointer",
+                "transition": "transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
+                "hover": {
+                    "transform": "rotateX(5deg) rotateY(-5deg) scale(1.05)"
+                },
 
-                "modulo_camaras": {
-                    "width": "50px",
-                    "height": "50px",
-                    "background": "#0a0a1a",
-                    "border-radius": "10px",
-                    "border": "1px solid #2a2a40"
+                "titulo_fondo": {
+                    "texto": "NATIVE",
+                    "font-size": "12rem",
+                    "font-weight": "900",
+                    "color": "rgba(255, 255, 255, 0.02)",
+                    "position": "absolute",
+                    "top": "-50%",
+                    "transform": "translateZ(-200px)",
+                    "user-select": "none",
+                    "white-space": "nowrap"
+                },
+
+                "titulo_principal": {
+                    "texto": "Motor UI <span style='color: #fff;'>Espacial.</span>",
+                    "font-size": "5.5rem",
+                    "font-weight": "800",
+                    "color": "transparent",
+                    "background-image": "linear-gradient(135deg, #a855f7, #ec4899)",
+                    "-webkit-background-clip": "text",
+                    "text-align": "center",
+                    "line-height": "1.1",
+                    "letter-spacing": "-0.04em",
+                    "transform": "translateZ(50px)",
+                    "text-shadow": "0 20px 40px rgba(0,0,0,0.5)"
+                },
+
+                "subtitulo": {
+                    "texto": "Renderizado DOM puro a 60FPS. Cero librerías intermedias.",
+                    "font-size": "1.25rem",
+                    "color": "#9ca3af",
+                    "margin-top": "1.5rem",
+                    "transform": "translateZ(80px)",
+                    "max-width": "600px",
+                    "text-align": "center",
+                    "line-height": "1.6"
                 }
             },
 
-            "borde_izquierdo": {
-                "nombre": "Borde Izquierdo",
-                "position": "absolute",
-                "width": "20px",
-                "height": "calc(100% - 20px)",
-                "top": "10px",
-                "left": "-10px",
-                "background": "#222238",
-                "transform": "rotateY(-90deg) translateZ(10px)"
-            },
+            "contenedor_botones": {
+                "display": "flex",
+                "gap": "1.5rem",
+                "margin-top": "4rem",
+                "transform": "translateZ(120px)",
+                "transform-style": "preserve-3d",
 
-            "borde_derecho": {
-                "nombre": "Borde Derecho",
-                "position": "absolute",
-                "width": "20px",
-                "height": "calc(100% - 20px)",
-                "top": "10px",
-                "right": "-10px",
-                "background": "#1a1a2e",
-                "transform": "rotateY(90deg) translateZ(10px)"
+                "btn_primario": {
+                    "texto": "Explorar Arquitectura",
+                    "padding": "1.2rem 2.5rem",
+                    "background": "linear-gradient(135deg, #9333ea, #db2777)",
+                    "border-radius": "999px",
+                    "color": "#fff",
+                    "font-weight": "600",
+                    "font-size": "1rem",
+                    "cursor": "pointer",
+                    "border": "none",
+                    "box-shadow": "0 10px 30px rgba(219, 39, 119, 0.3)",
+                    "transition": "all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
+                    "hover": {
+                        "transform": "translateZ(30px) scale(1.1)",
+                        "box-shadow": "0 20px 40px rgba(219, 39, 119, 0.6)"
+                    }
+                },
+                "btn_secundario": {
+                    "texto": "Ver Código JSON",
+                    "padding": "1.2rem 2.5rem",
+                    "background": "rgba(255, 255, 255, 0.03)",
+                    "border-radius": "999px",
+                    "color": "#e5e7eb",
+                    "font-weight": "600",
+                    "font-size": "1rem",
+                    "cursor": "pointer",
+                    "border": "1px solid rgba(255,255,255,0.1)",
+                    "transition": "all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
+                    "hover": {
+                        "background": "rgba(255, 255, 255, 0.1)",
+                        "transform": "translateZ(20px) scale(1.05)",
+                        "border-color": "rgba(255,255,255,0.3)"
+                    }
+                }
             }
-        }
-    },
-
-    "features_slider": {
-        "nombre": "Carrusel de Features (Scroll Engine)",
-        "display": "flex",
-        "gap": "2rem",
-        "padding": "2rem",
-        "width": "100%",
-        "max-width": "1200px",
-        "height": "350px",
-        "margin": "0 auto",
-        "overflow": "hidden",
-        "position": "relative",
-        "scroll": {
-            "direccion": "horizontal",
-            "fade": 0.2,
-            "fade-inicio": 0.05,
-            "fade-min": 0.4
         },
 
-        "card_1": {
-            "nombre": "Tarjeta Rapidez",
-            "min-width": "300px",
-            "height": "100%",
-            "background": "rgba(255, 255, 255, 0.03)",
-            "border": "1px solid rgba(255, 255, 255, 0.1)",
-            "border-radius": "1rem",
-            "padding": "2rem",
+        "seccion_dispositivo_3d": {
+            "nombre": "Showcase Teléfono 3D CSS",
+            "width": "100%",
+            "min-height": "120vh",
             "display": "flex",
             "flex-direction": "column",
-            "gap": "1rem",
-            "backdrop-filter": "blur(10px)",
-            "hover-hermanos": {
-                "opacity": "0.3",
-                "transform": "scale(0.95)"
+            "align-items": "center",
+            "justify-content": "center",
+            "perspective": "2000px",
+            "position": "relative",
+            "padding": "4rem 0",
+
+            "fondo_resplandor": {
+                "position": "absolute",
+                "width": "800px",
+                "height": "800px",
+                "background": "radial-gradient(circle, rgba(59,130,246,0.1) 0%, rgba(3,0,20,0) 60%)",
+                "transform": "translateZ(-800px)",
+                "z-index": "-1"
             },
-            "hover": {
-                "transform": "translateY(-10px)",
-                "border-color": "#4ade80",
-                "box-shadow": "0 10px 30px rgba(74, 222, 128, 0.1)"
+
+            "titulo_showcase": {
+                "texto": "Dispositivo Interactivo Construido en CSS",
+                "font-size": "2.5rem",
+                "font-weight": "700",
+                "margin-bottom": "6rem",
+                "transform": "translateZ(50px)",
+                "color": "#fff",
+                "text-shadow": "0 5px 15px rgba(0,0,0,0.5)"
             },
-            "transition": "all 0.3s ease",
 
-            "icono": { "font-size": "2rem", "texto": "⚡" },
-            "titulo": { "font-size": "1.25rem", "font-weight": "600", "texto": "Ultra Rápido" },
-            "desc": { "color": "#9ca3af", "line-height": "1.6", "texto": "Renderizado puramente en el DOM sin virtual overhead. Cero latencia." }
+            "telefono_contenedor": {
+                "nombre": "El Prisma Teléfono",
+                "position": "relative",
+                "width": "320px",
+                "height": "650px",
+                "transform-style": "preserve-3d",
+                "transform": "rotateX(15deg) rotateY(-25deg)",
+                "transition": "transform 1.5s cubic-bezier(0.2, 0.8, 0.2, 1)",
+                "cursor": "pointer",
+                "hover": {
+                    "transform": "rotateX(0deg) rotateY(0deg) scale(1.15) translateZ(100px)"
+                },
+
+                "cara_frontal_pantalla": {
+                    "nombre": "Pantalla con Scroll Interno",
+                    "position": "absolute",
+                    "width": "100%",
+                    "height": "100%",
+                    "background": "#000",
+                    "border": "8px solid #1a1a2e",
+                    "border-radius": "40px",
+                    "transform": "translateZ(15px)",
+                    "box-shadow": "inset 0 0 0 2px #3b3b58, 0 20px 50px rgba(0,0,0,0.8)",
+                    "overflow": "hidden",
+                    "display": "flex",
+                    "flex-direction": "column",
+
+                    "notch_camara": {
+                        "position": "absolute",
+                        "top": "10px",
+                        "left": "50%",
+                        "transform": "translateX(-50%)",
+                        "width": "100px",
+                        "height": "25px",
+                        "background": "#1a1a2e",
+                        "border-radius": "15px",
+                        "z-index": "10"
+                    },
+
+                    "app_interna": {
+                        "nombre": "App UI (Motor Scroll)",
+                        "width": "100%",
+                        "height": "100%",
+                        "padding": "50px 15px 20px 15px",
+                        "background": "linear-gradient(to bottom, #111827, #030712)",
+                        "display": "flex",
+                        "flex-direction": "column",
+                        "gap": "15px",
+                        "scroll": {
+                            "direccion": "vertical",
+                            "fade": 0.1,
+                            "fade-inicio": 0.02,
+                            "fade-min": 0.2
+                        },
+
+                        "widget_clima": {
+                            "width": "100%",
+                            "height": "140px",
+                            "background": "linear-gradient(135deg, #3b82f6, #2563eb)",
+                            "border-radius": "20px",
+                            "padding": "20px",
+                            "display": "flex",
+                            "flex-direction": "column",
+                            "justify-content": "space-between",
+                            "color": "#fff",
+                            "box-shadow": "0 10px 20px rgba(37, 99, 235, 0.3)",
+                            "grados": { "texto": "24°", "font-size": "2.5rem", "font-weight": "700" },
+                            "ciudad": { "texto": "Santiago, Motor V4", "font-size": "0.9rem", "opacity": "0.9" }
+                        },
+                        "widget_tarjeta_1": {
+                            "width": "100%", "height": "100px", "background": "rgba(255,255,255,0.05)", "border-radius": "20px", "padding": "15px",
+                            "border": "1px solid rgba(255,255,255,0.1)", "display": "flex", "align-items": "center", "gap": "15px",
+                            "icono": { "width": "50px", "height": "50px", "background": "#10b981", "border-radius": "12px" },
+                            "textos": { "display": "flex", "flex-direction": "column", "gap": "5px", "t1": {"texto": "Rendimiento GPU", "font-size": "0.9rem", "font-weight": "600", "color": "#fff"}, "t2": {"texto": "60 FPS Estables", "font-size": "0.75rem", "color": "#9ca3af"} }
+                        },
+                        "widget_tarjeta_2": {
+                            "width": "100%", "height": "100px", "background": "rgba(255,255,255,0.05)", "border-radius": "20px", "padding": "15px",
+                            "border": "1px solid rgba(255,255,255,0.1)", "display": "flex", "align-items": "center", "gap": "15px",
+                            "icono": { "width": "50px", "height": "50px", "background": "#f59e0b", "border-radius": "12px" },
+                            "textos": { "display": "flex", "flex-direction": "column", "gap": "5px", "t1": {"texto": "Peso de Carga", "font-size": "0.9rem", "font-weight": "600", "color": "#fff"}, "t2": {"texto": "15 Kilobytes", "font-size": "0.75rem", "color": "#9ca3af"} }
+                        },
+                        "widget_tarjeta_3": {
+                            "width": "100%", "height": "100px", "background": "rgba(255,255,255,0.05)", "border-radius": "20px", "padding": "15px",
+                            "border": "1px solid rgba(255,255,255,0.1)", "display": "flex", "align-items": "center", "gap": "15px",
+                            "icono": { "width": "50px", "height": "50px", "background": "#8b5cf6", "border-radius": "12px" },
+                            "textos": { "display": "flex", "flex-direction": "column", "gap": "5px", "t1": {"texto": "Arquitectura", "font-size": "0.9rem", "font-weight": "600", "color": "#fff"}, "t2": {"texto": "Puramente Nativa", "font-size": "0.75rem", "color": "#9ca3af"} }
+                        },
+                        "widget_tarjeta_4": {
+                            "width": "100%", "height": "100px", "background": "rgba(255,255,255,0.05)", "border-radius": "20px", "padding": "15px",
+                            "border": "1px solid rgba(255,255,255,0.1)", "display": "flex", "align-items": "center", "gap": "15px",
+                            "icono": { "width": "50px", "height": "50px", "background": "#ef4444", "border-radius": "12px" },
+                            "textos": { "display": "flex", "flex-direction": "column", "gap": "5px", "t1": {"texto": "Latencia DOM", "font-size": "0.9rem", "font-weight": "600", "color": "#fff"}, "t2": {"texto": "0ms", "font-size": "0.75rem", "color": "#9ca3af"} }
+                        }
+                    }
+                },
+
+                "cara_trasera": {
+                    "nombre": "Espalda Metálica",
+                    "position": "absolute",
+                    "width": "100%",
+                    "height": "100%",
+                    "background": "linear-gradient(135deg, #1f2937, #111827)",
+                    "border": "1px solid #374151",
+                    "border-radius": "40px",
+                    "transform": "rotateY(180deg) translateZ(15px)",
+                    "display": "flex",
+                    "padding": "30px",
+                    "box-shadow": "inset 0 0 30px rgba(0,0,0,0.5)",
+
+                    "modulo_camara_pro": {
+                        "position": "absolute",
+                        "top": "30px",
+                        "left": "30px",
+                        "width": "120px",
+                        "height": "120px",
+                        "background": "#030712",
+                        "border-radius": "25px",
+                        "border": "2px solid #374151",
+                        "box-shadow": "5px 5px 15px rgba(0,0,0,0.5), inset 2px 2px 5px rgba(255,255,255,0.05)",
+                        "display": "grid",
+                        "grid-template-columns": "1fr 1fr",
+                        "grid-template-rows": "1fr 1fr",
+                        "gap": "10px",
+                        "padding": "15px",
+
+                        "lente1": { "background": "radial-gradient(circle, #1e293b, #000)", "border-radius": "50%", "border": "2px solid #475569" },
+                        "lente2": { "background": "radial-gradient(circle, #1e293b, #000)", "border-radius": "50%", "border": "2px solid #475569" },
+                        "lente3": { "background": "radial-gradient(circle, #1e293b, #000)", "border-radius": "50%", "border": "2px solid #475569" },
+                        "flash": { "background": "#fef08a", "border-radius": "50%", "width": "15px", "height": "15px", "align-self": "center", "justify-self": "center", "box-shadow": "0 0 10px #fef08a" }
+                    },
+                    "logo_manzana_falsa": {
+                        "position": "absolute",
+                        "top": "50%",
+                        "left": "50%",
+                        "transform": "translate(-50%, -50%)",
+                        "texto": "V4",
+                        "font-size": "3rem",
+                        "font-weight": "800",
+                        "color": "#374151",
+                        "text-shadow": "1px 1px 0px rgba(255,255,255,0.1)"
+                    }
+                },
+
+                "borde_izquierdo": {
+                    "position": "absolute",
+                    "width": "30px",
+                    "height": "calc(100% - 80px)",
+                    "top": "40px",
+                    "left": "-15px",
+                    "background": "linear-gradient(to right, #475569, #1e293b)",
+                    "transform": "rotateY(-90deg) translateZ(15px)"
+                },
+                "borde_derecho": {
+                    "position": "absolute",
+                    "width": "30px",
+                    "height": "calc(100% - 80px)",
+                    "top": "40px",
+                    "right": "-15px",
+                    "background": "linear-gradient(to left, #475569, #1e293b)",
+                    "transform": "rotateY(90deg) translateZ(15px)"
+                },
+                "borde_superior": {
+                    "position": "absolute",
+                    "width": "calc(100% - 80px)",
+                    "height": "30px",
+                    "top": "-15px",
+                    "left": "40px",
+                    "background": "#334155",
+                    "transform": "rotateX(90deg) translateZ(15px)"
+                },
+                "borde_inferior": {
+                    "position": "absolute",
+                    "width": "calc(100% - 80px)",
+                    "height": "30px",
+                    "bottom": "-15px",
+                    "left": "40px",
+                    "background": "#1e293b",
+                    "transform": "rotateX(-90deg) translateZ(15px)"
+                }
+            }
         },
 
-        "card_2": {
-            "nombre": "Tarjeta Matemáticas",
-            "min-width": "300px",
-            "height": "100%",
-            "background": "rgba(255, 255, 255, 0.03)",
-            "border": "1px solid rgba(255, 255, 255, 0.1)",
-            "border-radius": "1rem",
-            "padding": "2rem",
-            "display": "flex",
-            "flex-direction": "column",
-            "gap": "1rem",
-            "backdrop-filter": "blur(10px)",
-            "hover-hermanos": { "opacity": "0.3", "transform": "scale(0.95)" },
-            "hover": { "transform": "translateY(-10px)", "border-color": "#60a5fa", "box-shadow": "0 10px 30px rgba(96, 165, 250, 0.1)" },
-            "transition": "all 0.3s ease",
+        "seccion_bento_grid": {
+            "nombre": "Bento Grid Reactiva",
+            "width": "100%",
+            "max-width": "1200px",
+            "padding": "6rem 2rem",
+            "margin": "0 auto",
+            "display": "grid",
+            "grid-template-columns": "repeat(3, 1fr)",
+            "grid-auto-rows": "minmax(250px, auto)",
+            "gap": "1.5rem",
+            "transform-style": "preserve-3d",
+            "perspective": "1000px",
 
-            "icono": { "font-size": "2rem", "texto": "📐" },
-            "titulo": { "font-size": "1.25rem", "font-weight": "600", "texto": "Matemática Pura" },
-            "desc": { "color": "#9ca3af", "line-height": "1.6", "texto": "Efectos espaciales logrados con matrices y CSS 3D transforms nativas." }
+            "bento_1": {
+                "nombre": "Grid Larga Horizontal",
+                "grid-column": "span 2",
+                "background": "rgba(255,255,255,0.02)",
+                "border": "1px solid rgba(255,255,255,0.05)",
+                "border-radius": "24px",
+                "padding": "3rem",
+                "display": "flex",
+                "flex-direction": "column",
+                "justify-content": "flex-end",
+                "position": "relative",
+                "overflow": "hidden",
+                "cursor": "pointer",
+                "transition": "all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1)",
+                "hover-hermanos": {
+                    "filter": "blur(4px)",
+                    "opacity": "0.4",
+                    "transform": "scale(0.95) translateZ(-50px)"
+                },
+                "hover": {
+                    "transform": "translateZ(80px) scale(1.02)",
+                    "background": "rgba(255,255,255,0.05)",
+                    "border-color": "rgba(168, 85, 247, 0.5)",
+                    "box-shadow": "0 30px 60px rgba(0,0,0,0.6), inset 0 0 20px rgba(168,85,247,0.1)"
+                },
+
+                "decoracion_bg": {
+                    "position": "absolute", "top": "-50%", "right": "-10%", "width": "400px", "height": "400px",
+                    "background": "radial-gradient(circle, rgba(168,85,247,0.2) 0%, transparent 70%)", "border-radius": "50%", "z-index": "0"
+                },
+                "t1": { "texto": "Escalabilidad", "font-size": "2rem", "font-weight": "700", "color": "#fff", "z-index": "1", "margin-bottom": "0.5rem" },
+                "t2": { "texto": "Sin límite de nodos. El DOM renderiza texto y cajas infinitamente más rápido que las texturas en WebGL.", "font-size": "1rem", "color": "#9ca3af", "z-index": "1", "max-width": "80%" }
+            },
+
+            "bento_2": {
+                "nombre": "Grid Cuadrada Hover",
+                "background": "rgba(255,255,255,0.02)",
+                "border": "1px solid rgba(255,255,255,0.05)",
+                "border-radius": "24px",
+                "padding": "2rem",
+                "display": "flex",
+                "flex-direction": "column",
+                "justify-content": "space-between",
+                "cursor": "pointer",
+                "transition": "all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1)",
+                "hover-hermanos": { "filter": "blur(4px)", "opacity": "0.4", "transform": "scale(0.95) translateZ(-50px)" },
+                "hover": { "transform": "translateZ(80px) scale(1.02)", "border-color": "#3b82f6", "background": "rgba(59, 130, 246, 0.05)" },
+
+                "icon": { "texto": "🔗", "font-size": "3rem" },
+                "t1": { "texto": "Data Driven", "font-size": "1.5rem", "font-weight": "700", "color": "#fff" }
+            },
+
+            "bento_3": {
+                "nombre": "Grid Cuadrada Hover 2",
+                "background": "rgba(255,255,255,0.02)",
+                "border": "1px solid rgba(255,255,255,0.05)",
+                "border-radius": "24px",
+                "padding": "2rem",
+                "display": "flex",
+                "flex-direction": "column",
+                "justify-content": "space-between",
+                "cursor": "pointer",
+                "transition": "all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1)",
+                "hover-hermanos": { "filter": "blur(4px)", "opacity": "0.4", "transform": "scale(0.95) translateZ(-50px)" },
+                "hover": { "transform": "translateZ(80px) scale(1.02)", "border-color": "#10b981", "background": "rgba(16, 185, 129, 0.05)" },
+
+                "icon": { "texto": "⚡", "font-size": "3rem" },
+                "t1": { "texto": "0 Latencia", "font-size": "1.5rem", "font-weight": "700", "color": "#fff" }
+            },
+
+            "bento_4": {
+                "nombre": "Grid Larga Horizontal Inferior",
+                "grid-column": "span 2",
+                "background": "rgba(255,255,255,0.02)",
+                "border": "1px solid rgba(255,255,255,0.05)",
+                "border-radius": "24px",
+                "padding": "3rem",
+                "display": "flex",
+                "flex-direction": "column",
+                "justify-content": "flex-end",
+                "position": "relative",
+                "overflow": "hidden",
+                "cursor": "pointer",
+                "transition": "all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1)",
+                "hover-hermanos": { "filter": "blur(4px)", "opacity": "0.4", "transform": "scale(0.95) translateZ(-50px)" },
+                "hover": { "transform": "translateZ(80px) scale(1.02)", "border-color": "#f43f5e", "background": "rgba(244, 63, 94, 0.05)" },
+
+                "t1": { "texto": "Arquitectura Purista", "font-size": "2rem", "font-weight": "700", "color": "#fff", "z-index": "1", "margin-bottom": "0.5rem" },
+                "t2": { "texto": "Desarrollo agnóstico. El diseño es dictado por JSON. El renderizado es dictado por JavaScript puro. Sin intermediarios, sin cajas negras.", "font-size": "1rem", "color": "#9ca3af", "z-index": "1", "max-width": "80%" }
+            }
         },
 
-        "card_3": {
-            "nombre": "Tarjeta Data-Driven",
-            "min-width": "300px",
-            "height": "100%",
-            "background": "rgba(255, 255, 255, 0.03)",
-            "border": "1px solid rgba(255, 255, 255, 0.1)",
-            "border-radius": "1rem",
-            "padding": "2rem",
-            "display": "flex",
-            "flex-direction": "column",
-            "gap": "1rem",
-            "backdrop-filter": "blur(10px)",
-            "hover-hermanos": { "opacity": "0.3", "transform": "scale(0.95)" },
-            "hover": { "transform": "translateY(-10px)", "border-color": "#c084fc", "box-shadow": "0 10px 30px rgba(192, 132, 252, 0.1)" },
-            "transition": "all 0.3s ease",
-
-            "icono": { "font-size": "2rem", "texto": "📊" },
-            "titulo": { "font-size": "1.25rem", "font-weight": "600", "texto": "Data-Driven" },
-            "desc": { "color": "#9ca3af", "line-height": "1.6", "texto": "El JSON es la fuente absoluta de la verdad. Toda la UI se renderiza recursivamente." }
-        },
-
-        "card_4": {
-            "nombre": "Tarjeta V4",
-            "min-width": "300px",
-            "height": "100%",
-            "background": "rgba(255, 255, 255, 0.03)",
-            "border": "1px solid rgba(255, 255, 255, 0.1)",
-            "border-radius": "1rem",
-            "padding": "2rem",
-            "display": "flex",
-            "flex-direction": "column",
-            "gap": "1rem",
-            "backdrop-filter": "blur(10px)",
-            "hover-hermanos": { "opacity": "0.3", "transform": "scale(0.95)" },
-            "hover": { "transform": "translateY(-10px)", "border-color": "#f472b6", "box-shadow": "0 10px 30px rgba(244, 114, 182, 0.1)" },
-            "transition": "all 0.3s ease",
-
-            "icono": { "font-size": "2rem", "texto": "🚀" },
-            "titulo": { "font-size": "1.25rem", "font-weight": "600", "texto": "Motor V4" },
-            "desc": { "color": "#9ca3af", "line-height": "1.6", "texto": "La evolución final hacia una arquitectura purista de Vanilla JS." }
+        "footer_nativo": {
+            "nombre": "Footer Sencillo",
+            "width": "100%",
+            "padding": "4rem 2rem",
+            "border-top": "1px solid rgba(255,255,255,0.05)",
+            "text-align": "center",
+            "color": "#6b7280",
+            "font-size": "0.9rem",
+            "margin-top": "4rem",
+            "texto": "Construido con el Motor V4. El poder del DOM absoluto."
         }
     }
 }
