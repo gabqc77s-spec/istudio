@@ -4,16 +4,33 @@
 
 const RESERVED = { nombre: true, hover: true, 'hover-hermanos': true, click: true, scroll: true, texto: true };
 
+let currentContent = null;
+
+function deepMerge(target, source) {
+    for (const key in source) {
+        if (source[key] !== null && typeof source[key] === 'object' && !Array.isArray(source[key])) {
+            if (!target[key] || typeof target[key] !== 'object' || Array.isArray(target[key])) {
+                target[key] = {};
+            }
+            deepMerge(target[key], source[key]);
+        } else {
+            target[key] = source[key];
+        }
+    }
+    return target;
+}
+
 // Core engine initialization
 export async function init() {
     try {
         const res = await fetch('./src/content.json');
         const data = await res.json();
+        currentContent = data;
         const app = document.getElementById('app');
 
         // Clear any loading state and render tree
         app.innerHTML = '';
-        construir(data, app, 0);
+        construir(currentContent, app, 0);
 
         // Check if we are running inside an iframe (Editor Mode)
         const isEditorMode = window.self !== window.top;
@@ -49,9 +66,10 @@ export async function init() {
         // Listen for live updates from editor.html
         window.addEventListener('message', (e) => {
             if (e.data && e.data.type === 'update-content') {
+                currentContent = e.data.content;
                 app.innerHTML = '';
                 // Pass empty string as initial path
-                construir(e.data.content, app, 0, '');
+                construir(currentContent, app, 0, '');
 
                 // Re-apply highlight if a node is selected
                 if (isEditorMode && e.data.selectedPath) {
@@ -63,6 +81,12 @@ export async function init() {
                         }
                     }, 50);
                 }
+            }
+
+            if (e.data && e.data.type === 'inject-partial') {
+                deepMerge(currentContent, e.data.partial);
+                app.innerHTML = '';
+                construir(currentContent, app, 0, '');
             }
         });
 
