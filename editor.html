@@ -431,7 +431,7 @@
     </div>
     <div class="preview">
         <!-- Iframe points to the site dev server or built file -->
-        <iframe id="preview" src="/"></iframe>
+        <iframe id="preview" src="./index.html"></iframe>
     </div>
 
     <script>
@@ -530,7 +530,7 @@
         };
 
         async function loadContent() {
-            var res = await fetch('/src/content.json');
+            var res = await fetch('./src/content.json');
             contentData = await res.json();
             renderTree();
             sendToPreview();

@@ -7,7 +7,7 @@ const RESERVED = { nombre: true, hover: true, 'hover-hermanos': true, click: tru
 // Core engine initialization
 export async function init() {
     try {
-        const res = await fetch('/src/content.json');
+        const res = await fetch('./src/content.json');
         const data = await res.json();
         const app = document.getElementById('app');
 
