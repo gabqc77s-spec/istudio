@@ -742,11 +742,25 @@
             }
             flexGroup.appendChild(buildInputRow('Gap', obj.gap || '', false, (v) => updateValue('gap', v)));
 
+            var positionGroup = document.createElement('div');
+            positionGroup.innerHTML = `
+                <div class="row" style="margin-top: 12px; margin-bottom: 8px;">
+                    <div style="flex:1;">${buildInputRow('Top', obj.top || '', false, (v) => updateValue('top', v)).innerHTML}</div>
+                    <div style="flex:1;">${buildInputRow('Bottom', obj.bottom || '', false, (v) => updateValue('bottom', v)).innerHTML}</div>
+                </div>
+                <div class="row" style="margin-bottom: 8px;">
+                    <div style="flex:1;">${buildInputRow('Left', obj.left || '', false, (v) => updateValue('left', v)).innerHTML}</div>
+                    <div style="flex:1;">${buildInputRow('Right', obj.right || '', false, (v) => updateValue('right', v)).innerHTML}</div>
+                </div>
+            `;
+
             panel.appendChild(buildSection('Diseño (Layout)', [
                 flexGroup,
                 buildInputRow('Width', obj.width || '', false, (v) => updateValue('width', v)),
                 buildInputRow('Height', obj.height || '', false, (v) => updateValue('height', v)),
-                buildInputRow('Position', obj.position || '', false, (v) => updateValue('position', v))
+                buildInputRow('Position', obj.position || '', false, (v) => updateValue('position', v)),
+                positionGroup,
+                buildInputRow('Z-Index', obj['z-index'] || '', false, (v) => updateValue('z-index', v), 'number')
             ]));
 
             // CAJA VISUAL (Box Model)
@@ -815,12 +829,118 @@
             panel.appendChild(buildSection('Transformaciones Espaciales', [transform3D]));
 
             // APARIENCIA (Color, Fondo, Bordes)
+            var bgType = 'solid';
+            if(obj.background && obj.background.includes('gradient')) bgType = 'gradient';
+            if(obj.background && obj.background.includes('url')) bgType = 'image';
+
+            var bgGroup = document.createElement('div');
+            bgGroup.innerHTML = `
+                <div class="row"><div class="label">Tipo de Fondo</div>
+                    <select class="select" id="bgTypeToggle" onchange="updateBackgroundType('${path}')">
+                        <option value="solid" ${bgType==='solid'?'selected':''}>Color Sólido</option>
+                        <option value="gradient" ${bgType==='gradient'?'selected':''}>Degradado</option>
+                        <option value="image" ${bgType==='image'?'selected':''}>Imagen (URL)</option>
+                    </select>
+                </div>
+            `;
+
+            var bgInputRow = buildInputRow('Background (Valor)', obj.background || '', false, (v) => updateValue('background', v));
+            bgGroup.appendChild(bgInputRow);
+
+            // Border visual constructor
+            var borderVal = obj.border || '';
+            var bW = '', bS = 'solid', bC = '#ffffff';
+            if (borderVal && borderVal !== 'none') {
+                var parts = borderVal.split(' ');
+                if(parts.length >= 3) { bW = parts[0]; bS = parts[1]; bC = parts.slice(2).join(' '); }
+                else if(parts.length === 1) { bC = parts[0]; }
+            }
+
+            var borderGroup = document.createElement('div');
+            borderGroup.style.cssText = 'padding: 10px; background: rgba(255,255,255,0.02); border-radius: 8px; margin-bottom: 8px; border: 1px solid #27272a;';
+            borderGroup.innerHTML = `
+                <div class="label" style="margin-bottom:8px;">Borde Personalizado</div>
+                <div style="display:flex; gap:8px; margin-bottom:8px;">
+                    <div style="flex:1"><div class="label">Grosor</div><input class="input" id="b-w" value="${bW}" placeholder="1px" onchange="updateBorder('${path}')"></div>
+                    <div style="flex:1"><div class="label">Estilo</div>
+                        <select class="select" id="b-s" onchange="updateBorder('${path}')">
+                            <option value="solid" ${bS==='solid'?'selected':''}>Solid</option>
+                            <option value="dashed" ${bS==='dashed'?'selected':''}>Dashed</option>
+                            <option value="dotted" ${bS==='dotted'?'selected':''}>Dotted</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="label">Color</div>
+                    <input type="text" class="input" id="b-c" value="${bC}" onchange="updateBorder('${path}')">
+                </div>
+            `;
+
+            // FILTER PARSERS
+            var fBlur = 0, fBright = 100, fSepia = 0;
+            if(obj.filter) {
+                var mb = obj.filter.match(/blur\(([-.\d]+)px\)/); if(mb) fBlur = mb[1];
+                var mbr = obj.filter.match(/brightness\(([-.\d]+)%\)/); if(mbr) fBright = mbr[1];
+                var msp = obj.filter.match(/sepia\(([-.\d]+)%\)/); if(msp) fSepia = msp[1];
+            }
+
+            var bfBlur = 0;
+            if(obj['backdrop-filter']) {
+                var mbf = obj['backdrop-filter'].match(/blur\(([-.\d]+)px\)/); if(mbf) bfBlur = mbf[1];
+            }
+
+            var filterGroup = document.createElement('div');
+            filterGroup.innerHTML = `
+                <div class="label" style="margin-bottom:8px; color:#a855f7;">Efectos de Imagen (Filter)</div>
+                ${buildSliderRow('Blur', fBlur, 0, 50, (v) => updateFilter(path, 'blur', v, 'px'))}
+                ${buildSliderRow('Brght', fBright, 0, 200, (v) => updateFilter(path, 'brightness', v, '%'))}
+                ${buildSliderRow('Sepia', fSepia, 0, 100, (v) => updateFilter(path, 'sepia', v, '%'))}
+
+                <div class="label" style="margin-top:16px; margin-bottom:8px; color:#3b82f6;">Glassmorphism (Backdrop)</div>
+                ${buildSliderRow('B-Blur', bfBlur, 0, 50, (v) => updateBackdrop(path, 'blur', v, 'px'))}
+            `;
+
+            // SHADOW VISUAL BUILDER
+            var sX=0, sY=0, sB=0, sS=0, sC='rgba(0,0,0,0.5)', sInset=false;
+            if (obj['box-shadow'] && obj['box-shadow'] !== 'none') {
+                // Simplified parser for first shadow only (for visual builder)
+                var shadowStr = obj['box-shadow'];
+                if(shadowStr.includes('inset')) sInset = true;
+                var nums = shadowStr.match(/-?[\d.]+px/g);
+                if(nums && nums.length >= 2) {
+                    sX = parseFloat(nums[0]);
+                    sY = parseFloat(nums[1]);
+                    if(nums[2]) sB = parseFloat(nums[2]);
+                    if(nums[3]) sS = parseFloat(nums[3]);
+                }
+                var colMatch = shadowStr.match(/rgba?\([^)]+\)|#[0-9a-fA-F]+/);
+                if(colMatch) sC = colMatch[0];
+            }
+
+            var shadowGroup = document.createElement('div');
+            shadowGroup.id = 'shadow-group';
+            shadowGroup.style.cssText = 'padding: 10px; background: rgba(255,255,255,0.02); border-radius: 8px; margin-bottom: 8px; border: 1px solid #27272a;';
+            shadowGroup.innerHTML = `
+                <div class="label" style="margin-bottom:8px; display:flex; justify-content:space-between;">
+                    <span>Sombra (Box Shadow)</span>
+                    <label style="display:flex; align-items:center; gap:4px;"><input type="checkbox" id="s-in" ${sInset?'checked':''} onchange="updateShadow('${path}')"> Inset</label>
+                </div>
+                ${buildSliderRow('X', sX, -50, 50, () => updateShadow(path), 1)}
+                ${buildSliderRow('Y', sY, -50, 50, () => updateShadow(path), 1)}
+                ${buildSliderRow('Blur', sB, 0, 100, () => updateShadow(path), 1)}
+                ${buildSliderRow('Sprd', sS, -50, 50, () => updateShadow(path), 1)}
+                <div class="row" style="margin-top:8px;">
+                    <div class="label">Color</div>
+                    <input type="text" class="input" id="s-c" value="${sC}" onchange="updateShadow('${path}')">
+                </div>
+            `;
+
             panel.appendChild(buildSection('Apariencia Visual', [
-                buildInputRow('Background', obj.background || '', false, (v) => updateValue('background', v)),
+                bgGroup,
+                borderGroup,
                 buildInputRow('Border Radius', obj['border-radius'] || '', false, (v) => updateValue('border-radius', v)),
-                buildInputRow('Box Shadow', obj['box-shadow'] || '', false, (v) => updateValue('box-shadow', v)),
-                buildInputRow('Filter (CSS)', obj.filter || '', false, (v) => updateValue('filter', v)),
-                buildInputRow('Backdrop Filter', obj['backdrop-filter'] || '', false, (v) => updateValue('backdrop-filter', v)),
+                shadowGroup,
+                filterGroup,
                 buildInputRow('Opacity', obj.opacity || '', false, (v) => updateValue('opacity', v)),
                 buildInputRow('Transition', obj.transition || '', false, (v) => updateValue('transition', v))
             ]));
@@ -977,6 +1097,97 @@
             if(!obj.scroll) obj.scroll = {};
             obj.scroll[prop] = parseFloat(val);
             sendToPreview();
+        }
+
+        window.updateBackgroundType = function(path) {
+            var type = document.getElementById('bgTypeToggle').value;
+            var baseObj = getObjAtPath(path);
+            var obj = getTargetObj(baseObj);
+
+            if (type === 'solid') {
+                obj.background = '#18181b';
+            } else if (type === 'gradient') {
+                obj.background = 'linear-gradient(135deg, #a855f7, #ec4899)';
+            } else if (type === 'image') {
+                obj.background = 'url(https://via.placeholder.com/150) center/cover no-repeat';
+            }
+
+            sendToPreview();
+            renderInspector(baseObj, path); // Re-render inspector to update the text input
+        }
+
+        window.updateBorder = function(path) {
+            var baseObj = getObjAtPath(path);
+            var obj = getTargetObj(baseObj);
+            var w = document.getElementById('b-w').value || '0px';
+            var s = document.getElementById('b-s').value;
+            var c = document.getElementById('b-c').value || '#ffffff';
+            if (w === '0px' || w === '') {
+                delete obj.border;
+            } else {
+                obj.border = `${w} ${s} ${c}`;
+            }
+            sendToPreview();
+        }
+
+        window.updateFilter = function(path, func, val, unit) {
+            var baseObj = getObjAtPath(path);
+            var obj = getTargetObj(baseObj);
+            var str = obj.filter || '';
+            var regex = new RegExp(func + '\\([^\\)]+\\)');
+            var newVal = func + '(' + val + unit + ')';
+            if(str.match(regex)) str = str.replace(regex, newVal);
+            else str = str + ' ' + newVal;
+            obj.filter = str.trim();
+            if (val == 0 && func !== 'brightness' || val == 100 && func === 'brightness') {
+                obj.filter = obj.filter.replace(newVal, '').trim();
+                if(obj.filter === '') delete obj.filter;
+            }
+            sendToPreview();
+        }
+
+        window.updateBackdrop = function(path, func, val, unit) {
+            var baseObj = getObjAtPath(path);
+            var obj = getTargetObj(baseObj);
+            var str = obj['backdrop-filter'] || '';
+            var regex = new RegExp(func + '\\([^\\)]+\\)');
+            var newVal = func + '(' + val + unit + ')';
+            if(str.match(regex)) str = str.replace(regex, newVal);
+            else str = str + ' ' + newVal;
+            obj['backdrop-filter'] = str.trim();
+            if (val == 0) {
+                obj['backdrop-filter'] = obj['backdrop-filter'].replace(newVal, '').trim();
+                if(obj['backdrop-filter'] === '') delete obj['backdrop-filter'];
+            }
+            sendToPreview();
+        }
+
+        window.updateShadow = function(path) {
+            // Need setTimeout to wait for input values to update if called from slider oninput
+            setTimeout(() => {
+                var baseObj = getObjAtPath(path);
+                var obj = getTargetObj(baseObj);
+
+                // Get all active shadow inputs but scoped to the shadow group
+                var shadowPanel = document.getElementById('shadow-group');
+                if(!shadowPanel) return;
+                var inputs = shadowPanel.querySelectorAll('.slider');
+                if(inputs.length < 4) return;
+
+                var x = inputs[0].value;
+                var y = inputs[1].value;
+                var b = inputs[2].value;
+                var s = inputs[3].value;
+                var c = document.getElementById('s-c').value || 'rgba(0,0,0,0.5)';
+                var inset = document.getElementById('s-in').checked ? 'inset ' : '';
+
+                if (x==0 && y==0 && b==0 && s==0) {
+                    delete obj['box-shadow'];
+                } else {
+                    obj['box-shadow'] = `${inset}${x}px ${y}px ${b}px ${s}px ${c}`;
+                }
+                sendToPreview();
+            }, 0);
         }
 
         // Init
