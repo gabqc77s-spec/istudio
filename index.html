@@ -150,16 +150,18 @@
                     const r = button.getBoundingClientRect();
                     updateCallback(panel, r.left, r.top);
 
-                    // Envío automático del content.json al abrir por primera vez
+                    // Envío automático de contexto completo al abrir por primera vez
                     if (buttonId === 'ai-bubble') {
-                        fetch('./src/content.json')
-                            .then(res => res.json())
-                            .then(data => {
-                                const wasSet = setInitialContext(data);
-                                if (wasSet) {
-                                    addMessage("Hola Gabriel, soy tu Arquitecto IA. He analizado tu content.json y estoy listo para ayudarte.", "ai");
-                                }
-                            });
+                        Promise.all([
+                            fetch('./src/content.json').then(r => r.json()),
+                            fetch('./src/showcase.css').then(r => r.text()),
+                            fetch('./src/showcase.js').then(r => r.text())
+                        ]).then(([json, css, js]) => {
+                            const wasSet = setInitialContext(json, css, js);
+                            if (wasSet) {
+                                addMessage("Hola Gabriel, soy tu Arquitecto IA. He analizado tu content.json, CSS y el motor V4. ¿Cómo puedo ayudarte hoy?", "ai");
+                            }
+                        }).catch(err => console.error("Error al cargar contexto de IA:", err));
                     }
                 } else {
                     panel.style.display = 'none';

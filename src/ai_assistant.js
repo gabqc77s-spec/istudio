@@ -23,15 +23,26 @@ function initAI() {
     }
 }
 
-export function setInitialContext(contentJson) {
+export function setInitialContext(contentJson, showcaseCss, showcaseJs) {
     if (!chatHistory.length) {
         chatHistory.push({
             role: 'user',
-            parts: [{ text: "Hola. Aquí tienes el contenido actual de mi aplicación content.json para que lo conozcas: " + JSON.stringify(contentJson) }]
+            parts: [{ text: `Hola. Para que entiendas mi aplicación, aquí tienes los archivos principales:
+
+1. content.json (Datos y Estructura):
+${JSON.stringify(contentJson)}
+
+2. showcase.css (Resets Base):
+${showcaseCss}
+
+3. showcase.js (Lógica del Motor V4):
+${showcaseJs}
+
+Por favor, analiza cómo se renderizan los elementos y cómo se aplican las interacciones para que tus futuras respuestas sean técnicamente precisas.` }]
         });
         chatHistory.push({
             role: 'model',
-            parts: [{ text: "Entendido. He analizado el content.json completo. Estoy listo para ayudarte a realizar cambios estructurales o estéticos. ¿Qué necesitas hacer?" }]
+            parts: [{ text: "Entendido. He analizado el content.json, el CSS base y la lógica del motor V4 en showcase.js. Tengo una comprensión completa de cómo se construyen los elementos, cómo funcionan las rutas (paths) y cómo aplicar inyecciones parciales. Estoy listo para ayudarte. ¿Qué cambio estructural o estético quieres realizar?" }]
         });
         return true;
     }
