@@ -94,8 +94,6 @@ export async function init() {
         window.get_json_v4_por_path = (path) => {
             if (!currentContent || !path) return null;
 
-            // Convertir path de string (ej: "pagina_principal.seccion_hero") a array de llaves
-            // Maneja también arrays si existieran: pagina.lista[0] -> ["pagina", "lista", "0"]
             const keys = path.split('.').flatMap(k => k.split(/[\[\]]/)).filter(Boolean);
 
             let result = currentContent;
@@ -107,6 +105,50 @@ export async function init() {
                 }
             }
             return result;
+        };
+
+        window.get_json_v4_por_path_jerarquico = (path) => {
+            if (!currentContent || !path) return null;
+
+            const keys = path.split('.').flatMap(k => k.split(/[\[\]]/)).filter(Boolean);
+
+            // Función auxiliar para clonar un nodo solo con sus propiedades directas (sin hijos)
+            const cloneNodeProperties = (node) => {
+                const clone = {};
+                for (const key in node) {
+                    const val = node[key];
+                    // Si no es un objeto/array, o es un objeto reservado (hover, click, etc), lo mantenemos
+                    if (typeof val !== 'object' || val === null || RESERVED[key]) {
+                        clone[key] = val;
+                    }
+                }
+                return clone;
+            };
+
+            // Construir la jerarquía de arriba hacia abajo
+            let fullHierarchy = {};
+            let currentTarget = fullHierarchy;
+            let currentDataSource = currentContent;
+
+            for (let i = 0; i < keys.length; i++) {
+                const key = keys[i];
+                const isLast = (i === keys.length - 1);
+
+                if (isLast) {
+                    // En el último nivel, devolvemos el nodo completo con sus hijos
+                    currentTarget[key] = JSON.parse(JSON.stringify(currentDataSource[key]));
+                } else {
+                    // En niveles intermedios, clonamos solo las propiedades del padre y preparamos el hueco para el hijo
+                    const parentProps = cloneNodeProperties(currentDataSource[key]);
+                    currentTarget[key] = parentProps;
+
+                    // Avanzamos en ambas estructuras
+                    currentTarget = currentTarget[key];
+                    currentDataSource = currentDataSource[key];
+                }
+            }
+
+            return fullHierarchy;
         };
 
         // Punto de entrada global compatible con AI Studio Function Calling

@@ -28,14 +28,15 @@ export async function sendMessage(message) {
     }
 
     const config = {
-        /* thinkingConfig: {
+        thinkingConfig: {
             thinkingLevel: 'MINIMAL',
-        }, */
+        },
         systemInstruction: [
             {
                 text: `Eres el arquitecto de Impulsa. Cada vez que el usuario pida una funcionalidad, debes interactuar con él para comprender totalmente su petición con detalle sin asumir lo que necesita. Debes responder con el fragmento de JSON que debe añadirse o modificarse.
 Respeta la estructura lógica y técnica del programa.
 Debes señalar correctamente dónde y cómo se debe implementar.
+
 
 TU UNICA SALIDA DEBE UNA FUCTION CALL VALIDA:
 Ejemplo de un requerimiento:
@@ -73,6 +74,10 @@ El bloque exacto dentro de content.json donde se define el elemento que contiene
         "letter-spacing": "-0.04em",
         "transform": "translateZ(50px)",
         "text-shadow": "0 20px 40px rgba(0,0,0,0.5)"
+    },
+
+    "subtitulo": {
+        // ... otras propiedades
     }
 },
 
@@ -83,12 +88,14 @@ Necesito que "Motor UI Espacial." tenga ahora colores celestes y rosados
 
 Respuesta:
 { "tool_calls": [ { "function": "inyectar_cambios_v4", "args": { "partial": { "pagina_principal": { "seccion_hero": { "contenedor_titulos": { "titulo_principal": { "background-image": "linear-gradient(135deg, #991b1b, #ef4444)" } } } } } } } ] }
+
+La respuesta sigue siendo la misma ya que te muestra el elemento con todas sus propiedades para que puedas buscarla en content.json y entregar una "tool_calls" con la "function": "inyectar_cambios_v4" y el contenido JSON path válido.
 `,
             }
         ],
     };
 
-    const model = 'gemini-2.0-flash'; // Cambiado a flash 2.0 ya que el lite preview puede no estar disponible o ser inestable
+    const model = 'gemini-3.1-flash-lite-preview';
     const contents = [
         {
             role: 'user',
@@ -101,14 +108,15 @@ Respuesta:
     ];
 
     try {
-        const responseStream = await ai.models.generateContentStream({
+        const response = await ai.models.generateContentStream({
             model,
             config,
             contents,
         });
 
         let fullText = "";
-        for await (const chunk of responseStream) {
+        for await (const chunk of response) {
+            console.log(chunk.text);
             fullText += chunk.text;
         }
 

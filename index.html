@@ -202,19 +202,9 @@
                         e.stopPropagation();
 
                         const path = target.dataset.path;
-                        const json = window.get_json_v4_por_path(path);
+                        const json = window.get_json_v4_por_path_jerarquico(path);
 
                         if (json) {
-                            // Construimos un objeto que represente la ruta para inyectar después fácilmente
-                            // O simplemente el fragmento. El usuario pidió "el JSON que utiliza".
-                            // Para ser útil en el inyector, lo envolvemos en su ruta
-                            const keys = path.split('.');
-                            let wrapped = json;
-                            // Opcional: envolver en la ruta completa para reinyección inmediata
-                            // for (let i = keys.length - 1; i >= 0; i--) {
-                            //    wrapped = { [keys[i]]: wrapped };
-                            // }
-
                             injectorData.value = JSON.stringify(json, null, 2);
 
                             // Visual feedback
