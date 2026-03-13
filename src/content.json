@@ -1,821 +1,270 @@
 {
     "pagina_principal": {
-        "nombre": "App Wrapper Principal",
+        "nombre": "Impulsa V4 — Professional Multiverse OS",
         "display": "flex",
         "flex-direction": "column",
-        "align-items": "center",
         "width": "100%",
         "min-height": "100vh",
-        "perspective": "1500px",
+        "perspective": "2500px",
         "transform-style": "preserve-3d",
-        "background": "radial-gradient(circle at 50% 10%, #151025 0%, #030014 100%)",
-        "overflow-x": "hidden",
+        "background": "#030014",
+        "overflow": "hidden",
 
-        "header_nav": {
-            "nombre": "Barra Navegación 3D",
+        "SISTEMA_NAVEGACION": {
+            "nombre": "Global Navigation OS",
             "position": "fixed",
-            "top": "0",
+            "bottom": "40px",
             "width": "100%",
-            "max-width": "1200px",
             "display": "flex",
-            "justify-content": "space-between",
-            "align-items": "center",
-            "padding": "1.5rem 2rem",
-            "z-index": "100",
-            "transform": "translateZ(100px)",
-            "backdrop-filter": "blur(10px)",
-            "border-bottom": "1px solid rgba(255, 255, 255, 0.05)",
+            "justify-content": "center",
+            "z-index": "10000",
 
-            "logo": {
-                "texto": "IMPULSA<span style='color: #a855f7;'>.</span>",
-                "font-size": "1.5rem",
-                "font-weight": "800",
-                "letter-spacing": "2px",
-                "cursor": "pointer",
-                "transition": "transform 0.3s ease, text-shadow 0.3s ease",
-                "hover": {
-                    "transform": "scale(1.1) rotateX(10deg)",
-                    "text-shadow": "0 0 15px rgba(168, 85, 247, 0.8)"
-                }
-            },
-            "menu_links": {
+            "dock": {
                 "display": "flex",
-                "gap": "2rem",
-                "link1": { "texto": "Home", "cursor": "pointer", "font-size": "0.9rem", "font-weight": "500", "color": "#a855f7", "transition": "all 0.3s ease", "hover": { "transform": "translateY(-2px)" } },
-                "link2": { "texto": "Showcase", "cursor": "pointer", "font-size": "0.9rem", "font-weight": "500", "color": "#9ca3af", "transition": "all 0.3s ease", "hover": { "color": "#fff", "transform": "translateY(-2px)" } },
-                "link3": { "texto": "Editor V4", "cursor": "pointer", "font-size": "0.9rem", "font-weight": "500", "color": "#9ca3af", "transition": "all 0.3s ease", "hover": { "color": "#fff", "transform": "translateY(-2px)" } }
+                "gap": "1rem",
+                "padding": "12px 24px",
+                "background": "rgba(10, 10, 20, 0.7)",
+                "backdrop-filter": "blur(20px) saturate(180%)",
+                "border": "1px solid rgba(255, 255, 255, 0.1)",
+                "border-radius": "100px",
+                "box-shadow": "0 20px 50px rgba(0,0,0,0.5), inset 0 0 20px rgba(255,255,255,0.05)",
+                "align-items": "center",
+
+                "nav_1": {
+                    "texto": "🏢 STRATEGY", "cursor": "pointer", "padding": "10px 20px", "border-radius": "20px", "transition": "all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1)", "font-size": "12px", "font-weight": "600", "letter-spacing": "1px",
+                    "hover": { "background": "rgba(255,255,255,0.1)", "transform": "translateY(-5px) scale(1.05)", "box-shadow": "0 10px 20px rgba(0,0,0,0.3)" },
+                    "acciones": { "click": { "tipo": "navegacion", "desde": "pagina_principal.UNIVERSOS", "hacia": "pagina_principal.UNIVERSOS.Web_Corporativa", "efecto": "slide" } }
+                },
+                "nav_2": {
+                    "texto": "🧪 RESEARCH", "cursor": "pointer", "padding": "10px 20px", "border-radius": "20px", "transition": "all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1)", "font-size": "12px", "font-weight": "600", "letter-spacing": "1px",
+                    "hover": { "background": "rgba(255,255,255,0.1)", "transform": "translateY(-5px) scale(1.05)", "box-shadow": "0 10px 20px rgba(0,0,0,0.3)" },
+                    "acciones": { "click": { "tipo": "navegacion", "desde": "pagina_principal.UNIVERSOS", "hacia": "pagina_principal.UNIVERSOS.Web_Laboratorio", "efecto": "slide" } }
+                },
+                "nav_3": {
+                    "texto": "💎 SHOWCASE", "cursor": "pointer", "padding": "10px 20px", "border-radius": "20px", "transition": "all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1)", "font-size": "12px", "font-weight": "600", "letter-spacing": "1px",
+                    "hover": { "background": "rgba(255,255,255,0.1)", "transform": "translateY(-5px) scale(1.05)", "box-shadow": "0 10px 20px rgba(0,0,0,0.3)" },
+                    "acciones": { "click": { "tipo": "navegacion", "desde": "pagina_principal.UNIVERSOS", "hacia": "pagina_principal.UNIVERSOS.Web_Showcase_3D", "efecto": "slide" } }
+                },
+                "nav_4": {
+                    "texto": "💳 FINTECH", "cursor": "pointer", "padding": "10px 20px", "border-radius": "20px", "transition": "all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1)", "font-size": "12px", "font-weight": "600", "letter-spacing": "1px",
+                    "hover": { "background": "rgba(255,255,255,0.1)", "transform": "translateY(-5px) scale(1.05)", "box-shadow": "0 10px 20px rgba(0,0,0,0.3)" },
+                    "acciones": { "click": { "tipo": "navegacion", "desde": "pagina_principal.UNIVERSOS", "hacia": "pagina_principal.UNIVERSOS.Web_App_Mobile", "efecto": "slide" } }
+                }
             }
         },
 
-        "seccion_hero": {
-            "nombre": "Hero Parallax 3D",
-            "position": "relative",
+        "UNIVERSOS": {
+            "nombre": "Contenedor de Realidades",
             "width": "100%",
-            "min-height": "100vh",
-            "display": "flex",
-            "flex-direction": "column",
-            "align-items": "center",
-            "justify-content": "center",
+            "height": "100vh",
+            "position": "relative",
             "transform-style": "preserve-3d",
 
-            "orbe_luminoso": {
-                "position": "absolute",
-                "width": "600px",
-                "height": "600px",
-                "border-radius": "50%",
-                "background": "radial-gradient(circle, rgba(168,85,247,0.15) 0%, rgba(3,0,20,0) 70%)",
-                "transform": "translateZ(-500px)",
-                "z-index": "-1"
-            },
-
-            "contenedor_titulos": {
+            "Web_Corporativa": {
+                "nombre": "NEXUS STRATEGY & DESIGN",
                 "display": "flex",
                 "flex-direction": "column",
-                "align-items": "center",
-                "transform-style": "preserve-3d",
-                "cursor": "pointer",
-                "transition": "transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
-                "hover": {
-                    "transform": "rotateX(5deg) rotateY(-5deg) scale(1.05)"
-                },
+                "width": "100%",
+                "min-height": "100vh",
+                "background": "linear-gradient(to bottom, #030014, #0a0a20)",
+                "transition": "all 1.2s cubic-bezier(0.23, 1, 0.32, 1)",
+                "opacity": "1",
+                "padding": "0",
+                "overflow-y": "auto",
+                "scroll": { "direccion": "vertical" },
 
-                "titulo_fondo": {
-                    "texto": "NATIVE",
-                    "font-size": "12rem",
-                    "font-weight": "900",
-                    "color": "rgba(255, 255, 255, 0.02)",
-                    "position": "absolute",
-                    "top": "-50%",
-                    "transform": "translateZ(-200px)",
-                    "user-select": "none",
-                    "white-space": "nowrap"
-                },
+                "HERO_SECTION": {
+                    "width": "100%", "height": "100vh", "display": "flex", "flex-direction": "column", "align-items": "center", "justify-content": "center",
+                    "transform-style": "preserve-3d", "position": "relative",
 
-                "titulo_principal": {
-                    "texto": "Motor UI <span style='color: #fff;'>Espacial.</span>",
-                    "font-size": "5.5rem",
-                    "font-weight": "800",
-                    "color": "transparent",
-                    "background-image": "linear-gradient(135deg, #a855f7, #ec4899)",
-                    "-webkit-background-clip": "text",
-                    "text-align": "center",
-                    "line-height": "1.1",
-                    "letter-spacing": "-0.04em",
-                    "transform": "translateZ(50px)",
-                    "text-shadow": "0 20px 40px rgba(0,0,0,0.5)"
-                },
-
-                "subtitulo": {
-                    "texto": "Renderizado DOM puro a 60FPS. Cero librerías intermedias.",
-                    "font-size": "1.25rem",
-                    "color": "#9ca3af",
-                    "margin-top": "1.5rem",
-                    "transform": "translateZ(80px)",
-                    "max-width": "600px",
-                    "text-align": "center",
-                    "line-height": "1.6"
-                }
-            },
-
-            "contenedor_botones": {
-                "display": "flex",
-                "gap": "1.5rem",
-                "margin-top": "4rem",
-                "transform": "translateZ(120px)",
-                "transform-style": "preserve-3d",
-
-                "btn_primario": {
-                    "texto": "Explorar Arquitectura",
-                    "padding": "1.2rem 2.5rem",
-                    "background": "linear-gradient(135deg, #9333ea, #db2777)",
-                    "border-radius": "999px",
-                    "color": "#fff",
-                    "font-weight": "600",
-                    "font-size": "1rem",
-                    "cursor": "pointer",
-                    "border": "none",
-                    "box-shadow": "0 10px 30px rgba(219, 39, 119, 0.3)",
-                    "transition": "all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
-                    "hover": {
-                        "transform": "translateZ(30px) scale(1.1)",
-                        "box-shadow": "0 20px 40px rgba(219, 39, 119, 0.6)"
-                    }
-                },
-                "btn_secundario": {
-                    "texto": "Ver Código JSON",
-                    "padding": "1.2rem 2.5rem",
-                    "background": "rgba(255, 255, 255, 0.03)",
-                    "border-radius": "999px",
-                    "color": "#e5e7eb",
-                    "font-weight": "600",
-                    "font-size": "1rem",
-                    "cursor": "pointer",
-                    "border": "1px solid rgba(255,255,255,0.1)",
-                    "transition": "all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
-                    "hover": {
-                        "background": "rgba(255, 255, 255, 0.1)",
-                        "transform": "translateZ(20px) scale(1.05)",
-                        "border-color": "rgba(255,255,255,0.3)"
-                    }
-                }
-            }
-        },
-
-        "seccion_dispositivo_3d": {
-            "nombre": "Showcase Teléfono 3D CSS",
-            "width": "100%",
-            "min-height": "120vh",
-            "display": "flex",
-            "flex-direction": "column",
-            "align-items": "center",
-            "justify-content": "center",
-            "perspective": "2000px",
-            "position": "relative",
-            "padding": "4rem 0",
-
-            "fondo_resplandor": {
-                "position": "absolute",
-                "width": "800px",
-                "height": "800px",
-                "background": "radial-gradient(circle, rgba(59,130,246,0.1) 0%, rgba(3,0,20,0) 60%)",
-                "transform": "translateZ(-800px)",
-                "z-index": "-1"
-            },
-
-            "titulo_showcase": {
-                "texto": "Dispositivo Interactivo Construido en CSS",
-                "font-size": "2.5rem",
-                "font-weight": "700",
-                "margin-bottom": "6rem",
-                "transform": "translateZ(50px)",
-                "color": "#fff",
-                "text-shadow": "0 5px 15px rgba(0,0,0,0.5)"
-            },
-
-            "telefono_contenedor": {
-                "nombre": "El Prisma Teléfono",
-                "position": "relative",
-                "width": "320px",
-                "height": "650px",
-                "transform-style": "preserve-3d",
-                "transform": "rotateX(15deg) rotateY(-25deg)",
-                "transition": "transform 1.5s cubic-bezier(0.2, 0.8, 0.2, 1)",
-                "cursor": "pointer",
-                "hover": {
-                    "transform": "rotateX(0deg) rotateY(0deg) scale(1.15) translateZ(100px)"
-                },
-
-                "cara_frontal_pantalla": {
-                    "nombre": "Pantalla con Scroll Interno",
-                    "position": "absolute",
-                    "width": "100%",
-                    "height": "100%",
-                    "background": "#000",
-                    "border": "8px solid #1a1a2e",
-                    "border-radius": "40px",
-                    "transform": "translateZ(15px)",
-                    "box-shadow": "inset 0 0 0 2px #3b3b58, 0 20px 50px rgba(0,0,0,0.8)",
-                    "overflow": "hidden",
-                    "display": "flex",
-                    "flex-direction": "column",
-
-                    "notch_camara": {
-                        "position": "absolute",
-                        "top": "10px",
-                        "left": "50%",
-                        "transform": "translateX(-50%)",
-                        "width": "100px",
-                        "height": "25px",
-                        "background": "#1a1a2e",
-                        "border-radius": "15px",
-                        "z-index": "10"
+                    "BG_ELEMENTS": {
+                        "position": "absolute", "width": "100%", "height": "100%", "pointer-events": "none", "transform-style": "preserve-3d",
+                        "BLUR_ORB": {
+                            "position": "absolute", "width": "600px", "height": "600px", "background": "radial-gradient(circle, rgba(168, 85, 247, 0.15), transparent 70%)",
+                            "border-radius": "50%", "filter": "blur(60px)", "transform": "translateZ(-500px) translate3d(-30%, -20%, 0)",
+                            "auto-animar": { "tipo": "flotar", "intensidad": 50, "duracion": 5 }
+                        }
                     },
 
-                    "app_interna": {
-                        "nombre": "App UI (Motor Scroll)",
-                        "width": "100%",
-                        "height": "100%",
-                        "padding": "50px 15px 20px 15px",
-                        "background": "linear-gradient(to bottom, #111827, #030712)",
-                        "display": "flex",
-                        "flex-direction": "column",
-                        "gap": "15px",
-                        "scroll": {
-                            "direccion": "vertical",
-                            "fade": 0.1,
-                            "fade-inicio": 0.02,
-                            "fade-min": 0.2
+                    "TITLE_WRAP": {
+                        "transform-style": "preserve-3d", "display": "flex", "flex-direction": "column", "align-items": "center",
+                        "main_title": {
+                            "texto": "NEXUS <span style='background: linear-gradient(90deg, #fff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent;'>STUDIO</span>",
+                            "font-size": "10rem", "font-weight": "900", "letter-spacing": "-8px", "color": "#fff", "line-height": "0.9",
+                            "look-at": { "intensidad": 25 }, "transform": "translateZ(300px)"
                         },
-
-                        "widget_clima": {
-                            "width": "100%",
-                            "height": "140px",
-                            "background": "linear-gradient(135deg, #3b82f6, #2563eb)",
-                            "border-radius": "20px",
-                            "padding": "20px",
-                            "display": "flex",
-                            "flex-direction": "column",
-                            "justify-content": "space-between",
-                            "color": "#fff",
-                            "box-shadow": "0 10px 20px rgba(37, 99, 235, 0.3)",
-                            "grados": { "texto": "24°", "font-size": "2.5rem", "font-weight": "700" },
-                            "ciudad": { "texto": "Santiago, Motor V4", "font-size": "0.9rem", "opacity": "0.9" }
-                        },
-                        "widget_tarjeta_1": {
-                            "width": "100%", "height": "100px", "background": "rgba(255,255,255,0.05)", "border-radius": "20px", "padding": "15px",
-                            "border": "1px solid rgba(255,255,255,0.1)", "display": "flex", "align-items": "center", "gap": "15px",
-                            "icono": { "width": "50px", "height": "50px", "background": "#10b981", "border-radius": "12px" },
-                            "textos": { "display": "flex", "flex-direction": "column", "gap": "5px", "t1": {"texto": "Rendimiento GPU", "font-size": "0.9rem", "font-weight": "600", "color": "#fff"}, "t2": {"texto": "60 FPS Estables", "font-size": "0.75rem", "color": "#9ca3af"} }
-                        },
-                        "widget_tarjeta_2": {
-                            "width": "100%", "height": "100px", "background": "rgba(255,255,255,0.05)", "border-radius": "20px", "padding": "15px",
-                            "border": "1px solid rgba(255,255,255,0.1)", "display": "flex", "align-items": "center", "gap": "15px",
-                            "icono": { "width": "50px", "height": "50px", "background": "#f59e0b", "border-radius": "12px" },
-                            "textos": { "display": "flex", "flex-direction": "column", "gap": "5px", "t1": {"texto": "Peso de Carga", "font-size": "0.9rem", "font-weight": "600", "color": "#fff"}, "t2": {"texto": "15 Kilobytes", "font-size": "0.75rem", "color": "#9ca3af"} }
-                        },
-                        "widget_tarjeta_3": {
-                            "width": "100%", "height": "100px", "background": "rgba(255,255,255,0.05)", "border-radius": "20px", "padding": "15px",
-                            "border": "1px solid rgba(255,255,255,0.1)", "display": "flex", "align-items": "center", "gap": "15px",
-                            "icono": { "width": "50px", "height": "50px", "background": "#8b5cf6", "border-radius": "12px" },
-                            "textos": { "display": "flex", "flex-direction": "column", "gap": "5px", "t1": {"texto": "Arquitectura", "font-size": "0.9rem", "font-weight": "600", "color": "#fff"}, "t2": {"texto": "Puramente Nativa", "font-size": "0.75rem", "color": "#9ca3af"} }
-                        },
-                        "widget_tarjeta_4": {
-                            "width": "100%", "height": "100px", "background": "rgba(255,255,255,0.05)", "border-radius": "20px", "padding": "15px",
-                            "border": "1px solid rgba(255,255,255,0.1)", "display": "flex", "align-items": "center", "gap": "15px",
-                            "icono": { "width": "50px", "height": "50px", "background": "#ef4444", "border-radius": "12px" },
-                            "textos": { "display": "flex", "flex-direction": "column", "gap": "5px", "t1": {"texto": "Latencia DOM", "font-size": "0.9rem", "font-weight": "600", "color": "#fff"}, "t2": {"texto": "0ms", "font-size": "0.75rem", "color": "#9ca3af"} }
+                        "sub_title": {
+                            "texto": "Arquitectura Digital de Siguiente Generación",
+                            "font-size": "1.2rem", "color": "rgba(255,255,255,0.5)", "margin-top": "30px", "letter-spacing": "5px", "text-transform": "uppercase",
+                            "escribir": { "velocidad": 60, "retraso": 800 }, "transform": "translateZ(150px)"
                         }
                     }
                 },
 
-                "cara_trasera": {
-                    "nombre": "Espalda Metálica",
-                    "position": "absolute",
-                    "width": "100%",
-                    "height": "100%",
-                    "background": "linear-gradient(135deg, #1f2937, #111827)",
-                    "border": "1px solid #374151",
-                    "border-radius": "40px",
-                    "transform": "rotateY(180deg) translateZ(15px)",
-                    "display": "flex",
-                    "padding": "30px",
-                    "box-shadow": "inset 0 0 30px rgba(0,0,0,0.5)",
+                "BENTO_GRID": {
+                    "display": "grid", "grid-template-columns": "repeat(12, 1fr)", "grid-auto-rows": "280px", "gap": "24px", "width": "90%", "max-width": "1600px", "margin": "100px auto",
+                    "transform-style": "preserve-3d",
 
-                    "modulo_camara_pro": {
-                        "position": "absolute",
-                        "top": "30px",
-                        "left": "30px",
-                        "width": "120px",
-                        "height": "120px",
-                        "background": "#030712",
-                        "border-radius": "25px",
-                        "border": "2px solid #374151",
-                        "box-shadow": "5px 5px 15px rgba(0,0,0,0.5), inset 2px 2px 5px rgba(255,255,255,0.05)",
-                        "display": "grid",
-                        "grid-template-columns": "1fr 1fr",
-                        "grid-template-rows": "1fr 1fr",
-                        "gap": "10px",
-                        "padding": "15px",
+                    "CARD_STRATEGY": {
+                        "grid-column": "span 8", "grid-row": "span 2", "background": "rgba(255,255,255,0.02)", "border": "1px solid rgba(255,255,255,0.05)", "border-radius": "40px", "padding": "60px",
+                        "display": "flex", "flex-direction": "column", "justify-content": "flex-end", "cursor": "pointer", "transition": "all 0.6s cubic-bezier(0.16, 1, 0.3, 1)", "overflow": "hidden",
+                        "hover-hermanos": { "opacity": "0.3", "filter": "blur(10px)", "transform": "scale(0.95) translateZ(-100px)" },
+                        "hover": { "background": "rgba(255,255,255,0.05)", "border-color": "rgba(168, 85, 247, 0.5)", "transform": "scale(1.02) translateZ(50px)" },
 
-                        "lente1": { "background": "radial-gradient(circle, #1e293b, #000)", "border-radius": "50%", "border": "2px solid #475569" },
-                        "lente2": { "background": "radial-gradient(circle, #1e293b, #000)", "border-radius": "50%", "border": "2px solid #475569" },
-                        "lente3": { "background": "radial-gradient(circle, #1e293b, #000)", "border-radius": "50%", "border": "2px solid #475569" },
-                        "flash": { "background": "#fef08a", "border-radius": "50%", "width": "15px", "height": "15px", "align-self": "center", "justify-self": "center", "box-shadow": "0 0 10px #fef08a" }
+                        "label": { "texto": "01", "font-size": "14px", "color": "#a855f7", "font-weight": "bold", "margin-bottom": "20px" },
+                        "titulo": { "texto": "Visión Inmersiva", "font-size": "3rem", "font-weight": "800", "color": "#fff" },
+                        "desc": { "texto": "Creamos experiencias que trascienden la pantalla plana tradicional.", "font-size": "1.1rem", "color": "rgba(255,255,255,0.4)", "margin-top": "20px", "max-width": "400px" }
                     },
-                    "logo_manzana_falsa": {
-                        "position": "absolute",
-                        "top": "50%",
-                        "left": "50%",
-                        "transform": "translate(-50%, -50%)",
-                        "texto": "V4",
-                        "font-size": "3rem",
-                        "font-weight": "800",
-                        "color": "#374151",
-                        "text-shadow": "1px 1px 0px rgba(255,255,255,0.1)"
-                    }
-                },
 
-                "borde_izquierdo": {
-                    "position": "absolute",
-                    "width": "30px",
-                    "height": "calc(100% - 80px)",
-                    "top": "40px",
-                    "left": "-15px",
-                    "background": "linear-gradient(to right, #475569, #1e293b)",
-                    "transform": "rotateY(-90deg) translateZ(15px)"
-                },
-                "borde_derecho": {
-                    "position": "absolute",
-                    "width": "30px",
-                    "height": "calc(100% - 80px)",
-                    "top": "40px",
-                    "right": "-15px",
-                    "background": "linear-gradient(to left, #475569, #1e293b)",
-                    "transform": "rotateY(90deg) translateZ(15px)"
-                },
-                "borde_superior": {
-                    "position": "absolute",
-                    "width": "calc(100% - 80px)",
-                    "height": "30px",
-                    "top": "-15px",
-                    "left": "40px",
-                    "background": "#334155",
-                    "transform": "rotateX(90deg) translateZ(15px)"
-                },
-                "borde_inferior": {
-                    "position": "absolute",
-                    "width": "calc(100% - 80px)",
-                    "height": "30px",
-                    "bottom": "-15px",
-                    "left": "40px",
-                    "background": "#1e293b",
-                    "transform": "rotateX(-90deg) translateZ(15px)"
-                }
-            }
-        },
+                    "CARD_DESIGN": {
+                        "grid-column": "span 4", "grid-row": "span 2", "background": "linear-gradient(135deg, #a855f7, #6366f1)", "border-radius": "40px", "padding": "40px",
+                        "display": "flex", "flex-direction": "column", "align-items": "center", "justify-content": "center", "cursor": "pointer", "transition": "all 0.6s cubic-bezier(0.16, 1, 0.3, 1)",
+                        "tilt": { "max": 15 }, "hover-hermanos": { "opacity": "0.3", "filter": "blur(10px)", "transform": "scale(0.95)" },
 
-        "seccion_bento_grid": {
-            "nombre": "Bento Grid Reactiva",
-            "width": "100%",
-            "max-width": "1200px",
-            "padding": "6rem 2rem",
-            "margin": "0 auto",
-            "display": "grid",
-            "grid-template-columns": "repeat(3, 1fr)",
-            "grid-auto-rows": "minmax(250px, auto)",
-            "gap": "1.5rem",
-            "transform-style": "preserve-3d",
-            "perspective": "1000px",
-
-            "bento_1": {
-                "nombre": "Grid Larga Horizontal",
-                "grid-column": "span 2",
-                "background": "rgba(255,255,255,0.02)",
-                "border": "1px solid rgba(255,255,255,0.05)",
-                "border-radius": "24px",
-                "padding": "3rem",
-                "display": "flex",
-                "flex-direction": "column",
-                "justify-content": "flex-end",
-                "position": "relative",
-                "overflow": "hidden",
-                "cursor": "pointer",
-                "transition": "all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1)",
-                "hover-hermanos": {
-                    "filter": "blur(4px)",
-                    "opacity": "0.4",
-                    "transform": "scale(0.95) translateZ(-50px)"
-                },
-                "hover": {
-                    "transform": "translateZ(80px) scale(1.02)",
-                    "background": "rgba(255,255,255,0.05)",
-                    "border-color": "rgba(168, 85, 247, 0.5)",
-                    "box-shadow": "0 30px 60px rgba(0,0,0,0.6), inset 0 0 20px rgba(168,85,247,0.1)"
-                },
-
-                "decoracion_bg": {
-                    "position": "absolute", "top": "-50%", "right": "-10%", "width": "400px", "height": "400px",
-                    "background": "radial-gradient(circle, rgba(168,85,247,0.2) 0%, transparent 70%)", "border-radius": "50%", "z-index": "0"
-                },
-                "t1": { "texto": "Escalabilidad", "font-size": "2rem", "font-weight": "700", "color": "#fff", "z-index": "1", "margin-bottom": "0.5rem" },
-                "t2": { "texto": "Sin límite de nodos. El DOM renderiza texto y cajas infinitamente más rápido que las texturas en WebGL.", "font-size": "1rem", "color": "#9ca3af", "z-index": "1", "max-width": "80%" }
-            },
-
-            "bento_2": {
-                "nombre": "Grid Cuadrada Hover",
-                "background": "rgba(255,255,255,0.02)",
-                "border": "1px solid rgba(255,255,255,0.05)",
-                "border-radius": "24px",
-                "padding": "2rem",
-                "display": "flex",
-                "flex-direction": "column",
-                "justify-content": "space-between",
-                "cursor": "pointer",
-                "transition": "all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1)",
-                "hover-hermanos": { "filter": "blur(4px)", "opacity": "0.4", "transform": "scale(0.95) translateZ(-50px)" },
-                "hover": { "transform": "translateZ(80px) scale(1.02)", "border-color": "#3b82f6", "background": "rgba(59, 130, 246, 0.05)" },
-
-                "icon": { "texto": "🔗", "font-size": "3rem" },
-                "t1": { "texto": "Data Driven", "font-size": "1.5rem", "font-weight": "700", "color": "#fff" }
-            },
-
-            "bento_3": {
-                "nombre": "Grid Cuadrada Hover 2",
-                "background": "rgba(255,255,255,0.02)",
-                "border": "1px solid rgba(255,255,255,0.05)",
-                "border-radius": "24px",
-                "padding": "2rem",
-                "display": "flex",
-                "flex-direction": "column",
-                "justify-content": "space-between",
-                "cursor": "pointer",
-                "transition": "all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1)",
-                "hover-hermanos": { "filter": "blur(4px)", "opacity": "0.4", "transform": "scale(0.95) translateZ(-50px)" },
-                "hover": { "transform": "translateZ(80px) scale(1.02)", "border-color": "#10b981", "background": "rgba(16, 185, 129, 0.05)" },
-
-                "icon": { "texto": "⚡", "font-size": "3rem" },
-                "t1": { "texto": "0 Latencia", "font-size": "1.5rem", "font-weight": "700", "color": "#fff" }
-            },
-
-            "bento_4": {
-                "nombre": "Grid Larga Horizontal Inferior",
-                "grid-column": "span 2",
-                "background": "rgba(255,255,255,0.02)",
-                "border": "1px solid rgba(255,255,255,0.05)",
-                "border-radius": "24px",
-                "padding": "3rem",
-                "display": "flex",
-                "flex-direction": "column",
-                "justify-content": "flex-end",
-                "position": "relative",
-                "overflow": "hidden",
-                "cursor": "pointer",
-                "transition": "all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1)",
-                "hover-hermanos": { "filter": "blur(4px)", "opacity": "0.4", "transform": "scale(0.95) translateZ(-50px)" },
-                "hover": { "transform": "translateZ(80px) scale(1.02)", "border-color": "#f43f5e", "background": "rgba(244, 63, 94, 0.05)" },
-
-                "t1": { "texto": "Arquitectura Purista", "font-size": "2rem", "font-weight": "700", "color": "#fff", "z-index": "1", "margin-bottom": "0.5rem" },
-                "t2": { "texto": "Desarrollo agnóstico. El diseño es dictado por JSON. El renderizado es dictado por JavaScript puro. Sin intermediarios, sin cajas negras.", "font-size": "1rem", "color": "#9ca3af", "z-index": "1", "max-width": "80%" }
-            }
-        },
-
-        "seccion_faq": {
-            "nombre": "Acordeón Interactivo FAQ (Native Click)",
-            "width": "100%",
-            "max-width": "800px",
-            "margin": "4rem auto",
-            "padding": "0 2rem",
-            "display": "flex",
-            "flex-direction": "column",
-            "gap": "1rem",
-
-            "faq_1": {
-                "nombre": "Pregunta 1",
-                "background": "rgba(255,255,255,0.02)",
-                "border": "1px solid rgba(255,255,255,0.05)",
-                "border-radius": "16px",
-                "padding": "1.5rem",
-                "cursor": "pointer",
-                "transition": "all 0.3s ease",
-                "click": {
-                    "background": "rgba(168,85,247,0.1)",
-                    "border-color": "rgba(168,85,247,0.3)"
-                },
-                "hover": { "background": "rgba(255,255,255,0.05)" },
-
-                "titulo": {
-                    "texto": "¿Es realmente Vanilla JS?",
-                    "font-size": "1.2rem",
-                    "font-weight": "600",
-                    "color": "#fff",
-                    "display": "flex",
-                    "justify-content": "space-between"
-                },
-                "contenido": {
-                    "texto": "Sí. Absolutamente todo el framework de React y WebGL fue reemplazado por un motor purista V4 de menos de 400 líneas de código, que interpreta recursivamente este mismo JSON para construir la interfaz.",
-                    "color": "#9ca3af",
-                    "line-height": "1.6",
-                    "margin-top": "0",
-                    "max-height": "0",
-                    "opacity": "0",
-                    "overflow": "hidden",
-                    "transition": "all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1)",
-                    "click": {
-                        "max-height": "200px",
-                        "opacity": "1",
-                        "margin-top": "1rem"
+                        "icon": { "texto": "✦", "font-size": "5rem", "color": "#fff" },
+                        "txt": { "texto": "Diseño Espacial", "font-size": "1.5rem", "font-weight": "bold", "margin-top": "20px" }
                     }
                 }
             },
-            "faq_2": {
-                "nombre": "Pregunta 2",
-                "background": "rgba(255,255,255,0.02)",
-                "border": "1px solid rgba(255,255,255,0.05)",
-                "border-radius": "16px",
-                "padding": "1.5rem",
-                "cursor": "pointer",
-                "transition": "all 0.3s ease",
-                "click": { "background": "rgba(236,72,153,0.1)", "border-color": "rgba(236,72,153,0.3)" },
-                "hover": { "background": "rgba(255,255,255,0.05)" },
 
-                "titulo": {
-                    "texto": "¿Cómo funciona el Teléfono 3D?",
-                    "font-size": "1.2rem",
-                    "font-weight": "600",
-                    "color": "#fff",
-                    "display": "flex",
-                    "justify-content": "space-between"
-                },
-                "contenido": {
-                    "texto": "Es un prisma rectangular creado íntegramente con HTML y transformaciones CSS espaciales (translateZ y rotateY). Lo más increíble es que dentro de la 'pantalla' anidamos otro contenedor con la propiedad 'scroll', creando un carrusel vertical funcional dentro de un objeto 3D.",
-                    "color": "#9ca3af",
-                    "line-height": "1.6",
-                    "margin-top": "0",
-                    "max-height": "0",
-                    "opacity": "0",
-                    "overflow": "hidden",
-                    "transition": "all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1)",
-                    "click": { "max-height": "200px", "opacity": "1", "margin-top": "1rem" }
-                }
-            }
-        },
+            "Web_Laboratorio": {
+                "nombre": "COGNITIVE RESEARCH LAB",
+                "display": "none", "flex-direction": "column", "width": "100%", "min-height": "100vh", "background": "#000", "transition": "all 1s", "opacity": "0", "align-items": "center", "justify-content": "center", "overflow": "hidden",
 
-        "galeria_3d": {
-            "nombre": "Galería Transformaciones 3D",
-            "width": "100%",
-            "padding": "4rem 0",
-            "display": "flex",
-            "justify-content": "center",
-            "gap": "2rem",
-            "perspective": "1000px",
-            "transform-style": "preserve-3d",
+                "DATA_CORE_WRAPPER": {
+                    "width": "100%", "height": "100vh", "display": "flex", "align-items": "center", "justify-content": "center", "position": "relative", "transform-style": "preserve-3d",
 
-            "tarjeta_izq": {
-                "width": "250px", "height": "350px", "background": "linear-gradient(135deg, #4f46e5, #ec4899)",
-                "border-radius": "20px", "transform": "rotateY(30deg) translateZ(-100px)", "transition": "transform 0.5s",
-                "box-shadow": "20px 20px 40px rgba(0,0,0,0.5)",
-                "hover": { "transform": "rotateY(0deg) translateZ(50px) scale(1.1)", "z-index": "10" }
-            },
-            "tarjeta_centro": {
-                "width": "250px", "height": "350px", "background": "linear-gradient(135deg, #a855f7, #6366f1)",
-                "border-radius": "20px", "transform": "translateZ(50px)", "transition": "transform 0.5s", "z-index": "5",
-                "box-shadow": "0px 30px 60px rgba(0,0,0,0.6)",
-                "hover": { "transform": "translateZ(100px) scale(1.1)", "z-index": "10" }
-            },
-            "tarjeta_der": {
-                "width": "250px", "height": "350px", "background": "linear-gradient(135deg, #10b981, #3b82f6)",
-                "border-radius": "20px", "transform": "rotateY(-30deg) translateZ(-100px)", "transition": "transform 0.5s",
-                "box-shadow": "-20px 20px 40px rgba(0,0,0,0.5)",
-                "hover": { "transform": "rotateY(0deg) translateZ(50px) scale(1.1)", "z-index": "10" }
-            }
-        },
+                    "CORE_ORB": {
+                        "width": "500px", "height": "500px", "background": "radial-gradient(circle, #0ea5e9 0%, transparent 70%)", "border-radius": "50%", "display": "flex", "align-items": "center", "justify-content": "center",
+                        "magnetico": { "fuerza": 0.8, "radio": 800 }, "position": "relative", "z-index": "2",
+                        "audio": { "url": "https://www.soundjay.com/buttons/sounds/button-20.mp3", "evento": "mouseenter", "volumen": 0.2 },
 
-        "dock_navegacion": {
-            "nombre": "Dock Inferior (Hover Hermanos)",
-            "position": "fixed",
-            "bottom": "2rem",
-            "left": "50%",
-            "transform": "translateX(-50%) translateZ(200px)",
-            "display": "flex",
-            "align-items": "flex-end",
-            "gap": "0.5rem",
-            "padding": "1rem 2rem",
-            "background": "rgba(255, 255, 255, 0.05)",
-            "border": "1px solid rgba(255,255,255,0.1)",
-            "border-radius": "2rem",
-            "backdrop-filter": "blur(20px)",
-            "z-index": "100",
+                        "INNER_CHIP": {
+                            "width": "100px", "height": "100px", "background": "#fff", "box-shadow": "0 0 100px #0ea5e9", "border-radius": "10px", "look-at": { "intensidad": 60 },
+                            "auto-animar": { "tipo": "latir", "intensidad": 20 }
+                        }
+                    },
 
-            "icon_1": {
-                "width": "50px", "height": "50px", "background": "rgba(255,255,255,0.1)", "border-radius": "50%", "cursor": "pointer",
-                "display": "flex", "justify-content": "center", "align-items": "center", "font-size": "1.5rem", "texto": "🏠",
-                "transition": "all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)", "transform-origin": "bottom",
-                "hover-hermanos": { "transform": "scale(1.2)", "margin": "0 10px", "opacity": "0.8" },
-                "hover": { "transform": "scale(1.5) translateY(-10px)", "background": "rgba(168,85,247,0.5)", "box-shadow": "0 10px 20px rgba(168,85,247,0.4)" }
-            },
-            "icon_2": {
-                "width": "50px", "height": "50px", "background": "rgba(255,255,255,0.1)", "border-radius": "50%", "cursor": "pointer",
-                "display": "flex", "justify-content": "center", "align-items": "center", "font-size": "1.5rem", "texto": "📱",
-                "transition": "all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)", "transform-origin": "bottom",
-                "hover-hermanos": { "transform": "scale(1.2)", "margin": "0 10px", "opacity": "0.8" },
-                "hover": { "transform": "scale(1.5) translateY(-10px)", "background": "rgba(236,72,153,0.5)", "box-shadow": "0 10px 20px rgba(236,72,153,0.4)" }
-            },
-            "icon_3": {
-                "width": "50px", "height": "50px", "background": "rgba(255,255,255,0.1)", "border-radius": "50%", "cursor": "pointer",
-                "display": "flex", "justify-content": "center", "align-items": "center", "font-size": "1.5rem", "texto": "⚙️",
-                "transition": "all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)", "transform-origin": "bottom",
-                "hover-hermanos": { "transform": "scale(1.2)", "margin": "0 10px", "opacity": "0.8" },
-                "hover": { "transform": "scale(1.5) translateY(-10px)", "background": "rgba(59,130,246,0.5)", "box-shadow": "0 10px 20px rgba(59,130,246,0.4)" }
-            }
-        },
-
-        "footer_nativo": {
-            "nombre": "Footer Sencillo",
-            "width": "100%",
-            "padding": "4rem 2rem 8rem 2rem",
-            "border-top": "1px solid rgba(255,255,255,0.05)",
-            "text-align": "center",
-            "color": "#6b7280",
-            "font-size": "0.9rem",
-            "margin-top": "4rem",
-            "texto": "Construido con el Editor V4 Pro. Interfaz Espacial y Motor Data-Driven."
-        },
-
-        "DEMO_V4_AVANZADO": {
-            "nombre": "Nido de Páginas y Funciones Avanzadas",
-            "transition": "all 0.8s cubic-bezier(0.4, 0, 0.2, 1)",
-            "width": "100%",
-            "min-height": "100vh",
-            "display": "flex",
-            "flex-direction": "column",
-            "align-items": "center",
-            "justify-content": "center",
-            "background": "#000",
-            "padding": "100px 0",
-            "gap": "50px",
-
-            "orbe_seguidor": {
-                "nombre": "Elemento que sigue al mouse",
-                "width": "150px",
-                "height": "150px",
-                "background": "radial-gradient(circle, #0ea5e9, transparent)",
-                "border-radius": "50%",
-                "filter": "blur(20px)",
-                "opacity": "0.6",
-                "seguir-mouse": { "factor": 0.2, "suavizado": 0.05 }
-            },
-
-            "tarjeta_tilt": {
-                "nombre": "Tarjeta con Tilt 3D",
-                "width": "300px",
-                "height": "400px",
-                "background": "rgba(255,255,255,0.05)",
-                "border": "1px solid rgba(255,255,255,0.1)",
-                "border-radius": "30px",
-                "display": "flex",
-                "align-items": "center",
-                "justify-content": "center",
-                "texto": "Pasa el mouse para inclinar",
-                "tilt": { "max": 25, "perspectiva": 1500 }
-            },
-
-            "nido_paginas_macro": {
-                "nombre": "Contenedor Padre de Navegación",
-                "perspective": "2000px",
-                "width": "80%",
-                "height": "400px",
-                "position": "relative",
-                "border": "2px dashed #333",
-                "border-radius": "20px",
-                "overflow": "hidden",
-
-                "pagina_1": {
-                    "nombre": "Página Virtual 1",
-                    "position": "absolute",
-                    "width": "100%",
-                    "height": "100%",
-                    "background": "#1e1b4b",
-                    "display": "flex",
-                    "flex-direction": "column",
-                    "align-items": "center",
-                    "justify-content": "center",
-                    "transition": "all 0.5s ease",
-                    "opacity": "1",
-                    "z-index": "10",
-                    "titulo": { "texto": "SECCIÓN ALPHA", "font-size": "2rem", "font-weight": "800" },
-                    "btn_ir_beta": {
-                        "texto": "Ir a Sección Beta (Modo Swapper)",
-                        "margin-top": "20px",
-                        "padding": "12px 24px",
-                        "background": "linear-gradient(135deg, #0ea5e9, #2563eb)",
-                        "color": "#fff",
-                        "border-radius": "12px",
-                        "cursor": "pointer",
-                        "acciones": {
-                            "click": {
-                                "tipo": "navegacion",
-                                "desde": "pagina_principal.DEMO_V4_AVANZADO.nido_paginas_macro.pagina_1",
-                                "hacia": "pagina_principal.DEMO_V4_AVANZADO.nido_paginas_macro.pagina_2",
-                                "efecto": "slide"
-                            }
+                    "PARTICLE_SYSTEM": {
+                        "position": "absolute", "width": "100%", "height": "100%", "pointer-events": "none",
+                        "instancias": {
+                            "cantidad": 40,
+                            "plantilla": {
+                                "width": "2px", "height": "2px", "background": "#0ea5e9", "position": "absolute", "top": "50%", "left": "50%", "opacity": "0.5",
+                                "auto-animar": { "tipo": "flotar", "intensidad": 300, "duracion": 10 }
+                            },
+                            "variacion": { "top": 500, "left": 800, "opacity": 0.5 }
                         }
                     }
                 },
 
-                "pagina_2": {
-                    "nombre": "Página Virtual 2",
-                    "position": "absolute",
-                    "width": "100%",
-                    "height": "100%",
-                    "background": "#4c1d95",
-                    "display": "flex",
-                    "flex-direction": "column",
-                    "align-items": "center",
-                    "justify-content": "center",
-                    "transition": "all 0.5s ease",
-                    "opacity": "0",
-                    "transform": "translateX(100%)",
-                    "z-index": "1",
-                    "titulo": { "texto": "SECCIÓN BETA", "font-size": "2rem", "font-weight": "800" },
-                    "btn_ir_alpha": {
-                        "texto": "Volver a Alpha",
-                        "margin-top": "20px",
-                        "padding": "12px 24px",
-                        "background": "#fff",
-                        "color": "#000",
-                        "border-radius": "12px",
-                        "cursor": "pointer",
+                "TERMINAL_FEED": {
+                    "position": "fixed", "top": "40px", "left": "40px", "width": "300px", "font-family": "monospace", "font-size": "12px", "color": "#0ea5e9", "opacity": "0.7",
+                    "line_1": { "texto": "> INITIALIZING NEURAL_SYNC...", "escribir": { "velocidad": 30 } },
+                    "line_2": { "texto": "> CORE TEMPERATURE: OPTIMAL", "margin-top": "10px", "escribir": { "velocidad": 30, "retraso": 1000 } },
+                    "line_3": { "texto": "> DATA STREAMS: ACTIVE", "margin-top": "10px", "escribir": { "velocidad": 30, "retraso": 2000 } }
+                }
+            },
+
+            "Web_Showcase_3D": {
+                "nombre": "AERO X SHOWCASE",
+                "display": "none", "flex-direction": "column", "width": "100%", "min-height": "100vh", "background": "#050505", "transition": "all 1s", "opacity": "0", "align-items": "center", "justify-content": "center",
+
+                "PRODUCT_STAGE": {
+                    "perspective": "3000px", "transform-style": "preserve-3d", "width": "100%", "height": "100vh", "display": "flex", "align-items": "center", "justify-content": "center",
+
+                    "HARDWARE_UNIT": {
+                        "width": "400px", "height": "600px", "position": "relative", "transform-style": "preserve-3d",
+                        "transform": "rotateY(-20deg) rotateX(10deg)", "transition": "transform 1.5s cubic-bezier(0.16, 1, 0.3, 1)",
+                        "hover": { "transform": "rotateY(0deg) rotateX(0deg) translateZ(100px)" },
+
+                        "CHASSIS": {
+                            "position": "absolute", "width": "100%", "height": "100%", "background": "#111", "border": "2px solid #333", "border-radius": "20px", "transform": "translateZ(0px)", "transition": "all 1s cubic-bezier(0.16, 1, 0.3, 1)"
+                        },
+                        "SCREEN_PLATE": {
+                            "position": "absolute", "width": "90%", "height": "90%", "top": "5%", "left": "5%", "background": "rgba(255,255,255,0.02)", "backdrop-filter": "blur(10px)", "border": "1px solid rgba(255,255,255,0.1)", "border-radius": "15px", "transform": "translateZ(50px)", "transition": "all 1s cubic-bezier(0.16, 1, 0.3, 1)", "display": "flex", "align-items": "center", "justify-content": "center",
+                            "texto": "AERO X — PANEL"
+                        },
+                        "CORE_COMPONENTS": {
+                            "position": "absolute", "width": "70%", "height": "50%", "top": "25%", "left": "15%", "background": "linear-gradient(45deg, #111, #222)", "border": "1px solid #444", "transform": "translateZ(-50px)", "transition": "all 1s cubic-bezier(0.16, 1, 0.3, 1)", "display": "flex", "flex-direction": "column", "padding": "20px",
+                            "chip": { "width": "40px", "height": "40px", "background": "#6366f1", "box-shadow": "0 0 20px #6366f1" }
+                        }
+                    }
+                },
+
+                "EXPLODE_CONTROL": {
+                    "position": "fixed", "right": "80px", "display": "flex", "flex-direction": "column", "gap": "20px",
+                    "btn_explode": {
+                        "texto": "VIEW EXPLODED", "padding": "15px 30px", "background": "transparent", "border": "1px solid #fff", "color": "#fff", "cursor": "pointer", "transition": "all 0.3s",
                         "acciones": {
-                            "click": {
-                                "tipo": "navegacion",
-                                "desde": "pagina_principal.DEMO_V4_AVANZADO.nido_paginas_macro.pagina_2",
-                                "hacia": "pagina_principal.DEMO_V4_AVANZADO.nido_paginas_macro.pagina_1",
-                                "efecto": "slide"
-                            }
+                            "click": [
+                                { "target": "pagina_principal.UNIVERSOS.Web_Showcase_3D.PRODUCT_STAGE.HARDWARE_UNIT.SCREEN_PLATE", "estilos": { "transform": "translateZ(250px)", "opacity": "0.5" } },
+                                { "target": "pagina_principal.UNIVERSOS.Web_Showcase_3D.PRODUCT_STAGE.HARDWARE_UNIT.CORE_COMPONENTS", "estilos": { "transform": "translateZ(-150px)", "opacity": "0.8" } }
+                            ]
+                        },
+                        "hover": { "background": "#fff", "color": "#000" },
+                        "audio": { "url": "https://www.soundjay.com/buttons/sounds/button-16.mp3", "volumen": 0.3 }
+                    },
+                    "btn_reset": {
+                        "texto": "ASSEMBLE", "padding": "15px 30px", "background": "transparent", "border": "1px solid rgba(255,255,255,0.3)", "color": "rgba(255,255,255,0.3)", "cursor": "pointer", "transition": "all 0.3s",
+                        "acciones": {
+                            "click": [
+                                { "target": "pagina_principal.UNIVERSOS.Web_Showcase_3D.PRODUCT_STAGE.HARDWARE_UNIT.SCREEN_PLATE", "estilos": { "transform": "translateZ(50px)", "opacity": "1" } },
+                                { "target": "pagina_principal.UNIVERSOS.Web_Showcase_3D.PRODUCT_STAGE.HARDWARE_UNIT.CORE_COMPONENTS", "estilos": { "transform": "translateZ(-50px)", "opacity": "1" } }
+                            ]
                         }
                     }
                 }
-            }
-        },
-
-        "LABORATORIO_TECNOLOGICO": {
-            "nombre": "Área de Pruebas de Mezcla de Funciones",
-            "width": "100%",
-            "min-height": "100vh",
-            "display": "flex",
-            "flex-direction": "column",
-            "align-items": "center",
-            "justify-content": "center",
-            "background": "#050505",
-            "padding": "100px 0",
-            "gap": "100px",
-
-            "titulo_lab": {
-                "texto": "Laboratorio de Mezclas V4",
-                "font-size": "3rem",
-                "font-weight": "900",
-                "color": "#fff",
-                "escribir": { "velocidad": 100, "retraso": 1000 }
             },
 
-            "cubo_combinado": {
-                "nombre": "Elemento con Multiples Efectos",
-                "width": "250px",
-                "height": "250px",
-                "background": "linear-gradient(45deg, #f43f5e, #8b5cf6)",
-                "border-radius": "40px",
-                "display": "flex",
-                "align-items": "center",
-                "justify-content": "center",
-                "color": "#fff",
-                "font-weight": "bold",
-                "texto": "Magnetico + Tilt + Audio",
-                "cursor": "pointer",
+            "Web_App_Mobile": {
+                "nombre": "QUANTUM FINANCE OS",
+                "display": "none", "flex-direction": "column", "width": "100%", "min-height": "100vh", "background": "#0a0a0a", "transition": "all 1s", "opacity": "0", "align-items": "center", "justify-content": "center",
 
-                "magnetico": { "fuerza": 0.4, "radio": 300, "suavizado": 0.1 },
-                "tilt": { "max": 30, "perspectiva": 1000 },
-                "audio": { "url": "https://www.soundjay.com/buttons/sounds/button-37a.mp3", "evento": "mouseenter", "volumen": 0.3 },
-                "auto-animar": { "tipo": "flotar", "duracion": 3, "intensidad": 15 }
-            },
+                "DEVICE_FRAME": {
+                    "width": "380px", "height": "780px", "background": "#000", "border-radius": "50px", "border": "12px solid #1a1a1a", "position": "relative", "overflow": "hidden", "box-shadow": "0 50px 100px rgba(0,0,0,0.8)",
 
-            "banner_paralaje": {
-                "nombre": "Banner con Scroll Parallax",
-                "width": "80%",
-                "height": "300px",
-                "background": "rgba(255,255,255,0.02)",
-                "border": "1px solid #333",
-                "border-radius": "20px",
-                "display": "flex",
-                "align-items": "center",
-                "justify-content": "center",
-                "overflow": "hidden",
+                    "APP_SCREENS": {
+                        "width": "100%", "height": "100%", "position": "relative",
 
-                "texto_paralaje": {
-                    "texto": "FLOTANDO EN EL ESPACIO",
-                    "font-size": "5rem",
-                    "font-weight": "900",
-                    "color": "rgba(255,255,255,0.05)",
-                    "paralaje": { "factor": 0.5, "direccion": "vertical" }
+                        "DASHBOARD": {
+                            "width": "100%", "height": "100%", "background": "#000", "display": "flex", "flex-direction": "column", "padding": "40px 25px", "transition": "all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1)",
+
+                            "header": { "texto": "Good Morning, Gabriel", "font-size": "14px", "color": "rgba(255,255,255,0.4)" },
+                            "balance": { "texto": "$42,500.00", "font-size": "2.5rem", "font-weight": "800", "margin-top": "10px", "color": "#fff" },
+
+                            "CHART_SIM": {
+                                "width": "100%", "height": "180px", "margin-top": "30px", "display": "flex", "align-items": "flex-end", "gap": "10px",
+                                "bar_1": { "width": "20%", "height": "40%", "background": "#3b82f6", "border-radius": "10px", "auto-animar": { "tipo": "latir", "intensidad": 5 } },
+                                "bar_2": { "width": "20%", "height": "70%", "background": "#6366f1", "border-radius": "10px", "auto-animar": { "tipo": "latir", "intensidad": 8, "duracion": 4 } },
+                                "bar_3": { "width": "20%", "height": "55%", "background": "#a855f7", "border-radius": "10px", "auto-animar": { "tipo": "latir", "intensidad": 6, "duracion": 2.5 } }
+                            },
+
+                            "NAV_CARDS": {
+                                "margin-top": "40px", "display": "flex", "flex-direction": "column", "gap": "15px",
+                                "card_tx": {
+                                    "texto": "View Transactions", "padding": "20px", "background": "rgba(255,255,255,0.05)", "border-radius": "20px", "cursor": "pointer",
+                                    "hover": { "background": "rgba(255,255,255,0.1)" },
+                                    "acciones": { "click": { "tipo": "navegacion", "desde": "pagina_principal.UNIVERSOS.Web_App_Mobile.DEVICE_FRAME.APP_SCREENS", "hacia": "pagina_principal.UNIVERSOS.Web_App_Mobile.DEVICE_FRAME.APP_SCREENS.TRANSACTIONS", "efecto": "slide" } }
+                                }
+                            }
+                        },
+
+                        "TRANSACTIONS": {
+                            "width": "100%", "height": "100%", "background": "#050505", "display": "none", "opacity": "0", "transform": "translateX(100%)", "flex-direction": "column", "padding": "40px 25px", "transition": "all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1)",
+
+                            "back": {
+                                "texto": "← Back", "color": "#a855f7", "cursor": "pointer", "margin-bottom": "30px",
+                                "acciones": { "click": { "tipo": "navegacion", "desde": "pagina_principal.UNIVERSOS.Web_App_Mobile.DEVICE_FRAME.APP_SCREENS", "hacia": "pagina_principal.UNIVERSOS.Web_App_Mobile.DEVICE_FRAME.APP_SCREENS.DASHBOARD", "efecto": "slide" } }
+                            },
+                            "title": { "texto": "Recent History", "font-size": "1.5rem", "font-weight": "bold" },
+                            "tx_list": [
+                                { "texto": "Apple Store - $199.00", "padding": "15px 0", "border-bottom": "1px solid #111" },
+                                { "texto": "Starbucks - $5.50", "padding": "15px 0", "border-bottom": "1px solid #111" },
+                                { "texto": "Amazon - $42.10", "padding": "15px 0", "border-bottom": "1px solid #111" }
+                            ]
+                        }
+                    }
                 }
             }
         }

@@ -351,26 +351,51 @@ function initActions(el, config) {
         el.addEventListener(eventType, () => {
             actionsList.forEach(action => {
                 // Soporte para navegación de página completa (Page Swapper)
-                if (action.tipo === 'navegacion' && action.desde && action.hacia) {
-                    const fromEl = document.querySelector(`[data-path="${action.desde}"]`);
+                if (action.tipo === 'navegacion' && action.hacia) {
                     const toEl = document.querySelector(`[data-path="${action.hacia}"]`);
+                    if (!toEl) return;
 
-                    if (fromEl) {
-                        fromEl.style.opacity = '0';
-                        fromEl.style.pointerEvents = 'none';
-                        fromEl.style.transform = action.efecto === 'slide' ? 'translateY(-100%) rotateX(45deg)' : 'scale(0.8) translateZ(-500px)';
-                        setTimeout(() => fromEl.style.display = 'none', 500);
+                    if (action.desde) {
+                        const fromEl = document.querySelector(`[data-path="${action.desde}"]`);
+                        if (fromEl) {
+                            // Si 'desde' es el contenedor padre, ocultamos a todos sus hijos excepto el destino
+                            if (action.hacia.startsWith(action.desde)) {
+                                Array.from(fromEl.children).forEach(child => {
+                                    if (child !== toEl && child.style.display !== 'none') {
+                                        child.style.transition = 'all 1s cubic-bezier(0.16, 1, 0.3, 1)';
+                                        child.style.opacity = '0';
+                                        child.style.filter = 'blur(20px)';
+                                        child.style.pointerEvents = 'none';
+                                        child.style.transform = action.efecto === 'slide' ? 'translateY(-100px) scale(0.8)' : 'scale(0.5) translateZ(-1500px)';
+                                        setTimeout(() => child.style.display = 'none', 1000);
+                                    }
+                                });
+                            } else {
+                                // Swapping 1 a 1 tradicional (Cinematic Exit)
+                                fromEl.style.transition = 'all 1s cubic-bezier(0.16, 1, 0.3, 1)';
+                                fromEl.style.opacity = '0';
+                                fromEl.style.filter = 'blur(20px)';
+                                fromEl.style.pointerEvents = 'none';
+                                fromEl.style.transform = 'scale(0.8) translateZ(-1000px)';
+                                setTimeout(() => fromEl.style.display = 'none', 1000);
+                            }
+                        }
                     }
 
-                    if (toEl) {
-                        toEl.style.display = 'flex';
-                        // Pequeño timeout para permitir que el display:flex se registre antes de la transición
-                        setTimeout(() => {
-                            toEl.style.opacity = '1';
-                            toEl.style.pointerEvents = 'auto';
-                            toEl.style.transform = 'translateY(0) rotateX(0) scale(1) translateZ(0)';
-                        }, 50);
-                    }
+                    toEl.style.display = 'flex';
+
+                    // Cinematic Entrance
+                    toEl.style.filter = 'blur(40px)';
+                    toEl.style.transform = 'scale(1.2) translateZ(1000px)';
+                    toEl.style.opacity = '0';
+
+                    setTimeout(() => {
+                        toEl.style.transition = 'all 1.2s cubic-bezier(0.16, 1, 0.3, 1)';
+                        toEl.style.opacity = '1';
+                        toEl.style.filter = 'blur(0px)';
+                        toEl.style.pointerEvents = 'auto';
+                        toEl.style.transform = 'translateY(0) rotateX(0) scale(1) translateZ(0)';
+                    }, 50);
                     return;
                 }
 
