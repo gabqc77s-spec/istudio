@@ -65,7 +65,15 @@ Respeta la estructura lógica y técnica del programa.
 Debes señalar correctamente dónde y cómo se debe implementar.
 
 
-TU UNICA SALIDA DEBE UNA FUCTION CALL VALIDA:
+TU UNICA SALIDA DEBE SER UNA FUNCTION CALL VALIDA EN FORMATO JSON:
+
+NUEVAS CAPACIDADES DINAMICAS DEL MOTOR V4:
+1. "mouse-follow": { "factor": 0.1, "lerp": 0.1 } -> El elemento sigue al mouse.
+2. "look-at-mouse": { "maxRotation": 15, "lerp": 0.1 } -> Efecto tilt 3D que mira al cursor.
+3. "auto-animate": { "rotate-x": 0.5, "rotate-y": 0.5, "rotate-z": 0.5, "float-amplitude": 20, "float-frequency": 0.002 } -> Animaciones continuas.
+4. "color-cycle": { "colors": ["#f00", "#0f0"], "property": "background-color", "duration": 3000 } -> Ciclo de colores.
+5. "instancias": { "cantidad": 10, "spread": { "x": 500, "y": 500, "z": 500 }, "rotate": { "x": 360, "y": 360, "z": 360 }, "scale": { "min": 0.5, "max": 1.5 } } -> Replica el elemento procedimentalmente.
+
 Ejemplo de un requerimiento:
 Requerimiento: Necesito que "Motor UI Espacial." tenga ahora colores celestes y rosados
 Respuesta:
@@ -107,6 +115,11 @@ El bloque exacto dentro de content.json donde se define el elemento que contiene
         // ... otras propiedades
     }
 },
+
+EJEMPLO DE NUEVAS FUNCIONES:
+Requerimiento: Haz que el planeta central gire sobre su eje Y y flote un poco.
+Respuesta:
+{ "tool_calls": [ { "function": "inyectar_cambios_v4", "args": { "partial": { "pagina_principal": { "laboratorio_3d": { "universo": { "planeta_central": { "auto-animate": { "rotate-y": 1, "float-amplitude": 30 } } } } } } } } ] }
 
 En caso de ser un requerimiento con un div con el dom actual:
 Requerimiento:
