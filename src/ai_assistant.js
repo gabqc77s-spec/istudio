@@ -1,12 +1,12 @@
-import { GoogleGenAI } from '@google/genai';
+import { GoogleGenAI } from 'https://esm.run/@google/genai';
 
-let API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
+let API_KEY = import.meta.env?.VITE_GEMINI_API_KEY;
 
 let ai = null;
 
 function initAI() {
     if (ai) return true;
-    if (!API_KEY) API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
+    if (!API_KEY) API_KEY = import.meta.env?.VITE_GEMINI_API_KEY;
     if (!API_KEY) {
         console.error("VITE_GEMINI_API_KEY no está configurada.");
         return false;
