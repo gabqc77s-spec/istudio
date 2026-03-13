@@ -1,0 +1,1379 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iStudio V4 - Pro Editor</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: #09090b;
+            color: #e4e4e7;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+            font-size: 13px;
+        }
+
+        /* ─── 1. Left Sidebar (Tree) ─── */
+        .sidebar-left {
+            width: 280px;
+            min-width: 280px;
+            background: #18181b;
+            border-right: 1px solid #27272a;
+            display: flex;
+            flex-direction: column;
+            z-index: 10;
+        }
+
+        .panel-header {
+            padding: 12px 16px;
+            border-bottom: 1px solid #27272a;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #18181b;
+            font-weight: 600;
+            color: #f4f4f5;
+        }
+
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+        .header-brand span { color: #a855f7; }
+
+        .tree-panel {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px 8px;
+        }
+
+        .tree-node { margin-left: 12px; border-left: 1px solid rgba(255,255,255,0.05); }
+        .tree-node-root { margin-left: 0; border-left: none; }
+
+        .tree-node-label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 8px;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.1s ease;
+            user-select: none;
+            color: #a1a1aa;
+        }
+        .tree-node-label:hover { background: #27272a; color: #f4f4f5; }
+        .tree-node-label.selected { background: rgba(168, 85, 247, 0.15); color: #c084fc; font-weight: 500; }
+
+        .tree-toggle { width: 14px; text-align: center; font-size: 10px; opacity: 0.6; }
+        .tree-icon { font-family: 'Material Icons Round'; font-size: 14px; opacity: 0.8; }
+        .tree-key { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        /* Actions Bottom */
+        .actions-panel {
+            padding: 12px;
+            border-top: 1px solid #27272a;
+            background: #18181b;
+            display: flex;
+            gap: 8px;
+        }
+        .btn {
+            flex: 1;
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid #27272a;
+            background: #27272a;
+            color: #e4e4e7;
+            font-family: inherit;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .btn:hover { background: #3f3f46; border-color: #3f3f46; color: #fff; }
+        .btn-primary { background: #9333ea; border-color: #a855f7; color: #fff; }
+        .btn-primary:hover { background: #a855f7; }
+        .btn-danger { color: #f87171; background: rgba(248, 113, 113, 0.1); border-color: transparent; }
+        .btn-danger:hover { background: #ef4444; color: #fff; }
+
+        /* ─── 2. Center Preview ─── */
+        .preview-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #09090b;
+        }
+        .toolbar {
+            height: 44px;
+            border-bottom: 1px solid #27272a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #18181b;
+            gap: 16px;
+        }
+        .device-toggle {
+            display: flex;
+            background: #09090b;
+            border-radius: 6px;
+            padding: 2px;
+            border: 1px solid #27272a;
+        }
+        .device-btn {
+            background: transparent; border: none; padding: 4px 12px; color: #71717a; cursor: pointer; border-radius: 4px; font-family: 'Material Icons Round'; font-size: 16px;
+        }
+        .device-btn.active { background: #27272a; color: #f4f4f5; }
+
+        .preview-canvas {
+            flex: 1;
+            padding: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: auto;
+        }
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: 1px solid #27272a;
+            border-radius: 8px;
+            background: #000;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            transition: width 0.3s ease;
+        }
+        iframe.mobile { width: 375px; }
+        iframe.tablet { width: 768px; }
+
+        /* ─── 3. Right Sidebar (Inspector) ─── */
+        .sidebar-right {
+            width: 320px;
+            min-width: 320px;
+            background: #18181b;
+            border-left: 1px solid #27272a;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            z-index: 10;
+        }
+
+        .inspector-empty {
+            padding: 40px 20px;
+            text-align: center;
+            color: #71717a;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+        .inspector-empty i { font-size: 48px; opacity: 0.2; }
+
+        .section {
+            border-bottom: 1px solid #27272a;
+            padding: 16px;
+        }
+        .section-title {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #71717a;
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Forms & Inputs */
+        .row { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+        .col { display: flex; flex-direction: column; gap: 4px; flex: 1; }
+
+        .label { font-size: 11px; color: #a1a1aa; }
+
+        .input, .select, .textarea {
+            width: 100%;
+            background: #09090b;
+            border: 1px solid #27272a;
+            border-radius: 6px;
+            color: #e4e4e7;
+            padding: 6px 8px;
+            font-family: 'Inter', sans-serif;
+            font-size: 12px;
+            transition: border-color 0.15s;
+        }
+        .input:focus, .select:focus, .textarea:focus { outline: none; border-color: #a855f7; }
+        .input-group { position: relative; display: flex; align-items: center; }
+        .input-unit { position: absolute; right: 8px; font-size: 10px; color: #71717a; pointer-events: none; }
+
+        /* Toggles (Flexbox, Alignments) */
+        .toggle-group {
+            display: flex;
+            background: #09090b;
+            border: 1px solid #27272a;
+            border-radius: 6px;
+            padding: 2px;
+            width: 100%;
+        }
+        .toggle-btn {
+            flex: 1;
+            background: transparent;
+            border: none;
+            padding: 6px 0;
+            color: #71717a;
+            cursor: pointer;
+            border-radius: 4px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Material Icons Round';
+            font-size: 16px;
+        }
+        .toggle-btn:hover { color: #e4e4e7; }
+        .toggle-btn.active { background: #27272a; color: #f4f4f5; }
+
+        /* Transform Sliders */
+        .slider-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+        .slider-label { width: 15px; font-weight: 600; color: #71717a; text-align: center; }
+        .slider { flex: 1; -webkit-appearance: none; height: 4px; background: #27272a; border-radius: 2px; }
+        .slider::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; background: #a855f7; border-radius: 50%; cursor: pointer; }
+        .slider-val { width: 50px; background: #09090b; border: 1px solid #27272a; border-radius: 4px; color: #e4e4e7; padding: 4px; font-size: 11px; text-align: right; }
+
+        /* Box Model Visualizer */
+        .box-model {
+            margin-top: 10px;
+            background: #09090b;
+            border: 1px dashed #3f3f46;
+            border-radius: 8px;
+            padding: 10px;
+            position: relative;
+            text-align: center;
+            font-size: 10px;
+            color: #a1a1aa;
+        }
+        .box-inner { background: #18181b; border: 1px solid #3f3f46; border-radius: 4px; padding: 20px; margin: 10px; }
+        .box-input {
+            position: absolute;
+            width: 25px;
+            background: transparent;
+            border: none;
+            color: #e4e4e7;
+            font-size: 10px;
+            text-align: center;
+        }
+        .box-input:focus { outline: none; border-bottom: 1px solid #a855f7; }
+        .m-t { top: 2px; left: 50%; transform: translateX(-50%); }
+        .m-b { bottom: 2px; left: 50%; transform: translateX(-50%); }
+        .m-l { left: 2px; top: 50%; transform: translateY(-50%); }
+        .m-r { right: 2px; top: 50%; transform: translateY(-50%); }
+        .p-t { top: 12px; left: 50%; transform: translateX(-50%); color: #a855f7;}
+        .p-b { bottom: 12px; left: 50%; transform: translateX(-50%); color: #a855f7;}
+        .p-l { left: 12px; top: 50%; transform: translateY(-50%); color: #a855f7;}
+        .p-r { right: 12px; top: 50%; transform: translateY(-50%); color: #a855f7;}
+
+        /* Components Modal */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.8); backdrop-filter: blur(4px);
+            z-index: 1000; display: none; align-items: center; justify-content: center;
+        }
+        .modal {
+            background: #18181b; border: 1px solid #27272a; border-radius: 12px;
+            width: 600px; max-width: 90%; max-height: 80vh; display: flex; flex-direction: column;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+        }
+        .modal-header { padding: 20px; border-bottom: 1px solid #27272a; display: flex; justify-content: space-between; align-items: center; }
+        .modal-title { font-size: 16px; font-weight: 600; }
+        .modal-close { background: none; border: none; color: #a1a1aa; cursor: pointer; font-size: 20px; }
+        .modal-body { padding: 20px; overflow-y: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+        .component-card {
+            background: #09090b; border: 1px solid #27272a; border-radius: 8px; padding: 16px;
+            cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 12px;
+        }
+        .component-card:hover { border-color: #a855f7; transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
+        .comp-icon { width: 40px; height: 40px; border-radius: 8px; background: #18181b; display: flex; align-items: center; justify-content: center; color: #a855f7; font-family: 'Material Icons Round'; font-size: 20px; }
+        .comp-info h4 { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+        .comp-info p { font-size: 11px; color: #71717a; }
+
+        /* Raw Data Editor (Advanced) */
+        .raw-editor {
+            font-family: 'JetBrains Mono', monospace; font-size: 11px; width: 100%; height: 150px;
+            background: #000; color: #a855f7; border: 1px solid #27272a; border-radius: 6px; padding: 10px; resize: vertical;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- LEFT SIDEBAR: TREE -->
+    <div class="sidebar-left">
+        <div class="panel-header">
+            <div class="header-brand">
+                <i class="material-icons-round">layers</i>
+                <span>V4</span> Jerarquía
+            </div>
+            <button class="btn" id="btnSave" style="padding: 4px 8px; font-size: 11px; border-color: #a855f7; color: #a855f7; background: transparent;"><i class="material-icons-round" style="font-size: 12px;">save</i> Guardar</button>
+        </div>
+        <div class="actions-panel" style="border-bottom: 1px solid #27272a; border-top: none; background: #09090b; padding: 8px 12px; gap: 4px;">
+            <button class="btn" style="flex: 0; padding: 4px 8px;" onclick="moveNode(-1)" title="Mover Arriba (↑)"><i class="material-icons-round" style="font-size: 16px;">keyboard_arrow_up</i></button>
+            <button class="btn" style="flex: 0; padding: 4px 8px;" onclick="moveNode(1)" title="Mover Abajo (↓)"><i class="material-icons-round" style="font-size: 16px;">keyboard_arrow_down</i></button>
+            <button class="btn btn-primary" style="flex: 1;" onclick="openComponentsModal()"><i class="material-icons-round" style="font-size: 16px;">add</i> Añadir</button>
+        </div>
+        <div class="tree-panel" id="tree"></div>
+    </div>
+
+    <!-- CENTER: PREVIEW -->
+    <div class="preview-container">
+        <div class="toolbar">
+            <div class="device-toggle">
+                <button class="device-btn active" onclick="setDevice('desktop', this)">desktop_windows</button>
+                <button class="device-btn" onclick="setDevice('tablet', this)">tablet_mac</button>
+                <button class="device-btn" onclick="setDevice('mobile', this)">smartphone</button>
+            </div>
+        </div>
+        <div class="preview-canvas">
+            <iframe id="preview" src="./index.html"></iframe>
+        </div>
+    </div>
+
+    <!-- RIGHT SIDEBAR: INSPECTOR -->
+    <div class="sidebar-right" id="inspector">
+        <div class="inspector-empty">
+            <i class="material-icons-round">touch_app</i>
+            <p>Selecciona un elemento de la jerarquía para editar sus propiedades espaciales.</p>
+        </div>
+    </div>
+
+    <!-- COMPONENTS MODAL -->
+    <div class="modal-overlay" id="compModal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title" style="display:flex; align-items:center; gap:16px;">
+                    Añadir Componente
+                    <select id="insertPosition" class="select" style="width:140px; padding:4px 8px;">
+                        <option value="inside">Como Hijo (Dentro)</option>
+                        <option value="after">Como Hermano (Abajo)</option>
+                    </select>
+                </div>
+                <button class="modal-close" onclick="closeComponentsModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="component-card" onclick="addComponent('Contenedor Flex', { 'display': 'flex', 'flex-direction': 'column', 'gap': '1rem', 'padding': '1rem' })">
+                    <div class="comp-icon">view_list</div>
+                    <div class="comp-info"><h4>Contenedor Flex</h4><p>Caja básica auto-ajustable.</p></div>
+                </div>
+                <div class="component-card" onclick="addComponent('Texto', { 'texto': 'Nuevo Texto', 'font-size': '1rem', 'color': '#ffffff' })">
+                    <div class="comp-icon">title</div>
+                    <div class="comp-info"><h4>Capa de Texto</h4><p>Nodo de texto sin formato.</p></div>
+                </div>
+                <div class="component-card" onclick="addComponent('Botón Interactivo', { 'texto': 'Clic Aquí', 'padding': '10px 20px', 'background': '#a855f7', 'color': '#fff', 'border-radius': '8px', 'cursor': 'pointer', 'transition': 'transform 0.2s', 'hover': {'transform': 'translateY(-2px)'} })">
+                    <div class="comp-icon">smart_button</div>
+                    <div class="comp-info"><h4>Botón Interactivo</h4><p>Con hover espacial preconfigurado.</p></div>
+                </div>
+                <div class="component-card" onclick="addComponent('Tarjeta 3D Parallax', { 'display': 'flex', 'flex-direction': 'column', 'padding': '2rem', 'background': 'rgba(255,255,255,0.05)', 'border': '1px solid rgba(255,255,255,0.1)', 'border-radius': '16px', 'transform-style': 'preserve-3d', 'transition': 'transform 0.5s', 'hover': {'transform': 'rotateX(10deg) rotateY(-10deg) translateZ(50px)'}, 't1': {'texto': 'Título 3D', 'transform': 'translateZ(30px)', 'font-size': '1.5rem', 'font-weight': '700', 'color': '#fff'} })">
+                    <div class="comp-icon">3d_rotation</div>
+                    <div class="comp-info"><h4>Tarjeta 3D Parallax</h4><p>Contenedor que reacciona en Z.</p></div>
+                </div>
+                <div class="component-card" onclick="addComponent('Sección Acordeón (Click)', { 'padding': '1rem', 'background': '#18181b', 'border-radius': '8px', 'cursor': 'pointer', 'click': {'background': '#27272a'}, 'titulo': {'texto': 'Pregunta Frecuente'}, 'contenido': {'texto': 'Respuesta oculta', 'height': '0px', 'overflow': 'hidden', 'transition': 'height 0.3s', 'click': {'height': '50px', 'margin-top': '1rem'}} })">
+                    <div class="comp-icon">unfold_more</div>
+                    <div class="comp-info"><h4>Acordeón (Click state)</h4><p>Interacción lógica sin JS extra.</p></div>
+                </div>
+                <div class="component-card" onclick="addComponent('Cubo Mágico (Caras)', { 'position': 'relative', 'width': '100px', 'height': '100px', 'transform-style': 'preserve-3d', 'transform': 'rotateX(-20deg) rotateY(45deg)', 'cara_frente': {'position': 'absolute', 'width': '100%', 'height': '100%', 'background': 'rgba(168,85,247,0.5)', 'transform': 'translateZ(50px)'}, 'cara_atras': {'position': 'absolute', 'width': '100%', 'height': '100%', 'background': 'rgba(236,72,153,0.5)', 'transform': 'rotateY(180deg) translateZ(50px)'} })">
+                    <div class="comp-icon">view_in_ar</div>
+                    <div class="comp-info"><h4>Cubo Geométrico CSS</h4><p>Base para construir modelos 3D.</p></div>
+                </div>
+                <div class="component-card" onclick="addComponent('Carrusel V4 (Drag)', { 'display': 'flex', 'gap': '1rem', 'padding': '2rem', 'width': '100%', 'height': '250px', 'overflow': 'hidden', 'scroll': { 'direccion': 'horizontal', 'fade': 0.15, 'fade-inicio': 0.05, 'fade-min': 0.3 }, 'tarjeta_1': {'min-width': '200px', 'height': '100%', 'background': '#18181b', 'border-radius': '16px'}, 'tarjeta_2': {'min-width': '200px', 'height': '100%', 'background': '#18181b', 'border-radius': '16px'} })">
+                    <div class="comp-icon">swipe</div>
+                    <div class="comp-info"><h4>Carrusel Horizontal V4</h4><p>Deslizador nativo Data-Driven.</p></div>
+                </div>
+                <div class="component-card" onclick="addComponent('Tarjeta Glassmorphism', { 'padding': '2rem', 'background': 'rgba(255, 255, 255, 0.05)', 'border': '1px solid rgba(255, 255, 255, 0.1)', 'border-radius': '24px', 'backdrop-filter': 'blur(20px)', 'box-shadow': '0 10px 30px rgba(0,0,0,0.5)', 'texto': 'Glassmorphism Card', 'color': '#fff' })">
+                    <div class="comp-icon">filter_b_and_w</div>
+                    <div class="comp-info"><h4>Tarjeta Glassmorphism</h4><p>Translúcida con blur espacial.</p></div>
+                </div>
+                <div class="component-card" onclick="addComponent('Botón Neumórfico', { 'padding': '12px 24px', 'background': '#1e1e24', 'border-radius': '12px', 'color': '#a1a1aa', 'font-weight': '600', 'cursor': 'pointer', 'box-shadow': '5px 5px 10px #111115, -5px -5px 10px #2b2b33', 'transition': 'all 0.2s', 'click': { 'box-shadow': 'inset 5px 5px 10px #111115, inset -5px -5px 10px #2b2b33', 'color': '#a855f7' }, 'texto': 'Press Me' })">
+                    <div class="comp-icon">touch_app</div>
+                    <div class="comp-info"><h4>Botón Neumórfico</h4><p>Efectos 3D de luz y sombra (Click).</p></div>
+                </div>
+                <div class="component-card" onclick="addComponent('Cuadrícula CSS Grid', { 'display': 'grid', 'grid-template-columns': 'repeat(auto-fit, minmax(200px, 1fr))', 'gap': '1rem', 'padding': '1rem', 'width': '100%', 'item_1': {'height': '100px', 'background': '#27272a', 'border-radius': '8px'}, 'item_2': {'height': '100px', 'background': '#27272a', 'border-radius': '8px'}, 'item_3': {'height': '100px', 'background': '#27272a', 'border-radius': '8px'} })">
+                    <div class="comp-icon">grid_view</div>
+                    <div class="comp-info"><h4>Contenedor Grid</h4><p>Columnas auto-ajustables (auto-fit).</p></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ─── STATE & DATA ───
+        var contentData = null;
+        var selectedPath = null;
+        var currentState = 'normal'; // 'normal', 'hover', 'click', 'hover-hermanos'
+        var RESERVED = { nombre: 1, hover: 1, 'hover-hermanos': 1, click: 1, scroll: 1, texto: 1 };
+
+        function saveToLocal() {
+            localStorage.setItem('v4_editor_content', JSON.stringify(contentData));
+        }
+
+        async function init() {
+            var localData = localStorage.getItem('v4_editor_content');
+            if (localData) {
+                try {
+                    contentData = JSON.parse(localData);
+                } catch(e) { console.error("Error parsing local storage"); }
+            }
+
+            if (!contentData) {
+                var res = await fetch('./src/content.json');
+                contentData = await res.json();
+            }
+
+            renderTree();
+            document.getElementById('btnSave').addEventListener('click', saveJSON);
+
+            // Listen for direct selection from iframe
+            window.addEventListener('message', (e) => {
+                if (e.data && e.data.type === 'select-node' && e.data.path) {
+                    selectedPath = e.data.path;
+                    renderTree();
+
+                    var obj = getObjAtPath(selectedPath);
+                    if (obj) {
+                        renderInspector(obj, selectedPath);
+                    }
+
+                    // Optional: scroll tree to selected item
+                    setTimeout(() => {
+                        var selectedEl = document.querySelector('.tree-node-label.selected');
+                        if (selectedEl) {
+                            selectedEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }
+                    }, 50);
+                }
+            });
+        }
+
+        // ─── UI INTERACTIONS ───
+        function setDevice(type, btn) {
+            document.querySelectorAll('.device-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            var iframe = document.getElementById('preview');
+            iframe.className = type === 'desktop' ? '' : type;
+        }
+
+        function openComponentsModal() {
+            if (!selectedPath) {
+                // Si no hay nada seleccionado, insertamos en la raíz
+                selectedPath = '';
+            }
+            document.getElementById('compModal').style.display = 'flex';
+        }
+        function closeComponentsModal() { document.getElementById('compModal').style.display = 'none'; }
+
+        function addComponent(name, template) {
+            var position = document.getElementById('insertPosition').value;
+            var id = name.toLowerCase().replace(/\s+/g, '_') + '_' + Math.floor(Math.random()*1000);
+            template.nombre = name;
+
+            if (position === 'inside' || !selectedPath) {
+                var parent = getObjAtPath(selectedPath) || contentData;
+                parent[id] = template;
+            } else {
+                // Como Hermano (Después)
+                var parts = selectedPath.split('.');
+                var childKey = parts.pop();
+                var parentPath = parts.join('.');
+                var parent = getObjAtPath(parentPath) || contentData;
+
+                var newObj = {};
+                for (var key in parent) {
+                    newObj[key] = parent[key];
+                    if (key === childKey) {
+                        newObj[id] = template; // Insert right after
+                    }
+                }
+
+                // Replace parent properties in order
+                for (var k in parent) delete parent[k];
+                for (var k in newObj) parent[k] = newObj[k];
+            }
+
+            closeComponentsModal();
+            renderTree();
+            if(selectedPath) renderInspector(getObjAtPath(selectedPath), selectedPath);
+            sendToPreview();
+        }
+
+        function moveNode(direction) {
+            if (!selectedPath) return;
+            var parts = selectedPath.split('.');
+            var keyToMove = parts.pop();
+            var parentPath = parts.join('.');
+            var parent = getObjAtPath(parentPath) || contentData;
+
+            var keys = Object.keys(parent);
+            var index = keys.indexOf(keyToMove);
+            if (index < 0) return;
+
+            var newIndex = index + direction;
+            if (newIndex < 0 || newIndex >= keys.length) return; // Out of bounds
+
+            // Swap keys
+            var temp = keys[index];
+            keys[index] = keys[newIndex];
+            keys[newIndex] = temp;
+
+            // Rebuild object in new order
+            var newObj = {};
+            for (var i = 0; i < keys.length; i++) {
+                newObj[keys[i]] = parent[keys[i]];
+            }
+
+            for (var k in parent) delete parent[k];
+            for (var k in newObj) parent[k] = newObj[k];
+
+            renderTree();
+            sendToPreview();
+        }
+
+        // ─── CORE ENGINE ───
+        function getObjAtPath(path) {
+            if (!path) return contentData;
+            var obj = contentData;
+            var parts = path.split('.');
+            for (var i = 0; i < parts.length; i++) { obj = obj[parts[i]]; if (!obj) return null; }
+            return obj;
+        }
+
+        function getTargetObj(baseObj) {
+            if (currentState === 'normal') return baseObj;
+            if (!baseObj[currentState]) baseObj[currentState] = {};
+            return baseObj[currentState];
+        }
+
+        function updateValue(key, val) {
+            var baseObj = getObjAtPath(selectedPath);
+            if(baseObj) {
+                var obj = getTargetObj(baseObj);
+                if(val === '' && key !== 'texto') delete obj[key];
+                else obj[key] = val;
+
+                // Cleanup empty states
+                if (currentState !== 'normal' && Object.keys(obj).length === 0) {
+                    delete baseObj[currentState];
+                }
+
+                sendToPreview();
+            }
+        }
+
+        function sendToPreview() {
+            var iframe = document.getElementById('preview');
+            iframe.contentWindow.postMessage({ type: 'update-content', content: contentData, selectedPath: selectedPath }, '*');
+            saveToLocal(); // Auto-save on every change
+        }
+
+        function saveJSON() {
+            var blob = new Blob([JSON.stringify(contentData, null, 4)], { type: 'application/json' });
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = url; a.download = 'content.json'; a.click(); URL.revokeObjectURL(url);
+        }
+
+        // ─── TREE RENDERER ───
+        function renderTree() {
+            var tree = document.getElementById('tree');
+            tree.innerHTML = '';
+            tree.appendChild(buildTreeNode(contentData, '', true));
+        }
+
+        function getIcon(obj, key) {
+            if(obj.texto) return 'title';
+            if(obj.display === 'flex') return 'view_list';
+            if(obj['transform-style'] === 'preserve-3d') return '3d_rotation';
+            return 'crop_din';
+        }
+
+        function buildTreeNode(obj, path, isRoot) {
+            var container = document.createElement('div');
+            container.className = isRoot ? 'tree-node-root' : 'tree-node';
+
+            var label = document.createElement('div');
+            label.className = 'tree-node-label' + (path === selectedPath ? ' selected' : '');
+
+            var childKeys = Object.keys(obj).filter(k => typeof obj[k] === 'object' && obj[k] !== null && !RESERVED[k] && !Array.isArray(obj[k]));
+
+            var toggle = document.createElement('span');
+            toggle.className = 'tree-toggle';
+            toggle.textContent = childKeys.length > 0 ? '▼' : '';
+            label.appendChild(toggle);
+
+            var icon = document.createElement('i');
+            icon.className = 'material-icons-round tree-icon';
+            icon.textContent = getIcon(obj, path);
+            label.appendChild(icon);
+
+            var keyName = path.split('.').pop() || 'Raíz (content.json)';
+            var textSpan = document.createElement('span');
+            textSpan.className = 'tree-key';
+            textSpan.textContent = obj.nombre ? obj.nombre : keyName;
+            label.appendChild(textSpan);
+
+            label.addEventListener('click', (e) => {
+                e.stopPropagation();
+                selectedPath = path;
+                renderTree();
+                renderInspector(obj, path);
+            });
+
+            container.appendChild(label);
+
+            childKeys.forEach(k => {
+                var childPath = path ? path + '.' + k : k;
+                container.appendChild(buildTreeNode(obj[k], childPath, false));
+            });
+
+            return container;
+        }
+
+        // ─── INSPECTOR RENDERER ───
+        function renderInspector(baseObj, path) {
+            var panel = document.getElementById('inspector');
+            panel.innerHTML = '';
+
+            // HEADER
+            var header = document.createElement('div');
+            header.className = 'panel-header';
+            header.innerHTML = `<span><i class="material-icons-round" style="font-size:14px; vertical-align:middle; margin-right:4px;">tune</i> Propiedades</span>
+                                <button class="btn btn-danger" style="padding: 2px 6px; font-size:10px;" id="btnDelNode">Eliminar</button>`;
+            panel.appendChild(header);
+
+            header.querySelector('#btnDelNode').addEventListener('click', () => {
+                if(!path) return;
+                var parts = path.split('.'); var keyName = parts.pop();
+                var parent = getObjAtPath(parts.join('.'));
+                if(parent) { delete parent[keyName]; selectedPath = null; renderTree(); panel.innerHTML = '<div class="inspector-empty"><i class="material-icons-round">touch_app</i><p>Seleccionado eliminado.</p></div>'; sendToPreview(); }
+            });
+
+            // ESTADOS (Normal, Hover, etc)
+            var stateSelector = document.createElement('div');
+            stateSelector.style.cssText = 'padding: 10px 16px; background: #09090b; border-bottom: 1px solid #27272a;';
+            stateSelector.innerHTML = `
+                <div class="row" style="margin:0;"><div class="label" style="width: 50px;">Estado:</div>
+                    <select class="select" id="stateSelect" style="color: #a855f7; font-weight: 600; border-color: #3f3f46;">
+                        <option value="normal" ${currentState==='normal'?'selected':''}>Normal</option>
+                        <option value="hover" ${currentState==='hover'?'selected':''}>Hover</option>
+                        <option value="click" ${currentState==='click'?'selected':''}>Click (Toggle)</option>
+                        <option value="hover-hermanos" ${currentState==='hover-hermanos'?'selected':''}>Hover Hermanos (Grupo)</option>
+                    </select>
+                </div>
+                ${currentState !== 'normal' ? `
+                    <div style="margin-top:10px; display:flex; gap:6px;">
+                        <button class="btn" style="flex:1; padding:4px; font-size:10px; border-style:dashed;" onclick="applyQuickAction('${path}', 'pop-up')">Efecto: Salto 3D</button>
+                        <button class="btn" style="flex:1; padding:4px; font-size:10px; border-style:dashed;" onclick="applyQuickAction('${path}', 'accordion')">Efecto: Acordeón</button>
+                    </div>
+                    <div style="margin-top:6px; display:flex; gap:6px;">
+                        <button class="btn" style="flex:1; padding:4px; font-size:10px; border-style:dashed; border-color:#06b6d4;" onclick="applyQuickAction('${path}', 'app-fullscreen')">App: Pantalla Completa</button>
+                        <button class="btn" style="flex:1; padding:4px; font-size:10px; border-style:dashed; border-color:#8b5cf6;" onclick="applyQuickAction('${path}', 'app-popout')">App: Pop-out 3D</button>
+                    </div>
+                ` : ''}
+            `;
+            panel.appendChild(stateSelector);
+            stateSelector.querySelector('#stateSelect').addEventListener('change', (e) => {
+                currentState = e.target.value;
+                renderInspector(baseObj, path);
+            });
+
+            // Target Object based on State
+            var obj = getTargetObj(baseObj);
+
+            // Si estamos en un estado, advertir visualmente
+            if (currentState !== 'normal') {
+                var stateWarn = document.createElement('div');
+                stateWarn.style.cssText = 'padding: 8px 16px; background: rgba(168,85,247,0.1); color: #c084fc; font-size: 11px; text-align: center; border-bottom: 1px solid #27272a;';
+                stateWarn.textContent = `Editando propiedades para el estado: ${currentState.toUpperCase()}`;
+                panel.appendChild(stateWarn);
+            }
+
+            // IDENTIDAD (Solo visible en Normal)
+            if (currentState === 'normal') {
+                panel.appendChild(buildSection('Identidad', [
+                    buildInputRow('Clave (JSON)', path.split('.').pop(), true), // readonly
+                    buildInputRow('Nombre Amigable', obj.nombre || '', false, (v) => { baseObj.nombre = v; sendToPreview(); renderTree(); }),
+                    buildTextareaRow('Contenido (HTML)', obj.texto || '', (v) => { baseObj.texto = v; sendToPreview(); })
+                ]));
+            }
+
+            // LAYOUT & FLEXBOX (Botones visuales)
+            var flexGroup = document.createElement('div');
+            flexGroup.innerHTML = `
+                <div class="row"><div class="label">Display</div>
+                    <div class="toggle-group">
+                        <button class="toggle-btn ${obj.display==='block'?'active':''}" onclick="updateValue('display','block'); renderInspector(getObjAtPath('${path}'),'${path}')" title="Block">B</button>
+                        <button class="toggle-btn ${obj.display==='flex'?'active':''}" onclick="updateValue('display','flex'); renderInspector(getObjAtPath('${path}'),'${path}')" title="Flex">view_week</button>
+                        <button class="toggle-btn ${obj.display==='none'?'active':''}" onclick="updateValue('display','none'); renderInspector(getObjAtPath('${path}'),'${path}')" title="None">visibility_off</button>
+                    </div>
+                </div>
+            `;
+            if(obj.display === 'flex') {
+                flexGroup.innerHTML += `
+                    <div class="row"><div class="label">Direction</div>
+                        <div class="toggle-group">
+                            <button class="toggle-btn ${obj['flex-direction']==='row'?'active':''}" onclick="updateValue('flex-direction','row'); renderInspector(getObjAtPath('${path}'),'${path}')">arrow_forward</button>
+                            <button class="toggle-btn ${obj['flex-direction']==='column'?'active':''}" onclick="updateValue('flex-direction','column'); renderInspector(getObjAtPath('${path}'),'${path}')">arrow_downward</button>
+                        </div>
+                    </div>
+                    <div class="row"><div class="label">Justify</div>
+                        <div class="toggle-group">
+                            <button class="toggle-btn ${obj['justify-content']==='flex-start'?'active':''}" onclick="updateValue('justify-content','flex-start'); renderInspector(getObjAtPath('${path}'),'${path}')">format_align_left</button>
+                            <button class="toggle-btn ${obj['justify-content']==='center'?'active':''}" onclick="updateValue('justify-content','center'); renderInspector(getObjAtPath('${path}'),'${path}')">format_align_center</button>
+                            <button class="toggle-btn ${obj['justify-content']==='space-between'?'active':''}" onclick="updateValue('justify-content','space-between'); renderInspector(getObjAtPath('${path}'),'${path}')">format_align_justify</button>
+                        </div>
+                    </div>
+                    <div class="row"><div class="label">Align</div>
+                        <div class="toggle-group">
+                            <button class="toggle-btn ${obj['align-items']==='flex-start'?'active':''}" onclick="updateValue('align-items','flex-start'); renderInspector(getObjAtPath('${path}'),'${path}')">vertical_align_top</button>
+                            <button class="toggle-btn ${obj['align-items']==='center'?'active':''}" onclick="updateValue('align-items','center'); renderInspector(getObjAtPath('${path}'),'${path}')">vertical_align_center</button>
+                            <button class="toggle-btn ${obj['align-items']==='stretch'?'active':''}" onclick="updateValue('align-items','stretch'); renderInspector(getObjAtPath('${path}'),'${path}')">format_line_spacing</button>
+                        </div>
+                    </div>
+                `;
+            }
+            flexGroup.appendChild(buildInputRow('Gap', obj.gap || '', false, (v) => updateValue('gap', v)));
+
+            var positionGroup = document.createElement('div');
+            positionGroup.innerHTML = `
+                <div class="row" style="margin-top: 12px; margin-bottom: 8px;">
+                    <div style="flex:1;">${buildInputRow('Top', obj.top || '', false, (v) => updateValue('top', v)).innerHTML}</div>
+                    <div style="flex:1;">${buildInputRow('Bottom', obj.bottom || '', false, (v) => updateValue('bottom', v)).innerHTML}</div>
+                </div>
+                <div class="row" style="margin-bottom: 8px;">
+                    <div style="flex:1;">${buildInputRow('Left', obj.left || '', false, (v) => updateValue('left', v)).innerHTML}</div>
+                    <div style="flex:1;">${buildInputRow('Right', obj.right || '', false, (v) => updateValue('right', v)).innerHTML}</div>
+                </div>
+            `;
+
+            var extraLayoutGroup = document.createElement('div');
+            extraLayoutGroup.innerHTML = `
+                <div class="row" style="margin-top: 12px;"><div class="label">Overflow</div>
+                    <div class="toggle-group">
+                        <button class="toggle-btn ${obj.overflow==='visible'?'active':''}" onclick="updateValue('overflow','visible'); renderInspector(getObjAtPath('${path}'),'${path}')" title="Visible">visibility</button>
+                        <button class="toggle-btn ${obj.overflow==='hidden'?'active':''}" onclick="updateValue('overflow','hidden'); renderInspector(getObjAtPath('${path}'),'${path}')" title="Hidden">visibility_off</button>
+                        <button class="toggle-btn ${obj.overflow==='scroll'?'active':''}" onclick="updateValue('overflow','scroll'); renderInspector(getObjAtPath('${path}'),'${path}')" title="Scroll">swap_vert</button>
+                    </div>
+                </div>
+                <div class="row" style="margin-top: 8px;"><div class="label">Cursor</div>
+                    <select class="select" onchange="updateValue('cursor', this.value); renderInspector(getObjAtPath('${path}'),'${path}')">
+                        <option value="">Default (Auto)</option>
+                        <option value="pointer" ${obj.cursor==='pointer'?'selected':''}>Pointer (Mano)</option>
+                        <option value="default" ${obj.cursor==='default'?'selected':''}>Flecha (Default)</option>
+                        <option value="text" ${obj.cursor==='text'?'selected':''}>Texto (I-Beam)</option>
+                        <option value="not-allowed" ${obj.cursor==='not-allowed'?'selected':''}>Not Allowed</option>
+                    </select>
+                </div>
+            `;
+
+            panel.appendChild(buildSection('Diseño (Layout)', [
+                flexGroup,
+                buildInputRow('Width', obj.width || '', false, (v) => updateValue('width', v)),
+                buildInputRow('Height', obj.height || '', false, (v) => updateValue('height', v)),
+                buildInputRow('Position', obj.position || '', false, (v) => updateValue('position', v)),
+                positionGroup,
+                buildInputRow('Z-Index', obj['z-index'] || '', false, (v) => updateValue('z-index', v), 'number'),
+                extraLayoutGroup
+            ]));
+
+            // CAJA VISUAL (Box Model)
+            var boxModel = document.createElement('div');
+            boxModel.innerHTML = `
+                <div class="label" style="margin-bottom:8px;">Espaciado (Margin / Padding)</div>
+                <div class="box-model">MARGIN
+                    <input class="box-input m-t" value="${getVal(obj.margin, 0)}" onchange="updateBoxModel('${path}', 'margin', 0, this.value)">
+                    <input class="box-input m-b" value="${getVal(obj.margin, 2)}" onchange="updateBoxModel('${path}', 'margin', 2, this.value)">
+                    <input class="box-input m-l" value="${getVal(obj.margin, 3)}" onchange="updateBoxModel('${path}', 'margin', 3, this.value)">
+                    <input class="box-input m-r" value="${getVal(obj.margin, 1)}" onchange="updateBoxModel('${path}', 'margin', 1, this.value)">
+                    <div class="box-inner">PADDING
+                        <input class="box-input p-t" value="${getVal(obj.padding, 0)}" onchange="updateBoxModel('${path}', 'padding', 0, this.value)">
+                        <input class="box-input p-b" value="${getVal(obj.padding, 2)}" onchange="updateBoxModel('${path}', 'padding', 2, this.value)">
+                        <input class="box-input p-l" value="${getVal(obj.padding, 3)}" onchange="updateBoxModel('${path}', 'padding', 3, this.value)">
+                        <input class="box-input p-r" value="${getVal(obj.padding, 1)}" onchange="updateBoxModel('${path}', 'padding', 1, this.value)">
+                    </div>
+                </div>
+            `;
+            panel.appendChild(buildSection('Box Model', [boxModel]));
+
+            // TYPOGRAPHY
+            var typoGroup = document.createElement('div');
+            typoGroup.innerHTML = `
+                <div class="row"><div class="label">Text Align</div>
+                    <div class="toggle-group">
+                        <button class="toggle-btn ${obj['text-align']==='left'?'active':''}" onclick="updateValue('text-align','left'); renderInspector(getObjAtPath('${path}'),'${path}')">format_align_left</button>
+                        <button class="toggle-btn ${obj['text-align']==='center'?'active':''}" onclick="updateValue('text-align','center'); renderInspector(getObjAtPath('${path}'),'${path}')">format_align_center</button>
+                        <button class="toggle-btn ${obj['text-align']==='right'?'active':''}" onclick="updateValue('text-align','right'); renderInspector(getObjAtPath('${path}'),'${path}')">format_align_right</button>
+                    </div>
+                </div>
+                <div class="row" style="margin-top: 8px;"><div class="label">Transform</div>
+                    <div class="toggle-group">
+                        <button class="toggle-btn ${obj['text-transform']==='uppercase'?'active':''}" onclick="updateValue('text-transform','uppercase'); renderInspector(getObjAtPath('${path}'),'${path}')" style="font-size:11px; font-weight:700;">UP</button>
+                        <button class="toggle-btn ${obj['text-transform']==='lowercase'?'active':''}" onclick="updateValue('text-transform','lowercase'); renderInspector(getObjAtPath('${path}'),'${path}')" style="font-size:11px;">low</button>
+                        <button class="toggle-btn ${obj['text-transform']==='capitalize'?'active':''}" onclick="updateValue('text-transform','capitalize'); renderInspector(getObjAtPath('${path}'),'${path}')" style="font-size:11px;">Cap</button>
+                        <button class="toggle-btn ${obj['font-style']==='italic'?'active':''}" onclick="updateValue('font-style', obj['font-style']==='italic'?'':'italic'); renderInspector(getObjAtPath('${path}'),'${path}')" style="font-style:italic; font-family:serif;">I</button>
+                    </div>
+                </div>
+            `;
+
+            // Extraer letter-spacing numerico para el slider
+            var lSpacing = 0;
+            if(obj['letter-spacing']) {
+                var m = obj['letter-spacing'].match(/([-.\d]+)(px|em|rem)/);
+                if(m) lSpacing = parseFloat(m[1]);
+            }
+
+            panel.appendChild(buildSection('Tipografía', [
+                buildInputRow('Font Size', obj['font-size'] || '', false, (v) => updateValue('font-size', v)),
+                buildInputRow('Font Weight', obj['font-weight'] || '', false, (v) => updateValue('font-weight', v)),
+                buildInputRow('Line Height', obj['line-height'] || '', false, (v) => updateValue('line-height', v)),
+                buildInputRow('Color', obj.color || '', false, (v) => updateValue('color', v), 'color'),
+                typoGroup,
+                document.createRange ? (function(){
+                    var d = document.createElement('div');
+                    d.innerHTML = `<div style="margin-top:12px;">${buildSliderRow('Spcg', lSpacing, -10, 50, (v) => updateValue('letter-spacing', v+'px'), 0.5)}</div>`;
+                    return d;
+                })() : null
+            ]));
+
+            // TRANSFORM 3D (Sliders)
+            var tValues = parseTransform(obj.transform || '');
+
+            // Transform Origin parser (default 50% 50%)
+            var oX = 50, oY = 50;
+            if(obj['transform-origin']) {
+                var oMatch = obj['transform-origin'].match(/([-.\d]+)%\s+([-.\d]+)%/);
+                if(oMatch) { oX = parseFloat(oMatch[1]); oY = parseFloat(oMatch[2]); }
+                else {
+                    var sMatch = obj['transform-origin'].match(/([-.\d]+)%/);
+                    if(sMatch) { oX = parseFloat(sMatch[1]); oY = 50; }
+                }
+            }
+
+            var transform3D = document.createElement('div');
+            transform3D.innerHTML = `
+                <div class="row"><div class="label">3D Engine</div>
+                    <div class="toggle-group">
+                        <button class="toggle-btn ${obj['transform-style']==='preserve-3d'?'active':''}" onclick="updateValue('transform-style','preserve-3d'); renderInspector(getObjAtPath('${path}'),'${path}')" style="font-size:11px; font-family:inherit;">Preserve-3D</button>
+                        <button class="toggle-btn ${obj['transform-style']==='flat'?'active':''}" onclick="updateValue('transform-style','flat'); renderInspector(getObjAtPath('${path}'),'${path}')" style="font-size:11px; font-family:inherit;">Flat</button>
+                    </div>
+                </div>
+                ${buildInputRow('Perspective (Cámara)', obj.perspective || '', false, (v) => updateValue('perspective', v)).outerHTML}
+
+                <div style="margin-top:16px;" class="label">Punto de Anclaje (Origin %)</div>
+                ${buildSliderRow('Ox', oX, 0, 100, (v) => updateOrigin(path, 'x', v), 1)}
+                ${buildSliderRow('Oy', oY, 0, 100, (v) => updateOrigin(path, 'y', v), 1)}
+
+                <div style="margin-top:16px;" class="label">Rotación (grados)</div>
+                ${buildSliderRow('X', tValues.rx, -360, 360, (v) => updateTransform(path, 'rotateX', v, 'deg'))}
+                ${buildSliderRow('Y', tValues.ry, -360, 360, (v) => updateTransform(path, 'rotateY', v, 'deg'))}
+                ${buildSliderRow('Z', tValues.rz, -360, 360, (v) => updateTransform(path, 'rotateZ', v, 'deg'))}
+
+                <div style="margin-top:16px;" class="label">Traslación (Z=Profundidad)</div>
+                ${buildSliderRow('X', tValues.tx, -1000, 1000, (v) => updateTransform(path, 'translateX', v, 'px'))}
+                ${buildSliderRow('Y', tValues.ty, -1000, 1000, (v) => updateTransform(path, 'translateY', v, 'px'))}
+                ${buildSliderRow('Z', tValues.tz, -1500, 1500, (v) => updateTransform(path, 'translateZ', v, 'px'))}
+
+                <div style="margin-top:16px;" class="label">Escala</div>
+                ${buildSliderRow('S', tValues.s, 0, 3, (v) => updateTransform(path, 'scale', v, ''), 0.1)}
+            `;
+            panel.appendChild(buildSection('Transformaciones Espaciales', [transform3D]));
+
+            // APARIENCIA (Color, Fondo, Bordes)
+            var bgType = 'solid';
+            if(obj.background && obj.background.includes('gradient')) bgType = 'gradient';
+            if(obj.background && obj.background.includes('url')) bgType = 'image';
+
+            var bgGroup = document.createElement('div');
+            bgGroup.innerHTML = `
+                <div class="row"><div class="label">Tipo de Fondo</div>
+                    <select class="select" id="bgTypeToggle" onchange="updateBackgroundType('${path}')">
+                        <option value="solid" ${bgType==='solid'?'selected':''}>Color Sólido</option>
+                        <option value="gradient" ${bgType==='gradient'?'selected':''}>Degradado</option>
+                        <option value="image" ${bgType==='image'?'selected':''}>Imagen (URL)</option>
+                    </select>
+                </div>
+            `;
+
+            var bgInputRow = buildInputRow('Background (Valor)', obj.background || '', false, (v) => updateValue('background', v));
+            bgGroup.appendChild(bgInputRow);
+
+            // Border visual constructor
+            var borderVal = obj.border || '';
+            var bW = '', bS = 'solid', bC = '#ffffff';
+            if (borderVal && borderVal !== 'none') {
+                var parts = borderVal.split(' ');
+                if(parts.length >= 3) { bW = parts[0]; bS = parts[1]; bC = parts.slice(2).join(' '); }
+                else if(parts.length === 1) { bC = parts[0]; }
+            }
+
+            var borderGroup = document.createElement('div');
+            borderGroup.style.cssText = 'padding: 10px; background: rgba(255,255,255,0.02); border-radius: 8px; margin-bottom: 8px; border: 1px solid #27272a;';
+            borderGroup.innerHTML = `
+                <div class="label" style="margin-bottom:8px;">Borde Personalizado</div>
+                <div style="display:flex; gap:8px; margin-bottom:8px;">
+                    <div style="flex:1"><div class="label">Grosor</div><input class="input" id="b-w" value="${bW}" placeholder="1px" onchange="updateBorder('${path}')"></div>
+                    <div style="flex:1"><div class="label">Estilo</div>
+                        <select class="select" id="b-s" onchange="updateBorder('${path}')">
+                            <option value="solid" ${bS==='solid'?'selected':''}>Solid</option>
+                            <option value="dashed" ${bS==='dashed'?'selected':''}>Dashed</option>
+                            <option value="dotted" ${bS==='dotted'?'selected':''}>Dotted</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="label">Color</div>
+                    <input type="text" class="input" id="b-c" value="${bC}" onchange="updateBorder('${path}')">
+                </div>
+            `;
+
+            // FILTER PARSERS
+            var fBlur = 0, fBright = 100, fSepia = 0;
+            if(obj.filter) {
+                var mb = obj.filter.match(/blur\(([-.\d]+)px\)/); if(mb) fBlur = mb[1];
+                var mbr = obj.filter.match(/brightness\(([-.\d]+)%\)/); if(mbr) fBright = mbr[1];
+                var msp = obj.filter.match(/sepia\(([-.\d]+)%\)/); if(msp) fSepia = msp[1];
+            }
+
+            var bfBlur = 0;
+            if(obj['backdrop-filter']) {
+                var mbf = obj['backdrop-filter'].match(/blur\(([-.\d]+)px\)/); if(mbf) bfBlur = mbf[1];
+            }
+
+            var filterGroup = document.createElement('div');
+            filterGroup.innerHTML = `
+                <div class="label" style="margin-bottom:8px; color:#a855f7;">Efectos de Imagen (Filter)</div>
+                ${buildSliderRow('Blur', fBlur, 0, 50, (v) => updateFilter(path, 'blur', v, 'px'))}
+                ${buildSliderRow('Brght', fBright, 0, 200, (v) => updateFilter(path, 'brightness', v, '%'))}
+                ${buildSliderRow('Sepia', fSepia, 0, 100, (v) => updateFilter(path, 'sepia', v, '%'))}
+
+                <div class="label" style="margin-top:16px; margin-bottom:8px; color:#3b82f6;">Glassmorphism (Backdrop)</div>
+                ${buildSliderRow('B-Blur', bfBlur, 0, 50, (v) => updateBackdrop(path, 'blur', v, 'px'))}
+            `;
+
+            // SHADOW VISUAL BUILDER
+            var sX=0, sY=0, sB=0, sS=0, sC='rgba(0,0,0,0.5)', sInset=false;
+            if (obj['box-shadow'] && obj['box-shadow'] !== 'none') {
+                // Simplified parser for first shadow only (for visual builder)
+                var shadowStr = obj['box-shadow'];
+                if(shadowStr.includes('inset')) sInset = true;
+                var nums = shadowStr.match(/-?[\d.]+px/g);
+                if(nums && nums.length >= 2) {
+                    sX = parseFloat(nums[0]);
+                    sY = parseFloat(nums[1]);
+                    if(nums[2]) sB = parseFloat(nums[2]);
+                    if(nums[3]) sS = parseFloat(nums[3]);
+                }
+                var colMatch = shadowStr.match(/rgba?\([^)]+\)|#[0-9a-fA-F]+/);
+                if(colMatch) sC = colMatch[0];
+            }
+
+            var shadowGroup = document.createElement('div');
+            shadowGroup.id = 'shadow-group';
+            shadowGroup.style.cssText = 'padding: 10px; background: rgba(255,255,255,0.02); border-radius: 8px; margin-bottom: 8px; border: 1px solid #27272a;';
+            shadowGroup.innerHTML = `
+                <div class="label" style="margin-bottom:8px; display:flex; justify-content:space-between;">
+                    <span>Sombra (Box Shadow)</span>
+                    <label style="display:flex; align-items:center; gap:4px;"><input type="checkbox" id="s-in" ${sInset?'checked':''} onchange="updateShadow('${path}')"> Inset</label>
+                </div>
+                ${buildSliderRow('X', sX, -50, 50, () => updateShadow(path), 1)}
+                ${buildSliderRow('Y', sY, -50, 50, () => updateShadow(path), 1)}
+                ${buildSliderRow('Blur', sB, 0, 100, () => updateShadow(path), 1)}
+                ${buildSliderRow('Sprd', sS, -50, 50, () => updateShadow(path), 1)}
+                <div class="row" style="margin-top:8px;">
+                    <div class="label">Color</div>
+                    <input type="text" class="input" id="s-c" value="${sC}" onchange="updateShadow('${path}')">
+                </div>
+            `;
+
+            var blendGroup = document.createElement('div');
+            blendGroup.innerHTML = `
+                <div class="row" style="margin-bottom: 8px;"><div class="label">Mix Blend Mode</div>
+                    <select class="select" onchange="updateValue('mix-blend-mode', this.value); renderInspector(getObjAtPath('${path}'),'${path}')">
+                        <option value="">Normal (Auto)</option>
+                        <option value="multiply" ${obj['mix-blend-mode']==='multiply'?'selected':''}>Multiply</option>
+                        <option value="screen" ${obj['mix-blend-mode']==='screen'?'selected':''}>Screen</option>
+                        <option value="overlay" ${obj['mix-blend-mode']==='overlay'?'selected':''}>Overlay</option>
+                        <option value="darken" ${obj['mix-blend-mode']==='darken'?'selected':''}>Darken</option>
+                        <option value="lighten" ${obj['mix-blend-mode']==='lighten'?'selected':''}>Lighten</option>
+                        <option value="color-dodge" ${obj['mix-blend-mode']==='color-dodge'?'selected':''}>Color Dodge</option>
+                        <option value="color-burn" ${obj['mix-blend-mode']==='color-burn'?'selected':''}>Color Burn</option>
+                        <option value="difference" ${obj['mix-blend-mode']==='difference'?'selected':''}>Difference</option>
+                        <option value="exclusion" ${obj['mix-blend-mode']==='exclusion'?'selected':''}>Exclusion</option>
+                        <option value="hue" ${obj['mix-blend-mode']==='hue'?'selected':''}>Hue</option>
+                        <option value="saturation" ${obj['mix-blend-mode']==='saturation'?'selected':''}>Saturation</option>
+                        <option value="color" ${obj['mix-blend-mode']==='color'?'selected':''}>Color</option>
+                        <option value="luminosity" ${obj['mix-blend-mode']==='luminosity'?'selected':''}>Luminosity</option>
+                    </select>
+                </div>
+            `;
+
+            panel.appendChild(buildSection('Apariencia Visual', [
+                bgGroup,
+                borderGroup,
+                buildInputRow('Border Radius', obj['border-radius'] || '', false, (v) => updateValue('border-radius', v)),
+                shadowGroup,
+                filterGroup,
+                blendGroup,
+                buildInputRow('Opacity', obj.opacity || '', false, (v) => updateValue('opacity', v)),
+                buildInputRow('Transition', obj.transition || '', false, (v) => updateValue('transition', v))
+            ]));
+
+            // MOTOR SCROLL V4 (Solo en Normal)
+            if (currentState === 'normal') {
+                var scrollObj = obj.scroll || {};
+                var scrollDiv = document.createElement('div');
+                scrollDiv.innerHTML = `
+                    <div class="row" style="margin-bottom:12px;"><div class="label">Activar Scroll</div>
+                        <select class="select" id="scrollDir">
+                            <option value="">Desactivado</option>
+                            <option value="horizontal" ${scrollObj.direccion==='horizontal'?'selected':''}>Horizontal</option>
+                            <option value="vertical" ${scrollObj.direccion==='vertical'?'selected':''}>Vertical</option>
+                            <option value="ambos" ${scrollObj.direccion==='ambos'?'selected':''}>Ambos</option>
+                        </select>
+                    </div>
+                    ${buildSliderRow('F-Zone', scrollObj.fade !== undefined ? scrollObj.fade : 0.15, 0, 1, (v)=>updateScroll(path, 'fade', v), 0.05)}
+                    ${buildSliderRow('F-Min', scrollObj['fade-min'] !== undefined ? scrollObj['fade-min'] : 0.3, 0, 1, (v)=>updateScroll(path, 'fade-min', v), 0.05)}
+                    ${buildSliderRow('F-Init', scrollObj['fade-inicio'] !== undefined ? scrollObj['fade-inicio'] : 0, 0, 0.5, (v)=>updateScroll(path, 'fade-inicio', v), 0.05)}
+                `;
+                panel.appendChild(buildSection('⚙️ Motor Scroll V4', [scrollDiv]));
+
+                scrollDiv.querySelector('#scrollDir').addEventListener('change', (e) => {
+                    if(!e.target.value) { updateValue('scroll', ''); }
+                    else {
+                        if(!obj.scroll) obj.scroll = {};
+                        obj.scroll.direccion = e.target.value;
+                        updateValue('scroll', obj.scroll);
+                    }
+                });
+            }
+
+            // CUSTOM CSS INJECTOR
+            var customBtn = document.createElement('button');
+            customBtn.className = 'btn';
+            customBtn.style.cssText = 'width: 100%; margin-bottom: 16px; border-style: dashed; color: #a855f7; border-color: rgba(168,85,247,0.3);';
+            customBtn.innerHTML = '+ Añadir Custom CSS';
+            customBtn.addEventListener('click', () => {
+                var propName = prompt('Nombre de la propiedad CSS nativa (ej: mix-blend-mode):');
+                if (propName) {
+                    var targetObj = getTargetObj(baseObj);
+                    targetObj[propName] = '';
+                    renderInspector(baseObj, path);
+                }
+            });
+            panel.appendChild(customBtn);
+
+            // DATA CRUDA (Avanzado)
+            var rawDiv = document.createElement('div');
+            var ta = document.createElement('textarea');
+            ta.className = 'raw-editor';
+            var cleanObj = {...obj}; delete cleanObj.nombre; delete cleanObj.texto;
+            ta.value = JSON.stringify(cleanObj, null, 2);
+            ta.addEventListener('change', () => {
+                try {
+                    var newObj = JSON.parse(ta.value);
+                    var parent = getObjAtPath(path);
+                    // Mantenemos nombre y texto
+                    var n = parent.nombre; var t = parent.texto;
+                    for(var k in parent) delete parent[k];
+                    for(var k in newObj) parent[k] = newObj[k];
+                    if(n) parent.nombre = n; if(t) parent.texto = t;
+                    sendToPreview(); renderTree();
+                } catch(e) { alert("JSON Inválido"); }
+            });
+            rawDiv.appendChild(ta);
+            panel.appendChild(buildSection('Avanzado (JSON Crudo)', [rawDiv]));
+        }
+
+        // --- Helpers Visuales ---
+        function buildSection(title, elements) {
+            var s = document.createElement('div'); s.className = 'section';
+            var t = document.createElement('div'); t.className = 'section-title'; t.textContent = title;
+            s.appendChild(t);
+            elements.forEach(e => { if(e) s.appendChild(e); });
+            return s;
+        }
+
+        function buildInputRow(label, value, readonly, callback, type='text') {
+            var r = document.createElement('div'); r.className = 'col'; r.style.marginBottom = '8px';
+            r.innerHTML = `<div class="label">${label}</div><input class="input" type="${type}" value="${value}" ${readonly?'readonly style="opacity:0.5"':''}>`;
+            if(callback) r.querySelector('input').addEventListener('input', (e) => callback(e.target.value));
+            return r;
+        }
+
+        function buildTextareaRow(label, value, callback) {
+            var r = document.createElement('div'); r.className = 'col'; r.style.marginBottom = '8px';
+            r.innerHTML = `<div class="label">${label}</div><textarea class="textarea" rows="3">${value}</textarea>`;
+            if(callback) r.querySelector('textarea').addEventListener('input', (e) => callback(e.target.value));
+            return r;
+        }
+
+        function buildSliderRow(label, value, min, max, callback, step=1) {
+            return `
+                <div class="slider-row">
+                    <div class="slider-label">${label}</div>
+                    <input type="range" class="slider" min="${min}" max="${max}" step="${step}" value="${value}"
+                           oninput="this.nextElementSibling.value=this.value; (${callback})(this.value)">
+                    <input type="text" class="slider-val" value="${value}"
+                           onchange="this.previousElementSibling.value=this.value; (${callback})(this.value)">
+                </div>
+            `;
+        }
+
+        // Box model parser "10px 20px 10px 20px" -> array
+        function getVal(str, index) {
+            if(!str) return '-';
+            var parts = str.split(' ');
+            if(parts.length === 1) return parts[0];
+            if(parts.length === 2) return index%2===0 ? parts[0] : parts[1];
+            if(parts.length === 4) return parts[index];
+            return '-';
+        }
+        window.updateBoxModel = function(path, prop, index, val) {
+            var baseObj = getObjAtPath(path);
+            var obj = getTargetObj(baseObj);
+            var current = obj[prop] ? obj[prop].split(' ') : ['0px','0px','0px','0px'];
+            if(current.length === 1) current = [current[0],current[0],current[0],current[0]];
+            if(current.length === 2) current = [current[0],current[1],current[0],current[1]];
+            current[index] = val;
+            obj[prop] = current.join(' ');
+            sendToPreview();
+        };
+
+        // Transform parser: translateZ(50px) rotateX(10deg)
+        function parseTransform(str) {
+            var res = { tx:0, ty:0, tz:0, rx:0, ry:0, rz:0, s:1 };
+            if(!str) return res;
+            var m;
+            if(m = str.match(/translateX\(([-.\d]+)px\)/)) res.tx = parseFloat(m[1]);
+            if(m = str.match(/translateY\(([-.\d]+)px\)/)) res.ty = parseFloat(m[1]);
+            if(m = str.match(/translateZ\(([-.\d]+)px\)/)) res.tz = parseFloat(m[1]);
+            if(m = str.match(/rotateX\(([-.\d]+)deg\)/)) res.rx = parseFloat(m[1]);
+            if(m = str.match(/rotateY\(([-.\d]+)deg\)/)) res.ry = parseFloat(m[1]);
+            if(m = str.match(/rotateZ\(([-.\d]+)deg\)/)) res.rz = parseFloat(m[1]);
+            if(m = str.match(/scale\(([-.\d]+)\)/)) res.s = parseFloat(m[1]);
+            return res;
+        }
+        window.updateTransform = function(path, func, val, unit) {
+            var baseObj = getObjAtPath(path);
+            var obj = getTargetObj(baseObj);
+            var str = obj.transform || '';
+            var regex = new RegExp(func + '\\([^\\)]+\\)');
+            var newVal = func + '(' + val + unit + ')';
+            if(str.match(regex)) str = str.replace(regex, newVal);
+            else str = str + ' ' + newVal;
+            obj.transform = str.trim();
+            sendToPreview();
+        }
+
+        window.updateOrigin = function(path, axis, val) {
+            var baseObj = getObjAtPath(path);
+            var obj = getTargetObj(baseObj);
+            var current = obj['transform-origin'] ? obj['transform-origin'].split(' ') : ['50%', '50%'];
+            if(current.length === 1) current = [current[0], '50%'];
+            if(axis === 'x') current[0] = val + '%';
+            if(axis === 'y') current[1] = val + '%';
+            obj['transform-origin'] = current.join(' ');
+            if(obj['transform-origin'] === '50% 50%') delete obj['transform-origin'];
+            sendToPreview();
+        }
+
+        window.updateScroll = function(path, prop, val) {
+            var obj = getObjAtPath(path);
+            if(!obj.scroll) obj.scroll = {};
+            obj.scroll[prop] = parseFloat(val);
+            sendToPreview();
+        }
+
+        window.updateBackgroundType = function(path) {
+            var type = document.getElementById('bgTypeToggle').value;
+            var baseObj = getObjAtPath(path);
+            var obj = getTargetObj(baseObj);
+
+            if (type === 'solid') {
+                obj.background = '#18181b';
+            } else if (type === 'gradient') {
+                obj.background = 'linear-gradient(135deg, #a855f7, #ec4899)';
+            } else if (type === 'image') {
+                obj.background = 'url(https://via.placeholder.com/150) center/cover no-repeat';
+            }
+
+            sendToPreview();
+            renderInspector(baseObj, path); // Re-render inspector to update the text input
+        }
+
+        window.updateBorder = function(path) {
+            var baseObj = getObjAtPath(path);
+            var obj = getTargetObj(baseObj);
+            var w = document.getElementById('b-w').value || '0px';
+            var s = document.getElementById('b-s').value;
+            var c = document.getElementById('b-c').value || '#ffffff';
+            if (w === '0px' || w === '') {
+                delete obj.border;
+            } else {
+                obj.border = `${w} ${s} ${c}`;
+            }
+            sendToPreview();
+        }
+
+        window.updateFilter = function(path, func, val, unit) {
+            var baseObj = getObjAtPath(path);
+            var obj = getTargetObj(baseObj);
+            var str = obj.filter || '';
+            var regex = new RegExp(func + '\\([^\\)]+\\)');
+            var newVal = func + '(' + val + unit + ')';
+            if(str.match(regex)) str = str.replace(regex, newVal);
+            else str = str + ' ' + newVal;
+            obj.filter = str.trim();
+            if (val == 0 && func !== 'brightness' || val == 100 && func === 'brightness') {
+                obj.filter = obj.filter.replace(newVal, '').trim();
+                if(obj.filter === '') delete obj.filter;
+            }
+            sendToPreview();
+        }
+
+        window.updateBackdrop = function(path, func, val, unit) {
+            var baseObj = getObjAtPath(path);
+            var obj = getTargetObj(baseObj);
+            var str = obj['backdrop-filter'] || '';
+            var regex = new RegExp(func + '\\([^\\)]+\\)');
+            var newVal = func + '(' + val + unit + ')';
+            if(str.match(regex)) str = str.replace(regex, newVal);
+            else str = str + ' ' + newVal;
+            obj['backdrop-filter'] = str.trim();
+            if (val == 0) {
+                obj['backdrop-filter'] = obj['backdrop-filter'].replace(newVal, '').trim();
+                if(obj['backdrop-filter'] === '') delete obj['backdrop-filter'];
+            }
+            sendToPreview();
+        }
+
+        window.updateShadow = function(path) {
+            // Need setTimeout to wait for input values to update if called from slider oninput
+            setTimeout(() => {
+                var baseObj = getObjAtPath(path);
+                var obj = getTargetObj(baseObj);
+
+                // Get all active shadow inputs but scoped to the shadow group
+                var shadowPanel = document.getElementById('shadow-group');
+                if(!shadowPanel) return;
+                var inputs = shadowPanel.querySelectorAll('.slider');
+                if(inputs.length < 4) return;
+
+                var x = inputs[0].value;
+                var y = inputs[1].value;
+                var b = inputs[2].value;
+                var s = inputs[3].value;
+                var c = document.getElementById('s-c').value || 'rgba(0,0,0,0.5)';
+                var inset = document.getElementById('s-in').checked ? 'inset ' : '';
+
+                if (x==0 && y==0 && b==0 && s==0) {
+                    delete obj['box-shadow'];
+                } else {
+                    obj['box-shadow'] = `${inset}${x}px ${y}px ${b}px ${s}px ${c}`;
+                }
+                sendToPreview();
+            }, 0);
+        }
+
+        // BUILDER DE INTERACCIONES (QUICK ACTIONS)
+        window.applyQuickAction = function(path, actionType) {
+            var baseObj = getObjAtPath(path);
+            var node = baseObj; // Working with the base node
+            if (!node) return;
+
+            // Asegurar que el objeto del estado exista
+            if (currentState === 'normal') {
+                alert("Selecciona el estado 'hover' o 'click' primero para aplicar una interacción.");
+                return;
+            }
+
+            if (!node[currentState]) {
+                node[currentState] = {};
+            }
+
+            var stateObj = node[currentState];
+
+            if (actionType === 'pop-up') {
+                // Efecto de salto 3D (Hover o Click)
+                stateObj['transform'] = "translateY(-10px) scale(1.05)";
+                stateObj['box-shadow'] = "0 20px 40px -10px rgba(0,0,0,0.5)";
+                stateObj['border'] = "1px solid rgba(255,255,255,0.2)";
+                stateObj['z-index'] = "10";
+
+                // Asegurar transición en normal
+                if (!node['transition']) node['transition'] = "all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
+            }
+            else if (actionType === 'accordion') {
+                // Efecto Acordeón (expandir, revelar)
+                stateObj['height'] = "auto";
+                stateObj['opacity'] = "1";
+                stateObj['padding'] = "16px";
+                stateObj['margin-top'] = "10px";
+
+                // Preparar el estado normal para estar colapsado
+                node['height'] = "0px";
+                node['opacity'] = "0";
+                node['padding'] = "0px 16px";
+                node['margin-top'] = "0px";
+                node['overflow'] = "hidden";
+                if (!node['transition']) node['transition'] = "all 0.3s ease-in-out";
+            }
+            else if (actionType === 'app-fullscreen') {
+                // Efecto de abrir App a pantalla completa dentro del teléfono
+                stateObj['position'] = "absolute";
+                stateObj['top'] = "0";
+                stateObj['left'] = "0";
+                stateObj['width'] = "100%";
+                stateObj['height'] = "100%";
+                stateObj['z-index'] = "100";
+                stateObj['border-radius'] = "30px";
+                stateObj['transform'] = "none";
+                stateObj['margin'] = "0";
+                stateObj['padding'] = "40px 20px 20px 20px";
+
+                if (!node['transition']) node['transition'] = "all 0.5s cubic-bezier(0.85, 0, 0.15, 1)";
+            }
+            else if (actionType === 'app-popout') {
+                // Efecto de módulo flotante 3D saliendo de la pantalla
+                stateObj['position'] = "absolute";
+                stateObj['top'] = "10%";
+                stateObj['left'] = "5%";
+                stateObj['width'] = "90%";
+                stateObj['height'] = "80%";
+                stateObj['z-index'] = "200";
+                stateObj['border-radius'] = "16px";
+                stateObj['transform'] = "translateZ(100px) scale(1.1)";
+                stateObj['box-shadow'] = "0 30px 60px rgba(0,0,0,0.6), 0 0 40px rgba(139, 92, 246, 0.3)";
+                stateObj['border'] = "1px solid rgba(255,255,255,0.2)";
+                stateObj['backdrop-filter'] = "blur(10px)";
+
+                if (!node['transition']) node['transition'] = "all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)";
+            }
+
+            sendToPreview();
+            renderInspector(baseObj, path);
+        }
+
+        // Init
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
