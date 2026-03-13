@@ -46,7 +46,17 @@
                 Hola Gabriel, soy tu Arquitecto IA. ¿Qué cambio estructural quieres realizar hoy?
             </div>
         </div>
-        <div style="padding: 15px; border-top: 1px solid #1e293b; background: #0f172a; display: flex; gap: 8px;">
+        <div id="ai-attachment-preview" style="display: none; background: #1e293b; padding: 8px 15px; border-top: 1px solid #334155; font-size: 11px; color: #38bdf8; align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: 5px; overflow: hidden; white-space: nowrap;">
+                <span class="material-icons-round" style="font-size: 14px;">terminal</span>
+                <span id="ai-attachment-name" style="text-overflow: ellipsis; overflow: hidden;">Elemento seleccionado</span>
+            </div>
+            <button id="ai-clear-attachment" style="background: none; border: none; color: #ef4444; cursor: pointer; font-size: 16px; padding: 0;">&times;</button>
+        </div>
+        <div style="padding: 15px; border-top: 1px solid #1e293b; background: #0f172a; display: flex; gap: 8px; align-items: center;">
+            <button id="ai-attach" style="background: #1e293b; border: 1px solid #334155; border-radius: 8px; color: #94a3b8; width: 36px; height: 36px; cursor: pointer; display: flex; align-items: center; justify-content: center;" title="Adjuntar elemento">
+                <span class="material-icons-round" style="font-size: 20px;">add_link</span>
+            </button>
             <input type="text" id="ai-input" placeholder="Ej: Cambia el hero a modo oscuro..." style="flex: 1; background: #1e293b; border: 1px solid #334155; border-radius: 8px; color: white; padding: 8px 12px; font-size: 13px; outline: none;">
             <button id="ai-send" style="background: #0ea5e9; border: none; border-radius: 8px; color: white; width: 36px; height: 36px; cursor: pointer; display: flex; align-items: center; justify-content: center;">
                 <span class="material-icons-round" style="font-size: 20px;">send</span>
@@ -58,7 +68,7 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
 
     <script type="module">
-        import { sendMessage } from './src/ai_assistant.js';
+        import { sendMessage, setInitialContext } from './src/ai_assistant.js';
 
         // Helper para UI Flotante Robusta
         window.initFloatingUI = function(buttonId, panelId, updateCallback, displayType = 'block') {
@@ -139,6 +149,18 @@
                     panel.style.visibility = 'visible';
                     const r = button.getBoundingClientRect();
                     updateCallback(panel, r.left, r.top);
+
+                    // Envío automático del content.json al abrir por primera vez
+                    if (buttonId === 'ai-bubble') {
+                        fetch('./src/content.json')
+                            .then(res => res.json())
+                            .then(data => {
+                                const wasSet = setInitialContext(data);
+                                if (wasSet) {
+                                    addMessage("Hola Gabriel, soy tu Arquitecto IA. He analizado tu content.json y estoy listo para ayudarte.", "ai");
+                                }
+                            });
+                    }
                 } else {
                     panel.style.display = 'none';
                     panel.style.visibility = 'hidden';
@@ -236,6 +258,13 @@
         const aiInput = document.getElementById('ai-input');
         const aiSend = document.getElementById('ai-send');
         const aiMessages = document.getElementById('ai-messages');
+        const aiAttach = document.getElementById('ai-attach');
+        const aiClearAttach = document.getElementById('ai-clear-attachment');
+        const aiAttachPreview = document.getElementById('ai-attachment-preview');
+        const aiAttachName = document.getElementById('ai-attachment-name');
+
+        let attachedJsonData = null;
+        let isAiSelecting = false;
 
         // Inicializar estados para evitar discrepancias en tests
         aiPanel.style.display = 'none';
@@ -261,16 +290,22 @@
 
         async function handleAISend() {
             const text = aiInput.value.trim();
-            if (!text) return;
+            if (!text && !attachedJsonData) return;
 
-            // Add user message
-            addMessage(text, 'user');
+            const currentAttached = attachedJsonData;
+
+            // Add user message visually
+            let visualText = text;
+            if (currentAttached) visualText += " 📎 [Elemento adjunto]";
+            addMessage(visualText, 'user');
+
             aiInput.value = '';
+            clearAttachment();
 
             // Loading state
             const loadingId = addMessage('...', 'ai', true);
 
-            const response = await sendMessage(text);
+            const response = await sendMessage(text, currentAttached);
 
             // Remove loading
             const loadingEl = document.getElementById(loadingId);
@@ -279,6 +314,68 @@
             // Add AI response
             addMessage(response.text, 'ai');
         }
+
+        function clearAttachment() {
+            attachedJsonData = null;
+            aiAttachPreview.style.display = 'none';
+            aiAttach.style.color = '#94a3b8';
+            aiAttach.style.background = '#1e293b';
+        }
+
+        aiClearAttach.onclick = clearAttachment;
+
+        aiAttach.onclick = () => {
+            if (isAiSelecting) return;
+            isAiSelecting = true;
+
+            aiAttach.style.background = '#3b82f6';
+            aiAttach.style.color = 'white';
+            document.body.style.cursor = 'crosshair';
+
+            const tip = document.createElement('div');
+            tip.id = 'ai-inspect-tip';
+            tip.style.cssText = 'position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #3b82f6; color: white; padding: 10px 20px; border-radius: 30px; z-index: 9999; font-weight: 600; box-shadow: 0 10px 25px rgba(0,0,0,0.3); pointer-events: none;';
+            tip.textContent = 'Selecciona un elemento para adjuntar al mensaje';
+            document.body.appendChild(tip);
+
+            const aiCaptureHandler = (e) => {
+                const target = e.target.closest('[data-path]');
+                if (target && isAiSelecting) {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    const path = target.dataset.path;
+                    const json = window.get_json_v4_por_path_jerarquico(path);
+
+                    if (json) {
+                        attachedJsonData = json;
+                        aiAttachName.textContent = path;
+                        aiAttachPreview.style.display = 'flex';
+                        aiAttach.style.background = '#10b981';
+                        aiAttach.style.color = 'white';
+
+                        // Visual feedback on target
+                        const originalOutline = target.style.outline;
+                        target.style.outline = '4px solid #3b82f6';
+                        setTimeout(() => target.style.outline = originalOutline, 1000);
+                    }
+                    stopAiSelection();
+                }
+            };
+
+            window.addEventListener('click', aiCaptureHandler, { capture: true, once: true });
+
+            function stopAiSelection() {
+                isAiSelecting = false;
+                document.body.style.cursor = 'default';
+                const tip = document.getElementById('ai-inspect-tip');
+                if (tip) tip.remove();
+                if (!attachedJsonData) {
+                    aiAttach.style.background = '#1e293b';
+                    aiAttach.style.color = '#94a3b8';
+                }
+            }
+        };
 
         function addMessage(text, role, isLoading = false) {
             const msg = document.createElement('div');

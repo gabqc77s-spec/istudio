@@ -23,7 +23,22 @@ function initAI() {
     }
 }
 
-export async function sendMessage(message) {
+export function setInitialContext(contentJson) {
+    if (!chatHistory.length) {
+        chatHistory.push({
+            role: 'user',
+            parts: [{ text: "Hola. Aquí tienes el contenido actual de mi aplicación content.json para que lo conozcas: " + JSON.stringify(contentJson) }]
+        });
+        chatHistory.push({
+            role: 'model',
+            parts: [{ text: "Entendido. He analizado el content.json completo. Estoy listo para ayudarte a realizar cambios estructurales o estéticos. ¿Qué necesitas hacer?" }]
+        });
+        return true;
+    }
+    return false;
+}
+
+export async function sendMessage(message, attachedJson = null) {
     if (!initAI()) {
         return { type: 'error', text: "Error de configuración de IA." };
     }
@@ -98,10 +113,15 @@ La respuesta sigue siendo la misma ya que te muestra el elemento con todas sus p
 
     const model = 'gemini-3.1-flash-lite-preview';
 
+    let fullMessage = message;
+    if (attachedJson) {
+        fullMessage += "\n\nContexto del elemento seleccionado (JSON): " + JSON.stringify(attachedJson);
+    }
+
     // Añadir mensaje del usuario al historial
     chatHistory.push({
         role: 'user',
-        parts: [{ text: message }]
+        parts: [{ text: fullMessage }]
     });
 
     try {
