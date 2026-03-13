@@ -90,6 +90,25 @@ export async function init() {
             }
         });
 
+        // --- API de Captura y Navegación ---
+        window.get_json_v4_por_path = (path) => {
+            if (!currentContent || !path) return null;
+
+            // Convertir path de string (ej: "pagina_principal.seccion_hero") a array de llaves
+            // Maneja también arrays si existieran: pagina.lista[0] -> ["pagina", "lista", "0"]
+            const keys = path.split('.').flatMap(k => k.split(/[\[\]]/)).filter(Boolean);
+
+            let result = currentContent;
+            for (const key of keys) {
+                if (result && typeof result === 'object' && key in result) {
+                    result = result[key];
+                } else {
+                    return null;
+                }
+            }
+            return result;
+        };
+
         // Punto de entrada global compatible con AI Studio Function Calling
         window.inyectar_cambios_v4 = (input) => {
             let partial = null;

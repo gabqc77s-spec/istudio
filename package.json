@@ -27,5 +27,8 @@
   "bugs": {
     "url": "https://github.com/gabqc77s-spec/istudio/issues"
   },
-  "homepage": "https://github.com/gabqc77s-spec/istudio#readme"
+  "homepage": "https://github.com/gabqc77s-spec/istudio#readme",
+  "dependencies": {
+    "@google/genai": "^1.45.0"
+  }
 }
