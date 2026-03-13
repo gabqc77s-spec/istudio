@@ -20,6 +20,91 @@ function deepMerge(target, source) {
     return target;
 }
 
+// --- API de Captura y Navegación (Global) ---
+window.get_json_v4_por_path = (path) => {
+    if (!currentContent || !path) return null;
+
+    const keys = path.split('.').flatMap(k => k.split(/[\[\]]/)).filter(Boolean);
+
+    let result = currentContent;
+    for (const key of keys) {
+        if (result && typeof result === 'object' && key in result) {
+            result = result[key];
+        } else {
+            return null;
+        }
+    }
+    return result;
+};
+
+window.get_json_v4_por_path_jerarquico = (path) => {
+    if (!currentContent || !path) return null;
+
+    const keys = path.split('.').flatMap(k => k.split(/[\[\]]/)).filter(Boolean);
+
+    // Función auxiliar para clonar un nodo solo con sus propiedades directas (sin hijos)
+    const cloneNodeProperties = (node) => {
+        const clone = {};
+        for (const key in node) {
+            const val = node[key];
+            // Si no es un objeto/array, o es un objeto reservado (hover, click, etc), lo mantenemos
+            if (typeof val !== 'object' || val === null || RESERVED[key]) {
+                clone[key] = val;
+            }
+        }
+        return clone;
+    };
+
+    // Construir la jerarquía de arriba hacia abajo
+    let fullHierarchy = {};
+    let currentTarget = fullHierarchy;
+    let currentDataSource = currentContent;
+
+    for (let i = 0; i < keys.length; i++) {
+        const key = keys[i];
+        const isLast = (i === keys.length - 1);
+
+        if (isLast) {
+            // En el último nivel, devolvemos el nodo completo con sus hijos
+            currentTarget[key] = JSON.parse(JSON.stringify(currentDataSource[key]));
+        } else {
+            // En niveles intermedios, clonamos solo las propiedades del padre y preparamos el hueco para el hijo
+            const parentProps = cloneNodeProperties(currentDataSource[key]);
+            currentTarget[key] = parentProps;
+
+            // Avanzamos en ambas estructuras
+            currentTarget = currentTarget[key];
+            currentDataSource = currentDataSource[key];
+        }
+    }
+
+    return fullHierarchy;
+};
+
+// Punto de entrada global compatible con AI Studio Function Calling
+window.inyectar_cambios_v4 = (input) => {
+    let partial = null;
+
+    // Caso 1: Viene el objeto de llamada completo { name, args: { partial } }
+    if (input.args && input.args.partial) {
+        partial = input.args.partial;
+    }
+    // Caso 2: Viene solo el objeto partial
+    else if (input.partial) {
+        partial = input.partial;
+    }
+    // Caso 3: Es el JSON crudo
+    else {
+        partial = input;
+    }
+
+    if (partial && typeof partial === 'object') {
+        window.postMessage({ type: 'inject-partial', partial }, '*');
+    } else {
+        console.warn("Inyector V4: El formato recibido no es un JSON válido o partial está vacío.");
+    }
+};
+
 // Core engine initialization
 export async function init() {
     try {
@@ -89,91 +174,6 @@ export async function init() {
                 construir(currentContent, app, 0, '');
             }
         });
-
-        // --- API de Captura y Navegación ---
-        window.get_json_v4_por_path = (path) => {
-            if (!currentContent || !path) return null;
-
-            const keys = path.split('.').flatMap(k => k.split(/[\[\]]/)).filter(Boolean);
-
-            let result = currentContent;
-            for (const key of keys) {
-                if (result && typeof result === 'object' && key in result) {
-                    result = result[key];
-                } else {
-                    return null;
-                }
-            }
-            return result;
-        };
-
-        window.get_json_v4_por_path_jerarquico = (path) => {
-            if (!currentContent || !path) return null;
-
-            const keys = path.split('.').flatMap(k => k.split(/[\[\]]/)).filter(Boolean);
-
-            // Función auxiliar para clonar un nodo solo con sus propiedades directas (sin hijos)
-            const cloneNodeProperties = (node) => {
-                const clone = {};
-                for (const key in node) {
-                    const val = node[key];
-                    // Si no es un objeto/array, o es un objeto reservado (hover, click, etc), lo mantenemos
-                    if (typeof val !== 'object' || val === null || RESERVED[key]) {
-                        clone[key] = val;
-                    }
-                }
-                return clone;
-            };
-
-            // Construir la jerarquía de arriba hacia abajo
-            let fullHierarchy = {};
-            let currentTarget = fullHierarchy;
-            let currentDataSource = currentContent;
-
-            for (let i = 0; i < keys.length; i++) {
-                const key = keys[i];
-                const isLast = (i === keys.length - 1);
-
-                if (isLast) {
-                    // En el último nivel, devolvemos el nodo completo con sus hijos
-                    currentTarget[key] = JSON.parse(JSON.stringify(currentDataSource[key]));
-                } else {
-                    // En niveles intermedios, clonamos solo las propiedades del padre y preparamos el hueco para el hijo
-                    const parentProps = cloneNodeProperties(currentDataSource[key]);
-                    currentTarget[key] = parentProps;
-
-                    // Avanzamos en ambas estructuras
-                    currentTarget = currentTarget[key];
-                    currentDataSource = currentDataSource[key];
-                }
-            }
-
-            return fullHierarchy;
-        };
-
-        // Punto de entrada global compatible con AI Studio Function Calling
-        window.inyectar_cambios_v4 = (input) => {
-            let partial = null;
-
-            // Caso 1: Viene el objeto de llamada completo { name, args: { partial } }
-            if (input.args && input.args.partial) {
-                partial = input.args.partial;
-            }
-            // Caso 2: Viene solo el objeto partial
-            else if (input.partial) {
-                partial = input.partial;
-            }
-            // Caso 3: Es el JSON crudo
-            else {
-                partial = input;
-            }
-
-            if (partial && typeof partial === 'object') {
-                window.postMessage({ type: 'inject-partial', partial }, '*');
-            } else {
-                console.warn("Inyector V4: El formato recibido no es un JSON válido o partial está vacío.");
-            }
-        };
 
     } catch (e) {
         console.error("Error starting V4 Engine:", e);
@@ -522,4 +522,8 @@ function initClickState(el, clickData) {
 }
 
 // Start Engine
-document.addEventListener('DOMContentLoaded', init);
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+} else {
+    init();
+}

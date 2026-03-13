@@ -3,6 +3,7 @@ import { GoogleGenAI } from 'https://esm.run/@google/genai';
 let API_KEY = import.meta.env?.VITE_GEMINI_API_KEY;
 
 let ai = null;
+let chatHistory = [];
 
 function initAI() {
     if (ai) return true;
@@ -96,22 +97,18 @@ La respuesta sigue siendo la misma ya que te muestra el elemento con todas sus p
     };
 
     const model = 'gemini-3.1-flash-lite-preview';
-    const contents = [
-        {
-            role: 'user',
-            parts: [
-                {
-                    text: message,
-                },
-            ],
-        },
-    ];
+
+    // Añadir mensaje del usuario al historial
+    chatHistory.push({
+        role: 'user',
+        parts: [{ text: message }]
+    });
 
     try {
         const response = await ai.models.generateContentStream({
             model,
             config,
-            contents,
+            contents: chatHistory,
         });
 
         let fullText = "";
@@ -119,6 +116,12 @@ La respuesta sigue siendo la misma ya que te muestra el elemento con todas sus p
             console.log(chunk.text);
             fullText += chunk.text;
         }
+
+        // Añadir respuesta de la IA al historial para mantener el contexto
+        chatHistory.push({
+            role: 'model',
+            parts: [{ text: fullText }]
+        });
 
         // Intentar parsear el tool call del texto (ya que el usuario pidió que la salida SEA el tool call)
         try {
