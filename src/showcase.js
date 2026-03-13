@@ -33,10 +33,13 @@ function deepMerge(target, source) {
 }
 
 // --- API de Captura y Navegación (Global) ---
+window.get_v4_current_content = () => currentContent;
+
 window.get_json_v4_por_path = (path) => {
     if (!currentContent || !path) return null;
 
-    const keys = path.split('.').flatMap(k => k.split(/[\[\]]/)).filter(Boolean);
+    const cleanPath = path.replace(/:ins\[\d+\]/g, '').replace(/\[(\d+)\]/g, '.$1');
+    const keys = cleanPath.split('.').filter(Boolean);
 
     let result = currentContent;
     for (const key of keys) {
@@ -52,7 +55,10 @@ window.get_json_v4_por_path = (path) => {
 window.get_json_v4_por_path_jerarquico = (path) => {
     if (!currentContent || !path) return null;
 
-    const keys = path.split('.').flatMap(k => k.split(/[\[\]]/)).filter(Boolean);
+    // El path puede venir con [index] o .prop o :ins[index]
+    // Reemplazamos :ins[n] por nada, y [n] por .n para facilitar el split
+    const cleanPath = path.replace(/:ins\[\d+\]/g, '').replace(/\[(\d+)\]/g, '.$1');
+    const keys = cleanPath.split('.').filter(Boolean);
 
     // Función auxiliar para clonar un nodo solo con sus propiedades directas (sin hijos)
     const cloneNodeProperties = (node) => {
@@ -75,6 +81,16 @@ window.get_json_v4_por_path_jerarquico = (path) => {
     for (let i = 0; i < keys.length; i++) {
         const key = keys[i];
         const isLast = (i === keys.length - 1);
+
+        if (!currentDataSource || typeof currentDataSource !== 'object' || !(key in currentDataSource)) {
+            // Caso especial: si la llave es un número, intentamos acceder como array o como llave de objeto
+            if (!isNaN(key) && Array.isArray(currentDataSource)) {
+                // Es un índice de array válido
+            } else {
+                console.warn(`V4: El path "${path}" no existe en la fuente de datos. Falló en la llave: "${key}"`);
+                return null;
+            }
+        }
 
         if (isLast) {
             // En el último nivel, devolvemos el nodo completo con sus hijos
