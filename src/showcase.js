@@ -2,7 +2,12 @@
 /* Reads content.json, builds containers, applies CSS properties directly. */
 /* Optimized for CSS 3D Space and pure data-driven DOM rendering. */
 
-const RESERVED = { nombre: true, hover: true, 'hover-hermanos': true, click: true, scroll: true, texto: true, 'seguir-mouse': true, tilt: true, acciones: true, instancias: true, 'look-at': true, 'auto-animar': true };
+const RESERVED = {
+    nombre: true, hover: true, 'hover-hermanos': true, click: true, scroll: true,
+    texto: true, 'seguir-mouse': true, tilt: true, acciones: true,
+    instancias: true, 'look-at': true, 'auto-animar': true,
+    paralaje: true, escribir: true, magnetico: true, audio: true
+};
 
 let currentContent = null;
 
@@ -187,8 +192,23 @@ export function construir(config, parent, profundidad, pathPrefix = '') {
         }
 
         // Si no es reservada y no es objeto, es un estilo directo (CSS mapping)
-        el.style.setProperty(key, val);
+        if (key === 'transform') {
+            el.style.setProperty('--base-transform', val);
+        } else {
+            el.style.setProperty(key, val);
+        }
     }
+
+    // Preparar el sistema de transformaciones combinadas (permite mezclar efectos)
+    el.style.transform = `
+        var(--base-transform, translate3d(0,0,0))
+        var(--dyn-mouse-follow, translate3d(0,0,0))
+        var(--dyn-look-at, rotateX(0deg) rotateY(0deg))
+        var(--dyn-tilt, rotateX(0deg) rotateY(0deg))
+        var(--dyn-parallax, translate3d(0,0,0))
+        var(--dyn-magnetic, translate3d(0,0,0))
+        var(--dyn-auto-animate, translate3d(0,0,0) rotate(0deg) scale(1))
+    `.trim();
 
     // --- Funcionalidad 1: JS-controlled scroll (Scroll Controlado) ---
     // (Exactamente la lógica provista para control de carruseles sin usar overflow scroll nativo)
@@ -242,6 +262,26 @@ export function construir(config, parent, profundidad, pathPrefix = '') {
         initAutoAnimate(el, config['auto-animar']);
     }
 
+    // --- Funcionalidad 11: Paralaje (Scroll reactive) ---
+    if (config['paralaje']) {
+        initParallax(el, config['paralaje']);
+    }
+
+    // --- Funcionalidad 12: Escribir (Typewriter effect) ---
+    if (config['escribir']) {
+        initTypewriter(el, config['escribir']);
+    }
+
+    // --- Funcionalidad 13: Magnético (Mouse attraction) ---
+    if (config['magnetico']) {
+        initMagnetic(el, config['magnetico']);
+    }
+
+    // --- Funcionalidad 14: Audio (Sound effects) ---
+    if (config['audio']) {
+        initAudio(el, config['audio']);
+    }
+
     parent.appendChild(el);
     return { el, hoverData, hoverHermanos: hoverHermanosData };
 }
@@ -261,19 +301,26 @@ function initFollowMouse(el, config) {
     });
 
     function animate() {
-        if (!el.isConnected) return; // Evitar fugas de memoria si el elemento es removido
-
+        if (!el.isConnected) return;
         currentX += (targetX - currentX) * smooth;
         currentY += (targetY - currentY) * smooth;
-
-        // Aplicar manteniendo transformaciones previas si existen (como translateZ o rotate)
-        // Usamos una expresión regular más robusta para no pisar otros transforms
-        const baseTransform = el.style.transform.replace(/translate\([^)]+\)/g, '').trim();
-        el.style.transform = `${baseTransform} translate(${currentX}px, ${currentY}px)`.trim();
-
+        el.style.setProperty('--dyn-mouse-follow', `translate3d(${currentX}px, ${currentY}px, 0)`);
         requestAnimationFrame(animate);
     }
     animate();
+}
+
+function initAudio(el, config) {
+    const sound = new Audio(config.url);
+    sound.volume = config.volumen || 0.5;
+
+    if (config.loop) sound.loop = true;
+
+    const trigger = config.evento || 'click';
+    el.addEventListener(trigger, () => {
+        sound.currentTime = 0;
+        sound.play().catch(e => console.warn("Audio play blocked by browser policy. Interaction required first."));
+    });
 }
 
 function initTilt(el, config) {
@@ -281,29 +328,18 @@ function initTilt(el, config) {
     const perspective = config.perspectiva || 1000;
     const smooth = config.suavizado || 0.1;
 
-    // Aplicar perspectiva al padre si existe
-    if (el.parentElement) {
-        el.parentElement.style.perspective = `${perspective}px`;
-    }
+    if (el.parentElement) el.parentElement.style.perspective = `${perspective}px`;
 
     el.addEventListener('mousemove', (e) => {
         const rect = el.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        const centerX = rect.width / 2;
-        const centerY = rect.height / 2;
-
-        const rotateX = ((y - centerY) / centerY) * -max;
-        const rotateY = ((x - centerX) / centerX) * max;
-
-        const baseTransform = el.style.transform.replace(/rotateX\([^)]+\)/g, '').replace(/rotateY\([^)]+\)/g, '').trim();
-        el.style.transform = `${baseTransform} rotateX(${rotateX}deg) rotateY(${rotateY}deg)`.trim();
+        const rotateX = ((e.clientY - rect.top - rect.height / 2) / (rect.height / 2)) * -max;
+        const rotateY = ((e.clientX - rect.left - rect.width / 2) / (rect.width / 2)) * max;
+        el.style.setProperty('--dyn-tilt', `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`);
     });
 
     el.addEventListener('mouseleave', () => {
-        const baseTransform = el.style.transform.replace(/rotateX\([^)]+\)/g, '').replace(/rotateY\([^)]+\)/g, '').trim();
         el.style.transition = `transform ${smooth}s ease`;
-        el.style.transform = baseTransform;
+        el.style.setProperty('--dyn-tilt', `rotateX(0deg) rotateY(0deg)`);
         setTimeout(() => el.style.transition = '', smooth * 1000);
     });
 }
@@ -385,52 +421,126 @@ function initLookAt(el, config) {
     let currentRX = 0, currentRY = 0;
 
     window.addEventListener('mousemove', (e) => {
-        const x = (e.clientX / window.innerWidth) - 0.5;
-        const y = (e.clientY / window.innerHeight) - 0.5;
-        targetRY = x * factor;
-        targetRX = -y * factor;
+        targetRY = ((e.clientX / window.innerWidth) - 0.5) * factor;
+        targetRX = -((e.clientY / window.innerHeight) - 0.5) * factor;
     });
 
     function animate() {
         if (!el.isConnected) return;
         currentRX += (targetRX - currentRX) * smooth;
         currentRY += (targetRY - currentRY) * smooth;
-
-        const baseTransform = el.style.transform.replace(/rotateX\([^)]+\)/g, '').replace(/rotateY\([^)]+\)/g, '').trim();
-        el.style.transform = `${baseTransform} rotateX(${currentRX}deg) rotateY(${currentRY}deg)`.trim();
+        el.style.setProperty('--dyn-look-at', `rotateX(${currentRX}deg) rotateY(${currentRY}deg)`);
         requestAnimationFrame(animate);
     }
     animate();
 }
 
 function initAutoAnimate(el, config) {
-    const type = config.tipo || 'flotar'; // flotar, latir, girar
+    const type = config.tipo || 'flotar';
     const duration = config.duracion || 3;
     const intensity = config.intensidad || 10;
 
-    el.style.transition = `transform ${duration}s ease-in-out`;
-
-    let step = 0;
     function cycle() {
         if (!el.isConnected) return;
-        step++;
-
-        const baseTransform = el.style.transform.replace(/translateY\([^)]+\)/g, '').replace(/scale\([^)]+\)/g, '').replace(/rotateZ\([^)]+\)/g, '').trim();
-
+        let transform = '';
         if (type === 'flotar') {
             const y = Math.sin(Date.now() / (duration * 200)) * intensity;
-            el.style.transform = `${baseTransform} translateY(${y}px)`.trim();
+            transform = `translate3d(0, ${y}px, 0)`;
         } else if (type === 'latir') {
             const s = 1 + Math.sin(Date.now() / (duration * 200)) * (intensity / 100);
-            el.style.transform = `${baseTransform} scale(${s})`.trim();
+            transform = `scale(${s})`;
         } else if (type === 'girar') {
             const r = (Date.now() / (duration * 10)) % 360;
-            el.style.transform = `${baseTransform} rotateZ(${r}deg)`.trim();
+            transform = `rotateZ(${r}deg)`;
         }
-
+        el.style.setProperty('--dyn-auto-animate', transform);
         requestAnimationFrame(cycle);
     }
     cycle();
+}
+
+function initParallax(el, config) {
+    const factor = config.factor || 0.2;
+    const direccion = config.direccion || 'vertical';
+
+    window.addEventListener('scroll', () => {
+        if (!el.isConnected) return;
+        const scroll = window.scrollY;
+        const offset = scroll * factor;
+        const transform = direccion === 'vertical' ? `translate3d(0, ${offset}px, 0)` : `translate3d(${offset}px, 0, 0)`;
+        el.style.setProperty('--dyn-parallax', transform);
+    }, { passive: true });
+}
+
+function initTypewriter(el, config) {
+    const fullText = el.innerHTML;
+    const speed = config.velocidad || 50;
+    const delay = config.retraso || 0;
+    const loop = config.bucle || false;
+
+    el.innerHTML = '';
+
+    function start() {
+        if (!el.isConnected) return;
+        let i = 0;
+        el.innerHTML = '';
+
+        const timer = setInterval(() => {
+            if (!el.isConnected) { clearInterval(timer); return; }
+            if (i < fullText.length) {
+                if (fullText[i] === '<') {
+                    const end = fullText.indexOf('>', i);
+                    el.innerHTML += fullText.substring(i, end + 1);
+                    i = end + 1;
+                } else {
+                    el.innerHTML += fullText[i];
+                    i++;
+                }
+            } else {
+                clearInterval(timer);
+                if (loop) setTimeout(start, 2000);
+            }
+        }, speed);
+    }
+
+    setTimeout(start, delay);
+}
+
+function initMagnetic(el, config) {
+    const force = config.fuerza || 0.5;
+    const radius = config.radio || 200;
+    const smooth = config.suavizado || 0.2;
+
+    let targetX = 0, targetY = 0;
+    let currentX = 0, currentY = 0;
+
+    window.addEventListener('mousemove', (e) => {
+        if (!el.isConnected) return;
+        const rect = el.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+
+        const dx = e.clientX - centerX;
+        const dy = e.clientY - centerY;
+        const distance = Math.sqrt(dx*dx + dy*dy);
+
+        if (distance < radius) {
+            targetX = dx * force;
+            targetY = dy * force;
+        } else {
+            targetX = 0;
+            targetY = 0;
+        }
+    });
+
+    function animate() {
+        if (!el.isConnected) return;
+        currentX += (targetX - currentX) * smooth;
+        currentY += (targetY - currentY) * smooth;
+        el.style.setProperty('--dyn-magnetic', `translate3d(${currentX}px, ${currentY}px, 0)`);
+        requestAnimationFrame(animate);
+    }
+    animate();
 }
 
 function initScrollSystem(el, scrollDir) {

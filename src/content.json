@@ -756,6 +756,68 @@
                     }
                 }
             }
+        },
+
+        "LABORATORIO_TECNOLOGICO": {
+            "nombre": "Área de Pruebas de Mezcla de Funciones",
+            "width": "100%",
+            "min-height": "100vh",
+            "display": "flex",
+            "flex-direction": "column",
+            "align-items": "center",
+            "justify-content": "center",
+            "background": "#050505",
+            "padding": "100px 0",
+            "gap": "100px",
+
+            "titulo_lab": {
+                "texto": "Laboratorio de Mezclas V4",
+                "font-size": "3rem",
+                "font-weight": "900",
+                "color": "#fff",
+                "escribir": { "velocidad": 100, "retraso": 1000 }
+            },
+
+            "cubo_combinado": {
+                "nombre": "Elemento con Multiples Efectos",
+                "width": "250px",
+                "height": "250px",
+                "background": "linear-gradient(45deg, #f43f5e, #8b5cf6)",
+                "border-radius": "40px",
+                "display": "flex",
+                "align-items": "center",
+                "justify-content": "center",
+                "color": "#fff",
+                "font-weight": "bold",
+                "texto": "Magnetico + Tilt + Audio",
+                "cursor": "pointer",
+
+                "magnetico": { "fuerza": 0.4, "radio": 300, "suavizado": 0.1 },
+                "tilt": { "max": 30, "perspectiva": 1000 },
+                "audio": { "url": "https://www.soundjay.com/buttons/sounds/button-37a.mp3", "evento": "mouseenter", "volumen": 0.3 },
+                "auto-animar": { "tipo": "flotar", "duracion": 3, "intensidad": 15 }
+            },
+
+            "banner_paralaje": {
+                "nombre": "Banner con Scroll Parallax",
+                "width": "80%",
+                "height": "300px",
+                "background": "rgba(255,255,255,0.02)",
+                "border": "1px solid #333",
+                "border-radius": "20px",
+                "display": "flex",
+                "align-items": "center",
+                "justify-content": "center",
+                "overflow": "hidden",
+
+                "texto_paralaje": {
+                    "texto": "FLOTANDO EN EL ESPACIO",
+                    "font-size": "5rem",
+                    "font-weight": "900",
+                    "color": "rgba(255,255,255,0.05)",
+                    "paralaje": { "factor": 0.5, "direccion": "vertical" }
+                }
+            }
         }
     }
 }

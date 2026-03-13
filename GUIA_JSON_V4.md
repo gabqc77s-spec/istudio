@@ -171,7 +171,44 @@ Aplica una animación cíclica automática sin necesidad de CSS keyframes.
 
 ---
 
-## 6. Reglas de Oro para la IA
+## 6. Mezcla de Funciones y Transformaciones
+
+El motor V4 permite mezclar múltiples efectos en un solo elemento sin que se pisen entre sí. Esto es posible gracias a un sistema de variables CSS dinámicas.
+
+### Funciones Combinables:
+*   `paralaje`: Movimiento basado en el scroll.
+*   `escribir`: Efecto de máquina de escribir para el texto.
+*   `magnetico`: Atracción física al cursor.
+*   `audio`: Efectos sonoros.
+
+### Ejemplo de Mezcla Extrema:
+Un elemento que es magnético, tiene tilt 3D, flota automáticamente y suena al tocarlo.
+```json
+"mi_super_bloque": {
+  "magnetico": { "fuerza": 0.5 },
+  "tilt": { "max": 25 },
+  "auto-animar": { "tipo": "flotar" },
+  "audio": { "url": "ping.mp3", "evento": "mouseenter" }
+}
+```
+
+### `paralaje`
+*   `factor`: Velocidad (0.1 lento, 0.8 rápido).
+*   `direccion`: "vertical" o "horizontal".
+
+### `escribir`
+*   `velocidad`: Milisegundos entre letras.
+*   `retraso`: Espera inicial.
+*   `bucle`: true/false.
+
+### `audio`
+*   `url`: Ruta al archivo de sonido.
+*   `volumen`: 0.0 a 1.0.
+*   `evento`: "click", "mouseenter", "mouseleave".
+
+---
+
+## 7. Reglas de Oro para la IA
 
 1.  **Paths Precisos**: El `target` debe ser el path completo desde la raíz del JSON (ej: `pagina_principal.header.logo`).
 2.  **Unidades**: Siempre incluir unidades en los estilos (px, %, deg, etc.).
