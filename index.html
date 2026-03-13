@@ -21,9 +21,13 @@
     <div id="injector-panel" style="display: none; visibility: hidden; position: fixed; bottom: 90px; right: 20px; z-index: 1000; background: #18181b; border: 1px solid #27272a; border-radius: 12px; width: 350px; padding: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
         <h3 style="margin-top: 0; font-size: 14px; color: #a855f7;">Inyectar JSON Parcial</h3>
         <textarea id="injector-data" style="width: 100%; height: 200px; background: #09090b; border: 1px solid #27272a; border-radius: 6px; color: #e4e4e7; padding: 10px; font-family: monospace; font-size: 11px; resize: vertical;" placeholder='{ "pagina_principal": { ... } }'></textarea>
-        <div style="margin-top: 10px; display: flex; gap: 10px;">
-            <button id="inject-now" style="flex: 1; background: #9333ea; color: white; border: none; padding: 8px; border-radius: 6px; cursor: pointer; font-weight: 600;">Inyectar Cambios</button>
-            <button id="close-injector" style="background: #27272a; color: #e4e4e7; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer;">Cerrar</button>
+        <div style="margin-top: 10px; display: flex; gap: 10px; flex-wrap: wrap;">
+            <button id="inject-now" style="flex: 2; background: #9333ea; color: white; border: none; padding: 8px; border-radius: 6px; cursor: pointer; font-weight: 600;">Inyectar Cambios</button>
+            <button id="inspect-now" style="flex: 1; background: #3b82f6; color: white; border: none; padding: 8px; border-radius: 6px; cursor: pointer; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 4px;">
+                <span class="material-icons-round" style="font-size: 16px;">search</span>
+                Capturar
+            </button>
+            <button id="close-injector" style="width: 100%; background: #27272a; color: #e4e4e7; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer;">Cerrar</button>
         </div>
     </div>
 
@@ -146,6 +150,9 @@
         const injectorPanel = document.getElementById('injector-panel');
         const injectorData = document.getElementById('injector-data');
         const injectNowBtn = document.getElementById('inject-now');
+        const inspectNowBtn = document.getElementById('inspect-now');
+
+        let isSelectionMode = false;
 
         function updateInjPanel(panel, l, t) {
             panel.style.left = Math.max(10, l - 350 + 60) + 'px';
@@ -171,6 +178,67 @@
                     injectNowBtn.style.background = '#9333ea';
                 }, 2000);
             } catch (err) { alert('Error JSON: ' + err.message); }
+        };
+
+        inspectNowBtn.onclick = () => {
+            isSelectionMode = !isSelectionMode;
+            if (isSelectionMode) {
+                inspectNowBtn.style.background = '#10b981';
+                inspectNowBtn.innerHTML = '<span class="material-icons-round" style="font-size: 16px;">near_me</span> Seleccionando...';
+                document.body.style.cursor = 'crosshair';
+
+                // Overlay informativo
+                const tip = document.createElement('div');
+                tip.id = 'inspect-tip';
+                tip.style.cssText = 'position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #10b981; color: white; padding: 10px 20px; border-radius: 30px; z-index: 9999; font-weight: 600; box-shadow: 0 10px 25px rgba(0,0,0,0.3); pointer-events: none;';
+                tip.textContent = 'Haz clic en un elemento para capturar su JSON';
+                document.body.appendChild(tip);
+
+                // Evento único de captura
+                const captureHandler = (e) => {
+                    const target = e.target.closest('[data-path]');
+                    if (target && isSelectionMode) {
+                        e.preventDefault();
+                        e.stopPropagation();
+
+                        const path = target.dataset.path;
+                        const json = window.get_json_v4_por_path(path);
+
+                        if (json) {
+                            // Construimos un objeto que represente la ruta para inyectar después fácilmente
+                            // O simplemente el fragmento. El usuario pidió "el JSON que utiliza".
+                            // Para ser útil en el inyector, lo envolvemos en su ruta
+                            const keys = path.split('.');
+                            let wrapped = json;
+                            // Opcional: envolver en la ruta completa para reinyección inmediata
+                            // for (let i = keys.length - 1; i >= 0; i--) {
+                            //    wrapped = { [keys[i]]: wrapped };
+                            // }
+
+                            injectorData.value = JSON.stringify(json, null, 2);
+
+                            // Visual feedback
+                            const originalOutline = target.style.outline;
+                            target.style.outline = '4px solid #10b981';
+                            setTimeout(() => target.style.outline = originalOutline, 1000);
+                        }
+
+                        // Desactivar modo
+                        stopSelection();
+                    }
+                };
+
+                window.addEventListener('click', captureHandler, { capture: true, once: true });
+
+                function stopSelection() {
+                    isSelectionMode = false;
+                    inspectNowBtn.style.background = '#3b82f6';
+                    inspectNowBtn.innerHTML = '<span class="material-icons-round" style="font-size: 16px;">search</span> Capturar';
+                    document.body.style.cursor = 'default';
+                    const tip = document.getElementById('inspect-tip');
+                    if (tip) tip.remove();
+                }
+            }
         };
 
         // --- AI ASSISTANT ---
