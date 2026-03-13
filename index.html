@@ -3,520 +3,244 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Impulsa V4</title>
-    <link rel="stylesheet" href="./src/showcase.css">
+    <title>Impulsa V4 | Multiverse OS</title>
+    <link rel="stylesheet" href="/src/showcase.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-</head>
-<body style="background: #030014; color: #ffffff; font-family: 'Inter', system-ui, sans-serif; min-height: 100vh; margin: 0; padding: 0;">
-    <!-- Scene Wrapper para el contenido 3D, permitiendo que la UI fija sea relativa al viewport -->
-    <div id="scene-wrapper" style="width: 100%; min-height: 100vh; perspective: 1000px; transform-style: preserve-3d; overflow-x: hidden;">
-        <div id="app" style="width: 100%; min-height: 100vh; position: relative; transform-style: preserve-3d;"></div>
-    </div>
-
-    <!-- UI Inyector -->
-    <div id="injector-btn" style="position: fixed; bottom: 20px; right: 20px; z-index: 1000; background: #a855f7; color: white; width: 60px; height: 60px; border-radius: 50%; cursor: move; font-size: 24px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.3); transition: transform 0.3s ease; user-select: none; touch-action: none;">
-        💉
-    </div>
-
-    <div id="injector-panel" style="display: none; visibility: hidden; position: fixed; bottom: 90px; right: 20px; z-index: 1000; background: #18181b; border: 1px solid #27272a; border-radius: 12px; width: 350px; padding: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
-        <h3 style="margin-top: 0; font-size: 14px; color: #a855f7;">Inyectar JSON Parcial</h3>
-        <textarea id="injector-data" style="width: 100%; height: 200px; background: #09090b; border: 1px solid #27272a; border-radius: 6px; color: #e4e4e7; padding: 10px; font-family: monospace; font-size: 11px; resize: vertical;" placeholder='{ "pagina_principal": { ... } }'></textarea>
-        <div style="margin-top: 10px; display: flex; gap: 10px; flex-wrap: wrap;">
-            <button id="inject-now" style="flex: 2; background: #9333ea; color: white; border: none; padding: 8px; border-radius: 6px; cursor: pointer; font-weight: 600;">Inyectar Cambios</button>
-            <button id="inspect-now" style="flex: 1; background: #3b82f6; color: white; border: none; padding: 8px; border-radius: 6px; cursor: pointer; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 4px;">
-                <span class="material-icons-round" style="font-size: 16px;">search</span>
-                Capturar
-            </button>
-            <button id="close-injector" style="width: 100%; background: #27272a; color: #e4e4e7; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer;">Cerrar</button>
-        </div>
-    </div>
-
-    <!-- UI Asistente IA -->
-    <div id="ai-bubble" style="position: fixed; bottom: 20px; right: 100px; z-index: 1000; background: #06b6d4; color: white; width: 60px; height: 60px; border-radius: 50%; cursor: move; font-size: 24px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.3); transition: transform 0.3s ease; user-select: none; touch-action: none;">
-        🤖
-    </div>
-
-    <!-- UI Panel de Revisión -->
-    <div id="review-panel" style="display: none; visibility: hidden; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 2000; background: #09090b; border: 1px solid #27272a; border-radius: 16px; width: 450px; max-height: 80vh; flex-direction: column; box-shadow: 0 30px 60px rgba(0,0,0,0.8); overflow: hidden; color: #e4e4e7;">
-        <div style="background: #18181b; padding: 15px 20px; border-bottom: 1px solid #27272a; display: flex; justify-content: space-between; align-items: center;">
-            <div style="display: flex; align-items: center; gap: 10px;">
-                <span class="material-icons-round" style="color: #a855f7;">architecture</span>
-                <span style="font-weight: 700; font-size: 15px;">Validación Arquitectónica</span>
-            </div>
-            <div id="review-status-tag" style="font-size: 10px; background: #3b82f6; padding: 2px 8px; border-radius: 10px; text-transform: uppercase; font-weight: 800;">Pendiente</div>
-        </div>
-
-        <div id="review-content" style="flex: 1; overflow-y: auto; padding: 20px; font-family: monospace; font-size: 12px; line-height: 1.5;">
-            <!-- Aquí se inyectará el diff o el JSON -->
-        </div>
-
-        <div id="review-warnings" style="padding: 10px 20px; background: rgba(239, 68, 68, 0.1); border-top: 1px solid rgba(239, 68, 68, 0.2); display: none;">
-            <div style="display: flex; gap: 8px; color: #f87171;">
-                <span class="material-icons-round" style="font-size: 18px;">warning</span>
-                <div style="font-size: 11px;">
-                    <strong style="display: block; margin-bottom: 2px;">Posibles Inconsistencias:</strong>
-                    <ul id="warnings-list" style="margin: 0; padding-left: 15px;"></ul>
-                </div>
-            </div>
-        </div>
-
-        <div style="padding: 20px; border-top: 1px solid #27272a; display: flex; gap: 12px; background: #09090b;">
-            <button id="review-cancel" style="flex: 1; background: #27272a; color: #e4e4e7; border: none; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: 600;">Rechazar</button>
-            <button id="review-accept" style="flex: 2; background: #9333ea; color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: 600;">Aplicar Cambios</button>
-        </div>
-    </div>
-
-    <div id="ai-panel" style="display: none; visibility: hidden; position: fixed; bottom: 90px; right: 100px; z-index: 1000; background: #0f172a; border: 1px solid #1e293b; border-radius: 16px; width: 350px; height: 450px; flex-direction: column; box-shadow: 0 20px 50px rgba(0,0,0,0.5); overflow: hidden;">
-        <div style="background: #1e293b; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #334155;">
-            <span style="font-weight: 600; font-size: 14px; color: #38bdf8;">Arquitecto de Impulsa</span>
-            <button id="close-ai" style="background: none; border: none; color: #94a3b8; cursor: pointer; font-size: 18px;">&times;</button>
-        </div>
-        <div id="ai-messages" style="flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; scrollbar-width: thin; scrollbar-color: #334155 transparent;">
-            <div style="background: #1e293b; color: #e2e8f0; padding: 8px 12px; border-radius: 12px 12px 12px 0; font-size: 13px; align-self: flex-start; max-width: 85%;">
-                Hola Gabriel, soy tu Arquitecto IA. ¿Qué cambio estructural quieres realizar hoy?
-            </div>
-        </div>
-        <div id="ai-attachment-preview" style="display: none; background: #1e293b; padding: 8px 15px; border-top: 1px solid #334155; font-size: 11px; color: #38bdf8; align-items: center; justify-content: space-between;">
-            <div style="display: flex; align-items: center; gap: 5px; overflow: hidden; white-space: nowrap;">
-                <span class="material-icons-round" style="font-size: 14px;">terminal</span>
-                <span id="ai-attachment-name" style="text-overflow: ellipsis; overflow: hidden;">Elemento seleccionado</span>
-            </div>
-            <button id="ai-clear-attachment" style="background: none; border: none; color: #ef4444; cursor: pointer; font-size: 16px; padding: 0;">&times;</button>
-        </div>
-        <div style="padding: 15px; border-top: 1px solid #1e293b; background: #0f172a; display: flex; gap: 8px; align-items: center;">
-            <button id="ai-attach" style="background: #1e293b; border: 1px solid #334155; border-radius: 8px; color: #94a3b8; width: 36px; height: 36px; cursor: pointer; display: flex; align-items: center; justify-content: center;" title="Adjuntar elemento">
-                <span class="material-icons-round" style="font-size: 20px;">add_link</span>
-            </button>
-            <input type="text" id="ai-input" placeholder="Ej: Cambia el hero a modo oscuro..." style="flex: 1; background: #1e293b; border: 1px solid #334155; border-radius: 8px; color: white; padding: 8px 12px; font-size: 13px; outline: none;">
-            <button id="ai-send" style="background: #0ea5e9; border: none; border-radius: 8px; color: white; width: 36px; height: 36px; cursor: pointer; display: flex; align-items: center; justify-content: center;">
-                <span class="material-icons-round" style="font-size: 20px;">send</span>
-            </button>
-        </div>
-    </div>
-
-    <!-- Google Material Icons -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+</head>
+<body style="background: #030014; color: #ffffff; font-family: 'Inter', system-ui, sans-serif; min-height: 100vh; margin: 0; padding: 0; overflow-x: hidden;">
+
+    <div id="scene-wrapper" style="width: 100vw; height: 100vh; perspective: 1200px; transform-style: preserve-3d; overflow: hidden;">
+        <div id="app" style="width: 100%; height: 100%; position: relative; transform-style: preserve-3d;"></div>
+    </div>
+
+    <!-- UI Buttons (Bottom Right) -->
+    <div id="ui-controls" style="position: fixed; bottom: 20px; right: 20px; display: flex; gap: 15px; z-index: 100000;">
+        <!-- AI Bubble -->
+        <div id="ai-bubble" style="background: #06b6d4; color: white; width: 60px; height: 60px; border-radius: 50%; cursor: pointer; font-size: 24px; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 30px rgba(6,182,212,0.3); transition: all 0.3s ease;">
+            <span class="material-icons-round">smart_toy</span>
+        </div>
+        <!-- Injector Bubble -->
+        <div id="injector-btn" style="background: #a855f7; color: white; width: 60px; height: 60px; border-radius: 50%; cursor: pointer; font-size: 24px; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 30px rgba(168,85,247,0.3); transition: all 0.3s ease;">
+            <span class="material-icons-round">auto_fix_high</span>
+        </div>
+    </div>
+
+    <!-- AI Panel -->
+    <div id="ai-panel" style="display: none; position: fixed; bottom: 100px; right: 20px; z-index: 100000; background: #0f172a; border: 1px solid #1e293b; border-radius: 20px; width: 380px; height: 500px; flex-direction: column; box-shadow: 0 30px 60px rgba(0,0,0,0.8); overflow: hidden;">
+        <div style="background: #1e293b; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #334155;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <span class="material-icons-round" style="color: #38bdf8;">architecture</span>
+                <span style="font-weight: 700; font-size: 14px; color: #f8fafc;">ARQUITECTO IA</span>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button id="ai-refresh" style="background: none; border: none; color: #94a3b8; cursor: pointer;" title="Refrescar Contexto"><span class="material-icons-round" style="font-size: 20px;">refresh</span></button>
+                <button id="close-ai" style="background: none; border: none; color: #94a3b8; cursor: pointer;"><span class="material-icons-round">close</span></button>
+            </div>
+        </div>
+        <div id="ai-messages" style="flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 12px; background: #020617;">
+            <!-- Messages here -->
+        </div>
+        <div id="ai-attachment-preview" style="display: none; background: #1e293b; padding: 10px 20px; border-top: 1px solid #334155; align-items: center; justify-content: space-between;">
+            <span id="ai-attachment-name" style="font-size: 11px; color: #38bdf8; font-family: monospace;"></span>
+            <button id="ai-clear-attachment" style="background: none; border: none; color: #ef4444; cursor: pointer;"><span class="material-icons-round" style="font-size: 18px;">cancel</span></button>
+        </div>
+        <div style="padding: 15px; background: #0f172a; border-top: 1px solid #1e293b; display: flex; gap: 10px;">
+            <button id="ai-attach" style="background: #1e293b; border: 1px solid #334155; border-radius: 12px; color: #94a3b8; width: 45px; height: 45px; cursor: pointer; display: flex; align-items: center; justify-content: center;"><span class="material-icons-round">attach_file</span></button>
+            <input type="text" id="ai-input" placeholder="Pregunta algo al Arquitecto..." style="flex: 1; background: #1e293b; border: 1px solid #334155; border-radius: 12px; color: white; padding: 10px 15px; outline: none; font-size: 14px;">
+            <button id="ai-send" style="background: #0ea5e9; color: white; border: none; border-radius: 12px; width: 45px; height: 45px; cursor: pointer; display: flex; align-items: center; justify-content: center;"><span class="material-icons-round">send</span></button>
+        </div>
+    </div>
+
+    <!-- Injector Panel -->
+    <div id="injector-panel" style="display: none; position: fixed; bottom: 100px; right: 20px; z-index: 100000; background: #18181b; border: 1px solid #27272a; border-radius: 20px; width: 400px; padding: 20px; box-shadow: 0 30px 60px rgba(0,0,0,0.8);">
+        <h3 style="margin: 0 0 15px 0; font-size: 14px; color: #a855f7; display: flex; align-items: center; gap: 10px;">
+            <span class="material-icons-round">code</span> INYECTOR MANUAL
+        </h3>
+        <textarea id="injector-data" style="width: 100%; height: 250px; background: #09090b; border: 1px solid #27272a; border-radius: 12px; color: #a5b4fc; padding: 15px; font-family: monospace; font-size: 12px; outline: none; resize: none;"></textarea>
+        <div style="margin-top: 15px; display: flex; gap: 10px;">
+            <label style="display: flex; align-items: center; gap: 8px; color: #94a3b8; font-size: 12px; cursor: pointer;">
+                <input type="checkbox" id="inject-replace" style="accent-color: #a855f7;"> Reemplazar Estado
+            </label>
+        </div>
+        <div style="margin-top: 15px; display: flex; gap: 10px;">
+            <button id="inject-now" style="flex: 1; background: #9333ea; color: white; border: none; padding: 12px; border-radius: 12px; cursor: pointer; font-weight: 700;">INYECTAR</button>
+            <button id="inspect-now" style="background: #3b82f6; color: white; border: none; padding: 12px 20px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                <span class="material-icons-round">touch_app</span> CAPTURAR
+            </button>
+        </div>
+        <button id="close-injector" style="margin-top: 10px; width: 100%; background: transparent; color: #52525b; border: none; padding: 5px; cursor: pointer; font-size: 12px; font-weight: bold;">CERRAR</button>
+    </div>
+
+    <!-- Review Panel (Modal) -->
+    <div id="review-panel" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); z-index: 200000; align-items: center; justify-content: center; padding: 20px;">
+        <div style="background: #09090b; border: 1px solid #27272a; border-radius: 24px; width: 600px; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 50px 100px rgba(0,0,0,0.9);">
+            <div style="padding: 20px 30px; border-bottom: 1px solid #27272a; background: #18181b; display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-weight: 800; font-size: 16px; color: #a855f7; letter-spacing: 1px;">REVISIÓN ARQUITECTÓNICA</span>
+                <div id="review-status-tag" style="padding: 4px 12px; border-radius: 20px; font-size: 10px; font-weight: 900; text-transform: uppercase;"></div>
+            </div>
+            <div id="review-content" style="flex: 1; overflow-y: auto; padding: 30px; background: #020617; font-family: 'JetBrains Mono', monospace; font-size: 12px;"></div>
+            <div id="review-warnings" style="padding: 15px 30px; background: rgba(239, 68, 68, 0.1); border-top: 1px solid rgba(239, 68, 68, 0.2); display: none; color: #f87171;">
+                <div style="font-weight: bold; margin-bottom: 5px;">Avisos:</div>
+                <ul id="warnings-list" style="margin: 0; padding-left: 20px; font-size: 11px;"></ul>
+            </div>
+            <div style="padding: 30px; display: flex; gap: 15px; background: #09090b;">
+                <button id="review-cancel" style="flex: 1; background: #27272a; color: white; border: none; padding: 15px; border-radius: 12px; cursor: pointer; font-weight: 700;">RECHAZAR</button>
+                <button id="review-accept" style="flex: 2; background: #9333ea; color: white; border: none; padding: 15px; border-radius: 12px; cursor: pointer; font-weight: 700;">APLICAR CAMBIOS</button>
+            </div>
+        </div>
+    </div>
 
     <script type="module">
         import { sendMessage, setInitialContext } from './src/ai_assistant.js';
 
-        // Helper para UI Flotante Robusta
-        window.initFloatingUI = function(buttonId, panelId, updateCallback, displayType = 'block') {
-            const button = document.getElementById(buttonId);
-            const panel = document.getElementById(panelId);
-
-            let startX, startY, initialLeft, initialTop;
-            let isDragging = false;
-            let dragStartTime = 0;
-
-            button.addEventListener('pointerdown', (e) => {
-                if (e.pointerType === 'mouse' && e.button !== 0) return;
-
-                const rect = button.getBoundingClientRect();
-                startX = e.clientX;
-                startY = e.clientY;
-                initialLeft = rect.left;
-                initialTop = rect.top;
-                isDragging = false;
-                dragStartTime = Date.now();
-
-                try {
-                    button.setPointerCapture(e.pointerId);
-                } catch (err) {
-                    console.warn("setPointerCapture failed:", err);
-                }
-
-                const onPointerMove = (me) => {
-                    const dx = me.clientX - startX;
-                    const dy = me.clientY - startY;
-                    const distance = Math.sqrt(dx*dx + dy*dy);
-
-                    if (!isDragging && distance > 15) {
-                        isDragging = true;
-                        button.style.transition = 'none';
-                    }
-
-                    if (isDragging) {
-                        const nl = initialLeft + dx;
-                        const nt = initialTop + dy;
-                        button.style.left = nl + 'px';
-                        button.style.top = nt + 'px';
-                        button.style.bottom = 'auto';
-                        button.style.right = 'auto';
-                        if (panel.style.display !== 'none' && panel.style.visibility !== 'hidden') {
-                            updateCallback(panel, nl, nt);
-                        }
-                    }
-                };
-
-                const onPointerUp = (ue) => {
-                    try {
-                        button.releasePointerCapture(e.pointerId);
-                    } catch (err) {}
-                    button.removeEventListener('pointermove', onPointerMove);
-                    button.removeEventListener('pointerup', onPointerUp);
-
-                    if (isDragging) {
-                        button.style.transition = 'transform 0.3s ease';
-                        // Prevenir que el click se procese si fue arrastre
-                        button.dataset.preventClick = "true";
-                        setTimeout(() => delete button.dataset.preventClick, 100);
-                    } else {
-                        delete button.dataset.preventClick;
-                    }
-                };
-
-                button.addEventListener('pointermove', onPointerMove);
-                button.addEventListener('pointerup', onPointerUp);
-            });
-
-            button.addEventListener('click', (e) => {
-                if (button.dataset.preventClick === "true") return;
-
-                const isHidden = panel.style.display === 'none' || !panel.style.display;
-                if (isHidden) {
-                    panel.style.display = displayType;
-                    panel.style.visibility = 'visible';
-                    const r = button.getBoundingClientRect();
-                    updateCallback(panel, r.left, r.top);
-
-                    // Envío automático de contexto completo al abrir por primera vez
-                    if (buttonId === 'ai-bubble') {
-                        Promise.all([
-                            fetch('./src/content.json').then(r => r.json()),
-                            fetch('./src/showcase.css').then(r => r.text()),
-                            fetch('./src/showcase.js').then(r => r.text())
-                        ]).then(([json, css, js]) => {
-                            const wasSet = setInitialContext(json, css, js);
-                            if (wasSet) {
-                                addMessage("Hola Gabriel, soy tu Arquitecto IA. He analizado tu content.json, CSS y el motor V4. ¿Cómo puedo ayudarte hoy?", "ai");
-                            }
-                        }).catch(err => console.error("Error al cargar contexto de IA:", err));
-                    }
-                } else {
-                    panel.style.display = 'none';
-                    panel.style.visibility = 'hidden';
-                }
-            });
-        }
-
-        // --- INYECTOR ---
-        const injectorPanel = document.getElementById('injector-panel');
-        const injectorData = document.getElementById('injector-data');
-        const injectNowBtn = document.getElementById('inject-now');
-        const inspectNowBtn = document.getElementById('inspect-now');
-
-        let isSelectionMode = false;
-
-        function updateInjPanel(panel, l, t) {
-            panel.style.left = Math.max(10, l - 350 + 60) + 'px';
-            panel.style.top = ((t - 310) < 10 ? t + 70 : t - 310) + 'px';
-            panel.style.bottom = 'auto';
-            panel.style.right = 'auto';
-        }
-        initFloatingUI('injector-btn', 'injector-panel', updateInjPanel, 'block');
-
-        document.getElementById('close-injector').onclick = () => {
-            injectorPanel.style.display = 'none';
-            injectorPanel.style.visibility = 'hidden';
-        };
-
-        injectNowBtn.onclick = () => {
-            try {
-                const input = JSON.parse(injectorData.value);
-                if (window.inyectar_cambios_v4) window.inyectar_cambios_v4(input);
-                injectNowBtn.textContent = '¡Inyectado!';
-                injectNowBtn.style.background = '#10b981';
-                setTimeout(() => {
-                    injectNowBtn.textContent = 'Inyectar Cambios';
-                    injectNowBtn.style.background = '#9333ea';
-                }, 2000);
-            } catch (err) { alert('Error JSON: ' + err.message); }
-        };
-
-        inspectNowBtn.onclick = () => {
-            isSelectionMode = !isSelectionMode;
-            if (isSelectionMode) {
-                inspectNowBtn.style.background = '#10b981';
-                inspectNowBtn.innerHTML = '<span class="material-icons-round" style="font-size: 16px;">near_me</span> Seleccionando...';
-                document.body.style.cursor = 'crosshair';
-
-                // Overlay informativo
-                const tip = document.createElement('div');
-                tip.id = 'inspect-tip';
-                tip.style.cssText = 'position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #10b981; color: white; padding: 10px 20px; border-radius: 30px; z-index: 9999; font-weight: 600; box-shadow: 0 10px 25px rgba(0,0,0,0.3); pointer-events: none;';
-                tip.textContent = 'Haz clic en un elemento para capturar su JSON';
-                document.body.appendChild(tip);
-
-                // Evento único de captura
-                const captureHandler = (e) => {
-                    const target = e.target.closest('[data-path]');
-                    if (target && isSelectionMode) {
-                        e.preventDefault();
-                        e.stopPropagation();
-
-                        const path = target.dataset.path;
-                        const json = window.get_json_v4_por_path_jerarquico(path);
-
-                        if (json) {
-                            injectorData.value = JSON.stringify(json, null, 2);
-
-                            // Visual feedback
-                            const originalOutline = target.style.outline;
-                            target.style.outline = '4px solid #10b981';
-                            setTimeout(() => target.style.outline = originalOutline, 1000);
-                        }
-
-                        // Desactivar modo
-                        stopSelection();
-                    }
-                };
-
-                window.addEventListener('click', captureHandler, { capture: true, once: true });
-
-                function stopSelection() {
-                    isSelectionMode = false;
-                    inspectNowBtn.style.background = '#3b82f6';
-                    inspectNowBtn.innerHTML = '<span class="material-icons-round" style="font-size: 16px;">search</span> Capturar';
-                    document.body.style.cursor = 'default';
-                    const tip = document.getElementById('inspect-tip');
-                    if (tip) tip.remove();
-                }
-            }
-        };
-
-        // --- AI ASSISTANT ---
+        // --- Core UI Logic ---
+        const aiBubble = document.getElementById('ai-bubble');
         const aiPanel = document.getElementById('ai-panel');
         const aiInput = document.getElementById('ai-input');
         const aiSend = document.getElementById('ai-send');
         const aiMessages = document.getElementById('ai-messages');
-        const aiAttach = document.getElementById('ai-attach');
-        const aiClearAttach = document.getElementById('ai-clear-attachment');
-        const aiAttachPreview = document.getElementById('ai-attachment-preview');
-        const aiAttachName = document.getElementById('ai-attachment-name');
+        const aiRefresh = document.getElementById('ai-refresh');
+        const injectorBtn = document.getElementById('injector-btn');
+        const injectorPanel = document.getElementById('injector-panel');
 
-        let attachedJsonData = null;
-        let isAiSelecting = false;
-
-        // Inicializar estados para evitar discrepancias en tests
-        aiPanel.style.display = 'none';
-        aiPanel.style.visibility = 'hidden';
-        injectorPanel.style.display = 'none';
-        injectorPanel.style.visibility = 'hidden';
-
-        function updateAiPanel(panel, l, t) {
-            panel.style.left = Math.max(10, l - 350 + 60) + 'px';
-            panel.style.top = ((t - 460) < 10 ? t + 70 : t - 460) + 'px';
-            panel.style.bottom = 'auto';
-            panel.style.right = 'auto';
+        function togglePanel(btn, panel) {
+            const isVisible = panel.style.display === 'flex' || panel.style.display === 'block';
+            panel.style.display = isVisible ? 'none' : (panel.id === 'ai-panel' ? 'flex' : 'block');
+            if (!isVisible && panel.id === 'ai-panel' && aiMessages.children.length === 0) {
+                primeAI();
+            }
         }
-        initFloatingUI('ai-bubble', 'ai-panel', updateAiPanel, 'flex');
 
-        document.getElementById('close-ai').onclick = () => {
-            aiPanel.style.display = 'none';
-            aiPanel.style.visibility = 'hidden';
+        async function primeAI() {
+            try {
+                const content = window.get_v4_current_content();
+                const resCss = await fetch('./src/showcase.css');
+                const css = await resCss.text();
+                const resJs = await fetch('./src/showcase.js');
+                const js = await resJs.text();
+
+                setInitialContext(content, css, js);
+                addMessage("Hola Gabriel, soy tu Arquitecto IA. He analizado el motor V4 y el estado actual de tu aplicación. ¿Qué vamos a construir?", "ai");
+            } catch(e) { console.error("Prime AI error:", e); }
+        }
+
+        aiBubble.onclick = () => {
+            if (document.getElementById('ui-controls').dataset.preventClick) return;
+            togglePanel(aiBubble, aiPanel);
         };
+        injectorBtn.onclick = () => {
+            if (document.getElementById('ui-controls').dataset.preventClick) return;
+            togglePanel(injectorBtn, injectorPanel);
+        };
+        document.getElementById('close-ai').onclick = () => aiPanel.style.display = 'none';
+        document.getElementById('close-injector').onclick = () => injectorPanel.style.display = 'none';
+        aiRefresh.onclick = () => primeAI();
 
-        // --- LOGIC ---
-        window.aiSendMessage = sendMessage;
+        // --- Dragging ---
+        function makeDraggable(el, trigger) {
+            let startX, startY, initialLeft, initialTop;
+            let dragging = false;
 
-        // --- VALIDACION ---
-        const VALID_CSS_PROPS = new Set([
-            'background', 'background-color', 'background-image', 'color', 'font-size', 'font-weight',
-            'padding', 'margin', 'border', 'border-radius', 'width', 'height', 'display', 'flex-direction',
-            'align-items', 'justify-content', 'position', 'top', 'left', 'right', 'bottom', 'transform',
-            'transition', 'perspective', 'transform-style', 'box-shadow', 'text-shadow', 'opacity',
-            'z-index', 'cursor', 'overflow', 'gap', 'line-height', 'letter-spacing', 'text-align'
-        ]);
+            trigger.onpointerdown = (e) => {
+                const rect = el.getBoundingClientRect();
+                startX = e.clientX; startY = e.clientY;
+                initialLeft = rect.left; initialTop = rect.top;
+                dragging = false;
 
-        function validateProposal(obj, path = '', warnings = []) {
-            for (const key in obj) {
-                const val = obj[key];
-                const currentPath = path ? `${path}.${key}` : key;
-
-                // Si es un estilo (no es objeto o es un reservado del motor como hover)
-                if (typeof val !== 'object' || val === null) {
-                    // Ignorar reservadas del motor
-                    if (!['nombre', 'texto', 'scroll'].includes(key)) {
-                        if (!VALID_CSS_PROPS.has(key) && !key.startsWith('--')) {
-                            warnings.push(`Propiedad desconocida: "${key}" en ${path}`);
-                        }
+                const move = (me) => {
+                    const dx = me.clientX - startX;
+                    const dy = me.clientY - startY;
+                    if (!dragging && (Math.abs(dx) > 10 || Math.abs(dy) > 10)) {
+                        dragging = true;
+                        el.style.transition = 'none';
+                        trigger.setPointerCapture(e.pointerId);
                     }
-                } else {
-                    // Si es un objeto pero no es un comportamiento reservado, seguimos validando
-                    if (!['hover', 'hover-hermanos', 'click'].includes(key)) {
-                        validateProposal(val, currentPath, warnings);
-                    } else if (key === 'hover' || key === 'click') {
-                        // Validar estilos dentro de hover/click
-                        validateProposal(val, currentPath, warnings);
+                    if (dragging) {
+                        el.style.left = (initialLeft + dx) + 'px';
+                        el.style.top = (initialTop + dy) + 'px';
+                        el.style.bottom = 'auto';
+                        el.style.right = 'auto';
                     }
-                }
-            }
-            return warnings;
+                };
+                const up = (ue) => {
+                    if (dragging) {
+                        try { trigger.releasePointerCapture(ue.pointerId); } catch(e) {}
+                        trigger.dataset.preventClick = "true";
+                        setTimeout(() => delete trigger.dataset.preventClick, 100);
+                    }
+                    window.removeEventListener('pointermove', move);
+                    window.removeEventListener('pointerup', up);
+                };
+                window.addEventListener('pointermove', move);
+                window.addEventListener('pointerup', up);
+            };
         }
+        // Draggable container of buttons
+        makeDraggable(document.getElementById('ui-controls'), document.getElementById('ui-controls'));
 
-        let pendingProposal = null;
-        const reviewPanel = document.getElementById('review-panel');
-        const reviewContent = document.getElementById('review-content');
-        const reviewWarnings = document.getElementById('review-warnings');
-        const warningsList = document.getElementById('warnings-list');
+        // --- AI Interactivity ---
+        let attachedData = null;
+        let isSelecting = false;
 
-        function showReview(proposal) {
-            pendingProposal = proposal;
-            const warnings = validateProposal(proposal.partial || proposal);
-
-            reviewContent.innerHTML = `<pre style="color: #a78bfa;">// Propuesta de cambio:\n${JSON.stringify(proposal, null, 2)}</pre>`;
-
-            if (warnings.length > 0) {
-                reviewWarnings.style.display = 'block';
-                warningsList.innerHTML = warnings.map(w => `<li>${w}</li>`).join('');
-                document.getElementById('review-status-tag').style.background = '#ef4444';
-                document.getElementById('review-status-tag').textContent = 'Inconsistencias';
-            } else {
-                reviewWarnings.style.display = 'none';
-                document.getElementById('review-status-tag').style.background = '#10b981';
-                document.getElementById('review-status-tag').textContent = 'Válido';
-            }
-
-            reviewPanel.style.display = 'flex';
-            reviewPanel.style.visibility = 'visible';
-        }
-
-        document.getElementById('review-accept').onclick = () => {
-            if (window.inyectar_cambios_v4 && pendingProposal) {
-                window.inyectar_cambios_v4(pendingProposal);
-                addMessage("✅ Cambio arquitectónico aplicado con éxito.", "ai");
-            }
-            closeReview();
-        };
-
-        document.getElementById('review-cancel').onclick = async () => {
-            if (pendingProposal) {
-                const reason = "El usuario ha cancelado la propuesta de cambio. Por favor, espera su instrucción para comprender qué fue lo que no fue factible o no le gustó.";
-                // Enviar mensaje automático al modelo para que sepa del rechazo
-                addMessage("❌ Propuesta rechazada por el usuario.", "user");
-                const resp = await sendMessage(reason);
-                addMessage(resp.text, "ai");
-            }
-            closeReview();
-        };
-
-        function closeReview() {
-            reviewPanel.style.display = 'none';
-            reviewPanel.style.visibility = 'hidden';
-            pendingProposal = null;
-        }
-
-        async function handleAISend() {
-            const text = aiInput.value.trim();
-            if (!text && !attachedJsonData) return;
-
-            const currentAttached = attachedJsonData;
-
-            // Add user message visually
-            let visualText = text;
-            if (currentAttached) visualText += " 📎 [Elemento adjunto]";
-            addMessage(visualText, 'user');
-
-            aiInput.value = '';
-            clearAttachment();
-
-            // Loading state
-            const loadingId = addMessage('...', 'ai', true);
-
-            const response = await sendMessage(text, currentAttached);
-
-            // Remove loading
-            const loadingEl = document.getElementById(loadingId);
-            if (loadingEl) loadingEl.remove();
-
-            // Add AI response
-            addMessage(response.text, 'ai');
-
-            // Si es una propuesta de cambio, mostrar el panel de revisión
-            if (response.type === 'review') {
-                showReview(response.data);
-            }
-        }
-
-        function clearAttachment() {
-            attachedJsonData = null;
-            aiAttachPreview.style.display = 'none';
-            aiAttach.style.color = '#94a3b8';
-            aiAttach.style.background = '#1e293b';
-        }
-
-        aiClearAttach.onclick = clearAttachment;
-
-        aiAttach.onclick = () => {
-            if (isAiSelecting) return;
-            isAiSelecting = true;
-
-            aiAttach.style.background = '#3b82f6';
-            aiAttach.style.color = 'white';
+        document.getElementById('ai-attach').onclick = () => {
+            isSelecting = true;
             document.body.style.cursor = 'crosshair';
-
             const tip = document.createElement('div');
-            tip.id = 'ai-inspect-tip';
-            tip.style.cssText = 'position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #3b82f6; color: white; padding: 10px 20px; border-radius: 30px; z-index: 9999; font-weight: 600; box-shadow: 0 10px 25px rgba(0,0,0,0.3); pointer-events: none;';
-            tip.textContent = 'Selecciona un elemento para adjuntar al mensaje';
+            tip.id = 'select-tip';
+            tip.style.cssText = 'position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #0ea5e9; color: white; padding: 10px 20px; border-radius: 30px; z-index: 1000000; font-weight: 800;';
+            tip.textContent = 'Selecciona un elemento [data-path]';
             document.body.appendChild(tip);
 
-            const aiCaptureHandler = (e) => {
+            const handler = (e) => {
                 const target = e.target.closest('[data-path]');
-                if (target && isAiSelecting) {
-                    e.preventDefault();
-                    e.stopPropagation();
-
+                if (target && isSelecting) {
+                    e.preventDefault(); e.stopPropagation();
                     const path = target.dataset.path;
-                    const json = window.get_json_v4_por_path_jerarquico(path);
-
-                    if (json) {
-                        attachedJsonData = json;
-                        aiAttachName.textContent = path;
-                        aiAttachPreview.style.display = 'flex';
-                        aiAttach.style.background = '#10b981';
-                        aiAttach.style.color = 'white';
-
-                        // Visual feedback on target
-                        const originalOutline = target.style.outline;
-                        target.style.outline = '4px solid #3b82f6';
-                        setTimeout(() => target.style.outline = originalOutline, 1000);
-                    }
-                    stopAiSelection();
+                    attachedData = window.get_json_v4_por_path_jerarquico(path);
+                    document.getElementById('ai-attachment-name').textContent = path;
+                    document.getElementById('ai-attachment-preview').style.display = 'flex';
+                    stop();
                 }
             };
-
-            window.addEventListener('click', aiCaptureHandler, { capture: true, once: true });
-
-            function stopAiSelection() {
-                isAiSelecting = false;
-                document.body.style.cursor = 'default';
-                const tip = document.getElementById('ai-inspect-tip');
-                if (tip) tip.remove();
-                if (!attachedJsonData) {
-                    aiAttach.style.background = '#1e293b';
-                    aiAttach.style.color = '#94a3b8';
-                }
-            }
+            window.addEventListener('click', handler, { capture: true, once: true });
+            function stop() { isSelecting = false; document.body.style.cursor = 'default'; tip.remove(); }
         };
 
-        function addMessage(text, role, isLoading = false) {
-            const msg = document.createElement('div');
-            const id = 'msg-' + Math.random().toString(36).substr(2, 9);
-            msg.id = id;
+        document.getElementById('ai-clear-attachment').onclick = () => {
+            attachedData = null;
+            document.getElementById('ai-attachment-preview').style.display = 'none';
+        };
 
-            const isAi = role === 'ai';
+        async function handleSend() {
+            const val = aiInput.value.trim();
+            if (!val && !attachedData) return;
+            const currentAttach = attachedData;
+            addMessage(val + (currentAttach ? " 📎" : ""), "user");
+            aiInput.value = '';
+            document.getElementById('ai-attachment-preview').style.display = 'none';
+            attachedData = null;
+
+            const loading = addMessage("Procesando...", "ai", true);
+            const resp = await sendMessage(val, currentAttach);
+            document.getElementById(loading).remove();
+
+            addMessage(resp.text, "ai");
+            if (resp.type === 'review') showReview(resp.data);
+        }
+
+        aiSend.onclick = handleSend;
+        aiInput.onkeypress = (e) => { if(e.key==='Enter') handleSend(); };
+
+        function addMessage(text, role, loading = false) {
+            const msg = document.createElement('div');
+            const id = 'm-' + Math.random();
+            msg.id = id;
             msg.style.cssText = `
-                background: ${isAi ? '#1e293b' : '#3b82f6'};
-                color: ${isAi ? '#e2e8f0' : 'white'};
-                padding: 8px 12px;
-                border-radius: ${isAi ? '12px 12px 12px 0' : '12px 12px 0 12px'};
-                font-size: 13px;
-                align-self: ${isAi ? 'flex-start' : 'flex-end'};
-                max-width: 85%;
-                word-wrap: break-word;
-                ${isLoading ? 'opacity: 0.5;' : ''}
+                padding: 12px 16px; border-radius: 20px; font-size: 13px; line-height: 1.5; max-width: 85%;
+                background: ${role==='ai' ? '#1e293b' : '#3b82f6'};
+                color: white; align-self: ${role==='ai' ? 'flex-start' : 'flex-end'};
+                ${loading ? 'opacity: 0.5' : ''}
             `;
             msg.textContent = text;
             aiMessages.appendChild(msg);
@@ -524,14 +248,48 @@
             return id;
         }
 
-        if (aiSend) aiSend.onclick = handleAISend;
-        if (aiInput) {
-            aiInput.onkeypress = (e) => {
-                if (e.key === 'Enter') handleAISend();
-            };
+        // --- Review & Injection ---
+        let pending = null;
+        function showReview(data) {
+            pending = data;
+            const reviewPanel = document.getElementById('review-panel');
+            const reviewContent = document.getElementById('review-content');
+            reviewContent.innerHTML = `<pre style="color: #6366f1;">${JSON.stringify(data, null, 2)}</pre>`;
+            reviewPanel.style.display = 'flex';
         }
-    </script>
+        document.getElementById('review-accept').onclick = () => {
+            window.inyectar_cambios_v4(pending);
+            addMessage("✅ Cambios aplicados.", "ai");
+            document.getElementById('review-panel').style.display = 'none';
+        };
+        document.getElementById('review-cancel').onclick = () => {
+            document.getElementById('review-panel').style.display = 'none';
+        };
 
-    <script type="module" src="./src/showcase.js"></script>
+        // --- Manual Injector ---
+        document.getElementById('inject-now').onclick = () => {
+            try {
+                const data = JSON.parse(document.getElementById('injector-data').value);
+                const replace = document.getElementById('inject-replace').checked;
+                window.inyectar_cambios_v4({ partial: data, replace });
+            } catch(e) { alert("JSON Error: " + e.message); }
+        };
+        document.getElementById('inspect-now').onclick = () => {
+            isSelecting = true;
+            document.body.style.cursor = 'crosshair';
+            const handler = (e) => {
+                const target = e.target.closest('[data-path]');
+                if (target && isSelecting) {
+                    const path = target.dataset.path;
+                    const json = window.get_json_v4_por_path_jerarquico(path);
+                    document.getElementById('injector-data').value = JSON.stringify(json, null, 2);
+                    isSelecting = false; document.body.style.cursor = 'default';
+                }
+            };
+            window.addEventListener('click', handler, { capture: true, once: true });
+        };
+
+    </script>
+    <script type="module" src="/src/showcase.js"></script>
 </body>
 </html>

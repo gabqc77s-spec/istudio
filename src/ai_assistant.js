@@ -24,29 +24,29 @@ function initAI() {
 }
 
 export function setInitialContext(contentJson, showcaseCss, showcaseJs) {
-    if (!chatHistory.length) {
-        chatHistory.push({
+    // Solo permitir setear contexto si el historial está vacío o es un reset
+    chatHistory = [
+        {
             role: 'user',
-            parts: [{ text: `Hola. Para que entiendas mi aplicación, aquí tienes los archivos principales:
+            parts: [{ text: `Hola. Este es el estado actual de mi aplicación V4:
 
-1. content.json (Datos y Estructura):
+1. content.json (Estado en Memoria):
 ${JSON.stringify(contentJson)}
 
-2. showcase.css (Resets Base):
+2. showcase.css:
 ${showcaseCss}
 
-3. showcase.js (Lógica del Motor V4):
+3. showcase.js (Motor V4 con módulos: Follow, Tilt, Actions, Instances, LookAt, AutoAnimate, Parallax, Typewriter, Magnetic, Audio, Scroll):
 ${showcaseJs}
 
-Por favor, analiza cómo se renderizan los elementos y cómo se aplican las interacciones para que tus futuras respuestas sean técnicamente precisas.` }]
-        });
-        chatHistory.push({
+Analiza las capacidades interactivas y la estructura jerárquica.` }]
+        },
+        {
             role: 'model',
-            parts: [{ text: "Entendido. He analizado el content.json, el CSS base y la lógica del motor V4 en showcase.js. Tengo una comprensión completa de cómo se construyen los elementos, cómo funcionan las rutas (paths) y cómo aplicar inyecciones parciales. Estoy listo para ayudarte. ¿Qué cambio estructural o estético quieres realizar?" }]
-        });
-        return true;
-    }
-    return false;
+            parts: [{ text: "Entendido. He analizado el estado actual del motor V4 y su contenido. Estoy listo para realizar modificaciones precisas utilizando los módulos de interacción disponibles." }]
+        }
+    ];
+    return true;
 }
 
 export async function sendMessage(message, attachedJson = null) {
@@ -60,64 +60,38 @@ export async function sendMessage(message, attachedJson = null) {
         },
         systemInstruction: [
             {
-                text: `Eres el arquitecto de Impulsa. Cada vez que el usuario pida una funcionalidad, debes interactuar con él para comprender totalmente su petición con detalle sin asumir lo que necesita. Debes responder con el fragmento de JSON que debe añadirse o modificarse.
-Respeta la estructura lógica y técnica del programa.
-Debes señalar correctamente dónde y cómo se debe implementar.
+                text: `Eres el Arquitecto de Impulsa V4, un ingeniero experto en interfaces 3D data-driven.
+Tu objetivo es manipular el content.json para crear experiencias increíbles.
 
+CAPACIDADES DEL MOTOR V4:
+- "seguir-mouse": { "factor": 0.1, "suavizado": 0.1 } -> Desplazamiento reactivo.
+- "tilt": { "max": 15, "perspectiva": 1000 } -> Inclinación 3D.
+- "look-at": { "intensidad": 20 } -> Rotación que mira al mouse.
+- "magnetico": { "fuerza": 0.5, "radio": 200 } -> Atracción de elementos.
+- "escribir": { "velocidad": 50, "retraso": 0, "bucle": false } -> Efecto máquina de escribir.
+- "auto-animar": { "tipo": "flotar"|"latir"|"girar", "duracion": 3, "intensidad": 10 } -> Ciclos constantes.
+- "paralaje": { "factor": 0.2, "direccion": "vertical" } -> Reacción al scroll.
+- "acciones": { "click"|"mouseenter": { "target": "path", "estilos": {...}, "tipo": "navegacion", "hacia": "path" } } -> Control remoto y Page Swapping.
+- "instancias": { "cantidad": n, "plantilla": {...}, "variacion": {...} } -> Generación procedimental.
 
-TU UNICA SALIDA DEBE UNA FUCTION CALL VALIDA:
-Ejemplo de un requerimiento:
-Requerimiento: Necesito que "Motor UI Espacial." tenga ahora colores celestes y rosados
-Respuesta:
-{ "tool_calls": [ { "function": "inyectar_cambios_v4", "args": { "partial": { "pagina_principal": { "seccion_hero": { "contenedor_titulos": { "titulo_principal": { "background-image": "linear-gradient(135deg, #991b1b, #ef4444)" } } } } } } } ] }
+REGLAS DE SALIDA:
+Debes responder con un objeto JSON que contenga una tool call a "inyectar_cambios_v4".
+Puedes usar la propiedad "replace": true si quieres SOBREESCRIBIR toda la página (para cambios de tema total), o false (por defecto) para mezclar (merge).
 
-Explicación:
-El bloque exacto dentro de content.json donde se define el elemento que contiene el texto "Motor UI Espacial." es el siguiente:
-// Dentro de "seccion_hero"
-"contenedor_titulos": {
-    "display": "flex",
-    "flex-direction": "column",
-    "align-items": "center",
-    "transform-style": "preserve-3d",
-    "cursor": "pointer",
-    "transition": "transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
-    "hover": {
-        "transform": "rotateX(5deg) rotateY(-5deg) scale(1.05)"
-    },
-
-    "titulo_fondo": {
-        "texto": "NATIVE",
-        // ... otras propiedades
-    },
-
-    "titulo_principal": {
-        "texto": "Motor UI <span style='color: #fff;'>Espacial.</span>",
-        "font-size": "5.5rem",
-        "font-weight": "800",
-        "color": "transparent",
-        "background-image": "linear-gradient(135deg, #a855f7, #ec4899)", // <-- ESTA ES LA PROPIEDAD A MODIFICAR
-        "text-align": "center",
-        "line-height": "1.1",
-        "letter-spacing": "-0.04em",
-        "transform": "translateZ(50px)",
-        "text-shadow": "0 20px 40px rgba(0,0,0,0.5)"
-    },
-
-    "subtitulo": {
-        // ... otras propiedades
+Ejemplo:
+{
+  "tool_calls": [
+    {
+      "function": "inyectar_cambios_v4",
+      "args": {
+        "partial": { ... tu fragmento de json ... },
+        "replace": false
+      }
     }
-},
+  ]
+}
 
-En caso de ser un requerimiento con un div con el dom actual:
-Requerimiento:
-<div data-path="pagina_principal.seccion_hero.contenedor_titulos.titulo_principal" style="z-index: 4; font-size: 5.5rem; font-weight: 800; color: transparent; background-image: linear-gradient(135deg, rgb(168, 85, 247), rgb(236, 72, 153)); background-clip: text; text-align: center; line-height: 1.1; letter-spacing: -0.04em; transform: translateZ(50px); text-shadow: rgba(0, 0, 0, 0.5) 0px 20px 40px;">Motor UI <span style="color: #fff;">Espacial.</span></div>
-Necesito que "Motor UI Espacial." tenga ahora colores celestes y rosados
-
-Respuesta:
-{ "tool_calls": [ { "function": "inyectar_cambios_v4", "args": { "partial": { "pagina_principal": { "seccion_hero": { "contenedor_titulos": { "titulo_principal": { "background-image": "linear-gradient(135deg, #991b1b, #ef4444)" } } } } } } } ] }
-
-La respuesta sigue siendo la misma ya que te muestra el elemento con todas sus propiedades para que puedas buscarla en content.json y entregar una "tool_calls" con la "function": "inyectar_cambios_v4" y el contenido JSON path válido.
-`,
+Sé creativo, usa gradientes, transformaciones 3D, desenfoques y todas las capacidades del motor.`,
             }
         ],
     };
@@ -129,7 +103,6 @@ La respuesta sigue siendo la misma ya que te muestra el elemento con todas sus p
         fullMessage += "\n\nContexto del elemento seleccionado (JSON): " + JSON.stringify(attachedJson);
     }
 
-    // Añadir mensaje del usuario al historial
     chatHistory.push({
         role: 'user',
         parts: [{ text: fullMessage }]
@@ -144,36 +117,30 @@ La respuesta sigue siendo la misma ya que te muestra el elemento con todas sus p
 
         let fullText = "";
         for await (const chunk of response) {
-            console.log(chunk.text);
             fullText += chunk.text;
         }
 
-        // Añadir respuesta de la IA al historial para mantener el contexto
         chatHistory.push({
             role: 'model',
             parts: [{ text: fullText }]
         });
 
-        // Intentar parsear el tool call del texto (ya que el usuario pidió que la salida SEA el tool call)
         try {
-            // Buscamos algo que parezca un JSON en el texto
             const jsonMatch = fullText.match(/\{[\s\S]*\}/);
             if (jsonMatch) {
                 const data = JSON.parse(jsonMatch[0]);
                 if (data.tool_calls && data.tool_calls.length > 0) {
                     const call = data.tool_calls[0];
                     if (call.function === "inyectar_cambios_v4") {
-                        return { type: 'review', text: '🎨 He propuesto cambios arquitectónicos. Por favor, revísalos.', data: call.args };
+                        return { type: 'review', text: '🎨 Propuesta arquitectónica lista.', data: call.args };
                     }
                 }
             }
-        } catch (e) {
-            console.warn("No se pudo parsear tool call del texto de la IA", e);
-        }
+        } catch (e) {}
 
         return { type: 'text', text: fullText };
     } catch (error) {
         console.error("Error AI Chat:", error);
-        return { type: 'error', text: "Lo siento, hubo un error procesando tu petición." };
+        return { type: 'error', text: "Error en la comunicación con el Arquitecto." };
     }
 }

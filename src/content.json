@@ -8,261 +8,204 @@
         "perspective": "2500px",
         "transform-style": "preserve-3d",
         "background": "#030014",
-        "overflow": "hidden",
+        "overflow-x": "hidden",
 
         "SISTEMA_NAVEGACION": {
-            "nombre": "Global Navigation OS",
+            "nombre": "Global Navigation Dock",
             "position": "fixed",
             "bottom": "40px",
             "width": "100%",
             "display": "flex",
             "justify-content": "center",
-            "z-index": "10000",
-
+            "z-index": "100000",
             "dock": {
                 "display": "flex",
                 "gap": "1rem",
                 "padding": "12px 24px",
                 "background": "rgba(10, 10, 20, 0.7)",
-                "backdrop-filter": "blur(20px) saturate(180%)",
+                "backdrop-filter": "blur(20px)",
                 "border": "1px solid rgba(255, 255, 255, 0.1)",
                 "border-radius": "100px",
-                "box-shadow": "0 20px 50px rgba(0,0,0,0.5), inset 0 0 20px rgba(255,255,255,0.05)",
-                "align-items": "center",
-
-                "nav_1": {
-                    "texto": "🏢 STRATEGY", "cursor": "pointer", "padding": "10px 20px", "border-radius": "20px", "transition": "all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1)", "font-size": "12px", "font-weight": "600", "letter-spacing": "1px",
-                    "hover": { "background": "rgba(255,255,255,0.1)", "transform": "translateY(-5px) scale(1.05)", "box-shadow": "0 10px 20px rgba(0,0,0,0.3)" },
-                    "acciones": { "click": { "tipo": "navegacion", "desde": "pagina_principal.UNIVERSOS", "hacia": "pagina_principal.UNIVERSOS.Web_Corporativa", "efecto": "slide" } }
+                "box-shadow": "0 20px 50px rgba(0,0,0,0.5)",
+                "item1": {
+                    "texto": "🏢 STRATEGY", "padding": "10px 20px", "cursor": "pointer", "font-size": "11px", "font-weight": "bold", "border-radius": "20px", "transition": "all 0.3s",
+                    "hover": { "background": "rgba(255,255,255,0.1)", "transform": "translateY(-5px)" },
+                    "acciones": { "click": { "tipo": "navegacion", "desde": "pagina_principal.UNIVERSOS", "hacia": "pagina_principal.UNIVERSOS.NEXUS_STRATEGY", "efecto": "slide" } }
                 },
-                "nav_2": {
-                    "texto": "🧪 RESEARCH", "cursor": "pointer", "padding": "10px 20px", "border-radius": "20px", "transition": "all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1)", "font-size": "12px", "font-weight": "600", "letter-spacing": "1px",
-                    "hover": { "background": "rgba(255,255,255,0.1)", "transform": "translateY(-5px) scale(1.05)", "box-shadow": "0 10px 20px rgba(0,0,0,0.3)" },
-                    "acciones": { "click": { "tipo": "navegacion", "desde": "pagina_principal.UNIVERSOS", "hacia": "pagina_principal.UNIVERSOS.Web_Laboratorio", "efecto": "slide" } }
+                "item2": {
+                    "texto": "🧪 RESEARCH", "padding": "10px 20px", "cursor": "pointer", "font-size": "11px", "font-weight": "bold", "border-radius": "20px", "transition": "all 0.3s",
+                    "hover": { "background": "rgba(255,255,255,0.1)", "transform": "translateY(-5px)" },
+                    "acciones": { "click": { "tipo": "navegacion", "desde": "pagina_principal.UNIVERSOS", "hacia": "pagina_principal.UNIVERSOS.COGNITIVE_LAB", "efecto": "slide" } }
                 },
-                "nav_3": {
-                    "texto": "💎 SHOWCASE", "cursor": "pointer", "padding": "10px 20px", "border-radius": "20px", "transition": "all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1)", "font-size": "12px", "font-weight": "600", "letter-spacing": "1px",
-                    "hover": { "background": "rgba(255,255,255,0.1)", "transform": "translateY(-5px) scale(1.05)", "box-shadow": "0 10px 20px rgba(0,0,0,0.3)" },
-                    "acciones": { "click": { "tipo": "navegacion", "desde": "pagina_principal.UNIVERSOS", "hacia": "pagina_principal.UNIVERSOS.Web_Showcase_3D", "efecto": "slide" } }
+                "item3": {
+                    "texto": "💎 SHOWCASE", "padding": "10px 20px", "cursor": "pointer", "font-size": "11px", "font-weight": "bold", "border-radius": "20px", "transition": "all 0.3s",
+                    "hover": { "background": "rgba(255,255,255,0.1)", "transform": "translateY(-5px)" },
+                    "acciones": { "click": { "tipo": "navegacion", "desde": "pagina_principal.UNIVERSOS", "hacia": "pagina_principal.UNIVERSOS.AERO_X", "efecto": "slide" } }
                 },
-                "nav_4": {
-                    "texto": "💳 FINTECH", "cursor": "pointer", "padding": "10px 20px", "border-radius": "20px", "transition": "all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1)", "font-size": "12px", "font-weight": "600", "letter-spacing": "1px",
-                    "hover": { "background": "rgba(255,255,255,0.1)", "transform": "translateY(-5px) scale(1.05)", "box-shadow": "0 10px 20px rgba(0,0,0,0.3)" },
-                    "acciones": { "click": { "tipo": "navegacion", "desde": "pagina_principal.UNIVERSOS", "hacia": "pagina_principal.UNIVERSOS.Web_App_Mobile", "efecto": "slide" } }
+                "item4": {
+                    "texto": "💳 FINTECH", "padding": "10px 20px", "cursor": "pointer", "font-size": "11px", "font-weight": "bold", "border-radius": "20px", "transition": "all 0.3s",
+                    "hover": { "background": "rgba(255,255,255,0.1)", "transform": "translateY(-5px)" },
+                    "acciones": { "click": { "tipo": "navegacion", "desde": "pagina_principal.UNIVERSOS", "hacia": "pagina_principal.UNIVERSOS.QUANTUM_FINANCE", "efecto": "slide" } }
                 }
             }
         },
 
         "UNIVERSOS": {
             "nombre": "Contenedor de Realidades",
-            "width": "100%",
+            "width": "100vw",
             "height": "100vh",
             "position": "relative",
             "transform-style": "preserve-3d",
 
-            "Web_Corporativa": {
-                "nombre": "NEXUS STRATEGY & DESIGN",
+            "NEXUS_STRATEGY": {
+                "nombre": "Nexus Strategy & Design",
                 "display": "flex",
                 "flex-direction": "column",
+                "align-items": "center",
                 "width": "100%",
-                "min-height": "100vh",
-                "background": "linear-gradient(to bottom, #030014, #0a0a20)",
-                "transition": "all 1.2s cubic-bezier(0.23, 1, 0.32, 1)",
+                "height": "100%",
+                "background": "radial-gradient(circle at 50% 10%, #151025 0%, #030014 100%)",
+                "transition": "all 1s cubic-bezier(0.2, 0.8, 0.2, 1)",
                 "opacity": "1",
-                "padding": "0",
-                "overflow-y": "auto",
-                "scroll": { "direccion": "vertical" },
+                "position": "absolute",
+                "top": "0",
+                "left": "0",
 
-                "HERO_SECTION": {
-                    "width": "100%", "height": "100vh", "display": "flex", "flex-direction": "column", "align-items": "center", "justify-content": "center",
-                    "transform-style": "preserve-3d", "position": "relative",
-
-                    "BG_ELEMENTS": {
-                        "position": "absolute", "width": "100%", "height": "100%", "pointer-events": "none", "transform-style": "preserve-3d",
-                        "BLUR_ORB": {
-                            "position": "absolute", "width": "600px", "height": "600px", "background": "radial-gradient(circle, rgba(168, 85, 247, 0.15), transparent 70%)",
-                            "border-radius": "50%", "filter": "blur(60px)", "transform": "translateZ(-500px) translate3d(-30%, -20%, 0)",
-                            "auto-animar": { "tipo": "flotar", "intensidad": 50, "duracion": 5 }
-                        }
-                    },
-
-                    "TITLE_WRAP": {
+                "HERO": {
+                    "width": "100%", "height": "100vh", "display": "flex", "flex-direction": "column", "align-items": "center", "justify-content": "center", "transform-style": "preserve-3d",
+                    "TITLES": {
                         "transform-style": "preserve-3d", "display": "flex", "flex-direction": "column", "align-items": "center",
-                        "main_title": {
-                            "texto": "NEXUS <span style='background: linear-gradient(90deg, #fff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent;'>STUDIO</span>",
-                            "font-size": "10rem", "font-weight": "900", "letter-spacing": "-8px", "color": "#fff", "line-height": "0.9",
-                            "look-at": { "intensidad": 25 }, "transform": "translateZ(300px)"
+                        "main": {
+                            "texto": "NEXUS STUDIO", "font-size": "10rem", "font-weight": "900", "color": "#fff", "letter-spacing": "-5px",
+                            "look-at": { "intensidad": 30 }, "transform": "translateZ(200px)"
                         },
-                        "sub_title": {
-                            "texto": "Arquitectura Digital de Siguiente Generación",
-                            "font-size": "1.2rem", "color": "rgba(255,255,255,0.5)", "margin-top": "30px", "letter-spacing": "5px", "text-transform": "uppercase",
-                            "escribir": { "velocidad": 60, "retraso": 800 }, "transform": "translateZ(150px)"
+                        "sub": {
+                            "texto": "ARQUITECTURA DIGITAL DE SIGUIENTE GENERACIÓN", "font-size": "1.2rem", "color": "#9ca3af", "margin-top": "20px", "letter-spacing": "5px",
+                            "escribir": { "velocidad": 50, "retraso": 1000 }, "transform": "translateZ(100px)"
                         }
                     }
                 },
-
-                "BENTO_GRID": {
-                    "display": "grid", "grid-template-columns": "repeat(12, 1fr)", "grid-auto-rows": "280px", "gap": "24px", "width": "90%", "max-width": "1600px", "margin": "100px auto",
-                    "transform-style": "preserve-3d",
-
-                    "CARD_STRATEGY": {
-                        "grid-column": "span 8", "grid-row": "span 2", "background": "rgba(255,255,255,0.02)", "border": "1px solid rgba(255,255,255,0.05)", "border-radius": "40px", "padding": "60px",
-                        "display": "flex", "flex-direction": "column", "justify-content": "flex-end", "cursor": "pointer", "transition": "all 0.6s cubic-bezier(0.16, 1, 0.3, 1)", "overflow": "hidden",
-                        "hover-hermanos": { "opacity": "0.3", "filter": "blur(10px)", "transform": "scale(0.95) translateZ(-100px)" },
-                        "hover": { "background": "rgba(255,255,255,0.05)", "border-color": "rgba(168, 85, 247, 0.5)", "transform": "scale(1.02) translateZ(50px)" },
-
-                        "label": { "texto": "01", "font-size": "14px", "color": "#a855f7", "font-weight": "bold", "margin-bottom": "20px" },
-                        "titulo": { "texto": "Visión Inmersiva", "font-size": "3rem", "font-weight": "800", "color": "#fff" },
-                        "desc": { "texto": "Creamos experiencias que trascienden la pantalla plana tradicional.", "font-size": "1.1rem", "color": "rgba(255,255,255,0.4)", "margin-top": "20px", "max-width": "400px" }
+                "BENTO": {
+                    "display": "grid", "grid-template-columns": "repeat(3, 1fr)", "gap": "24px", "width": "90%", "max-width": "1200px", "margin-bottom": "100px", "transform-style": "preserve-3d",
+                    "CARD_1": {
+                        "grid-column": "span 2", "background": "rgba(255,255,255,0.02)", "border": "1px solid rgba(255,255,255,0.05)", "border-radius": "30px", "padding": "50px", "cursor": "pointer", "transition": "all 0.6s cubic-bezier(0.16, 1, 0.3, 1)",
+                        "hover-hermanos": { "filter": "blur(5px)", "opacity": "0.3", "transform": "scale(0.95) translateZ(-100px)" },
+                        "hover": { "background": "rgba(168, 85, 247, 0.1)", "border-color": "rgba(168, 85, 247, 0.5)", "transform": "scale(1.05) translateZ(50px)" },
+                        "t": { "texto": "Escalabilidad Infinita", "font-size": "2rem", "font-weight": "800", "color": "#fff" }
                     },
-
-                    "CARD_DESIGN": {
-                        "grid-column": "span 4", "grid-row": "span 2", "background": "linear-gradient(135deg, #a855f7, #6366f1)", "border-radius": "40px", "padding": "40px",
-                        "display": "flex", "flex-direction": "column", "align-items": "center", "justify-content": "center", "cursor": "pointer", "transition": "all 0.6s cubic-bezier(0.16, 1, 0.3, 1)",
-                        "tilt": { "max": 15 }, "hover-hermanos": { "opacity": "0.3", "filter": "blur(10px)", "transform": "scale(0.95)" },
-
-                        "icon": { "texto": "✦", "font-size": "5rem", "color": "#fff" },
-                        "txt": { "texto": "Diseño Espacial", "font-size": "1.5rem", "font-weight": "bold", "margin-top": "20px" }
+                    "CARD_2": {
+                        "background": "rgba(255,255,255,0.02)", "border": "1px solid rgba(255,255,255,0.05)", "border-radius": "30px", "padding": "50px", "cursor": "pointer", "transition": "all 0.6s cubic-bezier(0.16, 1, 0.3, 1)",
+                        "hover-hermanos": { "filter": "blur(5px)", "opacity": "0.3", "transform": "scale(0.95) translateZ(-100px)" },
+                        "hover": { "background": "rgba(59, 130, 246, 0.1)", "border-color": "rgba(59, 130, 246, 0.5)", "transform": "scale(1.05) translateZ(50px)" },
+                        "t": { "texto": "60 FPS", "font-size": "2rem", "font-weight": "800", "color": "#fff" }
                     }
                 }
             },
 
-            "Web_Laboratorio": {
-                "nombre": "COGNITIVE RESEARCH LAB",
-                "display": "none", "flex-direction": "column", "width": "100%", "min-height": "100vh", "background": "#000", "transition": "all 1s", "opacity": "0", "align-items": "center", "justify-content": "center", "overflow": "hidden",
-
-                "DATA_CORE_WRAPPER": {
+            "COGNITIVE_LAB": {
+                "nombre": "Cognitive Research Lab",
+                "display": "none", "flex-direction": "column", "width": "100%", "height": "100%", "background": "#000", "transition": "all 1s", "opacity": "0", "align-items": "center", "justify-content": "center", "overflow": "hidden", "position": "absolute", "top": "0", "left": "0",
+                "CORE_WRAPPER": {
                     "width": "100%", "height": "100vh", "display": "flex", "align-items": "center", "justify-content": "center", "position": "relative", "transform-style": "preserve-3d",
-
                     "CORE_ORB": {
-                        "width": "500px", "height": "500px", "background": "radial-gradient(circle, #0ea5e9 0%, transparent 70%)", "border-radius": "50%", "display": "flex", "align-items": "center", "justify-content": "center",
-                        "magnetico": { "fuerza": 0.8, "radio": 800 }, "position": "relative", "z-index": "2",
-                        "audio": { "url": "https://www.soundjay.com/buttons/sounds/button-20.mp3", "evento": "mouseenter", "volumen": 0.2 },
-
-                        "INNER_CHIP": {
-                            "width": "100px", "height": "100px", "background": "#fff", "box-shadow": "0 0 100px #0ea5e9", "border-radius": "10px", "look-at": { "intensidad": 60 },
-                            "auto-animar": { "tipo": "latir", "intensidad": 20 }
-                        }
+                        "width": "400px", "height": "400px", "background": "radial-gradient(circle, #0ea5e9 0%, transparent 70%)", "border-radius": "50%",
+                        "magnetico": { "fuerza": 0.6, "radio": 600 },
+                        "INNER_LIGHT": { "width": "100px", "height": "100px", "background": "#fff", "border-radius": "50%", "box-shadow": "0 0 100px #0ea5e9", "auto-animar": { "tipo": "latir", "intensidad": 20 } }
                     },
-
-                    "PARTICLE_SYSTEM": {
-                        "position": "absolute", "width": "100%", "height": "100%", "pointer-events": "none",
+                    "PARTICLES": {
+                        "position": "absolute", "width": "100%", "height": "100%",
                         "instancias": {
-                            "cantidad": 40,
-                            "plantilla": {
-                                "width": "2px", "height": "2px", "background": "#0ea5e9", "position": "absolute", "top": "50%", "left": "50%", "opacity": "0.5",
-                                "auto-animar": { "tipo": "flotar", "intensidad": 300, "duracion": 10 }
-                            },
-                            "variacion": { "top": 500, "left": 800, "opacity": 0.5 }
+                            "cantidad": 30,
+                            "plantilla": { "width": "4px", "height": "4px", "background": "#0ea5e9", "position": "absolute", "top": "50%", "left": "50%", "auto-animar": { "tipo": "flotar", "intensidad": 200, "duracion": 8 } },
+                            "variacion": { "top": 400, "left": 600 }
                         }
                     }
                 },
-
-                "TERMINAL_FEED": {
-                    "position": "fixed", "top": "40px", "left": "40px", "width": "300px", "font-family": "monospace", "font-size": "12px", "color": "#0ea5e9", "opacity": "0.7",
-                    "line_1": { "texto": "> INITIALIZING NEURAL_SYNC...", "escribir": { "velocidad": 30 } },
-                    "line_2": { "texto": "> CORE TEMPERATURE: OPTIMAL", "margin-top": "10px", "escribir": { "velocidad": 30, "retraso": 1000 } },
-                    "line_3": { "texto": "> DATA STREAMS: ACTIVE", "margin-top": "10px", "escribir": { "velocidad": 30, "retraso": 2000 } }
+                "LOGS": {
+                    "position": "fixed", "top": "50px", "left": "50px", "color": "#0ea5e9", "font-family": "monospace", "font-size": "14px",
+                    "line1": { "texto": "> INITIALIZING NEURAL_SYNC...", "escribir": { "velocidad": 40 } },
+                    "line2": { "texto": "> CORE STATUS: STABLE", "margin-top": "10px", "escribir": { "velocidad": 40, "retraso": 1500 } }
                 }
             },
 
-            "Web_Showcase_3D": {
-                "nombre": "AERO X SHOWCASE",
-                "display": "none", "flex-direction": "column", "width": "100%", "min-height": "100vh", "background": "#050505", "transition": "all 1s", "opacity": "0", "align-items": "center", "justify-content": "center",
-
-                "PRODUCT_STAGE": {
-                    "perspective": "3000px", "transform-style": "preserve-3d", "width": "100%", "height": "100vh", "display": "flex", "align-items": "center", "justify-content": "center",
-
-                    "HARDWARE_UNIT": {
-                        "width": "400px", "height": "600px", "position": "relative", "transform-style": "preserve-3d",
-                        "transform": "rotateY(-20deg) rotateX(10deg)", "transition": "transform 1.5s cubic-bezier(0.16, 1, 0.3, 1)",
-                        "hover": { "transform": "rotateY(0deg) rotateX(0deg) translateZ(100px)" },
-
-                        "CHASSIS": {
-                            "position": "absolute", "width": "100%", "height": "100%", "background": "#111", "border": "2px solid #333", "border-radius": "20px", "transform": "translateZ(0px)", "transition": "all 1s cubic-bezier(0.16, 1, 0.3, 1)"
+            "AERO_X": {
+                "nombre": "Aero X Showcase",
+                "display": "none", "flex-direction": "column", "width": "100%", "height": "100%", "background": "#080808", "transition": "all 1s", "opacity": "0", "align-items": "center", "justify-content": "center", "position": "absolute", "top": "0", "left": "0",
+                "STAGE": {
+                    "width": "100%", "height": "100vh", "display": "flex", "align-items": "center", "justify-content": "center", "perspective": "2000px",
+                    "DEVICE": {
+                        "width": "320px", "height": "600px", "position": "relative", "transform-style": "preserve-3d", "transform": "rotateY(-20deg) rotateX(10deg)", "transition": "transform 1s",
+                        "hover": { "transform": "rotateY(0deg) rotateX(0deg)" },
+                        "BACK": { "position": "absolute", "width": "100%", "height": "100%", "background": "#1a1a1a", "border-radius": "30px", "border": "2px solid #333" },
+                        "GLASS": {
+                            "position": "absolute", "width": "90%", "height": "94%", "top": "3%", "left": "5%", "background": "rgba(255,255,255,0.05)", "backdrop-filter": "blur(10px)", "border": "1px solid rgba(255,255,255,0.1)", "border-radius": "20px", "transform": "translateZ(40px)", "transition": "transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1)", "display": "flex", "align-items": "center", "justify-content": "center",
+                            "t": { "texto": "AERO X — PANEL" }
                         },
-                        "SCREEN_PLATE": {
-                            "position": "absolute", "width": "90%", "height": "90%", "top": "5%", "left": "5%", "background": "rgba(255,255,255,0.02)", "backdrop-filter": "blur(10px)", "border": "1px solid rgba(255,255,255,0.1)", "border-radius": "15px", "transform": "translateZ(50px)", "transition": "all 1s cubic-bezier(0.16, 1, 0.3, 1)", "display": "flex", "align-items": "center", "justify-content": "center",
-                            "texto": "AERO X — PANEL"
-                        },
-                        "CORE_COMPONENTS": {
-                            "position": "absolute", "width": "70%", "height": "50%", "top": "25%", "left": "15%", "background": "linear-gradient(45deg, #111, #222)", "border": "1px solid #444", "transform": "translateZ(-50px)", "transition": "all 1s cubic-bezier(0.16, 1, 0.3, 1)", "display": "flex", "flex-direction": "column", "padding": "20px",
-                            "chip": { "width": "40px", "height": "40px", "background": "#6366f1", "box-shadow": "0 0 20px #6366f1" }
+                        "COMPONENTS": {
+                            "position": "absolute", "width": "70%", "height": "60%", "top": "20%", "left": "15%", "background": "#111", "border": "1px solid #444", "transform": "translateZ(-30px)", "transition": "transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1)", "display": "flex", "align-items": "center", "justify-content": "center",
+                            "chip": { "width": "50px", "height": "50px", "background": "#f43f5e", "box-shadow": "0 0 30px #f43f5e" }
                         }
                     }
                 },
-
-                "EXPLODE_CONTROL": {
-                    "position": "fixed", "right": "80px", "display": "flex", "flex-direction": "column", "gap": "20px",
-                    "btn_explode": {
-                        "texto": "VIEW EXPLODED", "padding": "15px 30px", "background": "transparent", "border": "1px solid #fff", "color": "#fff", "cursor": "pointer", "transition": "all 0.3s",
-                        "acciones": {
-                            "click": [
-                                { "target": "pagina_principal.UNIVERSOS.Web_Showcase_3D.PRODUCT_STAGE.HARDWARE_UNIT.SCREEN_PLATE", "estilos": { "transform": "translateZ(250px)", "opacity": "0.5" } },
-                                { "target": "pagina_principal.UNIVERSOS.Web_Showcase_3D.PRODUCT_STAGE.HARDWARE_UNIT.CORE_COMPONENTS", "estilos": { "transform": "translateZ(-150px)", "opacity": "0.8" } }
-                            ]
-                        },
+                "CONTROLS": {
+                    "position": "fixed", "right": "100px", "display": "flex", "flex-direction": "column", "gap": "20px",
+                    "btn_expl": {
+                        "texto": "VIEW EXPLODED", "padding": "15px 30px", "border": "1px solid #fff", "color": "#fff", "cursor": "pointer", "transition": "all 0.3s",
                         "hover": { "background": "#fff", "color": "#000" },
-                        "audio": { "url": "https://www.soundjay.com/buttons/sounds/button-16.mp3", "volumen": 0.3 }
-                    },
-                    "btn_reset": {
-                        "texto": "ASSEMBLE", "padding": "15px 30px", "background": "transparent", "border": "1px solid rgba(255,255,255,0.3)", "color": "rgba(255,255,255,0.3)", "cursor": "pointer", "transition": "all 0.3s",
                         "acciones": {
                             "click": [
-                                { "target": "pagina_principal.UNIVERSOS.Web_Showcase_3D.PRODUCT_STAGE.HARDWARE_UNIT.SCREEN_PLATE", "estilos": { "transform": "translateZ(50px)", "opacity": "1" } },
-                                { "target": "pagina_principal.UNIVERSOS.Web_Showcase_3D.PRODUCT_STAGE.HARDWARE_UNIT.CORE_COMPONENTS", "estilos": { "transform": "translateZ(-50px)", "opacity": "1" } }
+                                { "target": "pagina_principal.UNIVERSOS.AERO_X.STAGE.DEVICE.GLASS", "estilos": { "transform": "translateZ(200px)", "opacity": "0.4" } },
+                                { "target": "pagina_principal.UNIVERSOS.AERO_X.STAGE.DEVICE.COMPONENTS", "estilos": { "transform": "translateZ(-150px)", "opacity": "0.7" } }
+                            ]
+                        }
+                    },
+                    "btn_asmb": {
+                        "texto": "ASSEMBLE", "padding": "15px 30px", "border": "1px solid rgba(255,255,255,0.3)", "color": "rgba(255,255,255,0.3)", "cursor": "pointer",
+                        "acciones": {
+                            "click": [
+                                { "target": "pagina_principal.UNIVERSOS.AERO_X.STAGE.DEVICE.GLASS", "estilos": { "transform": "translateZ(40px)", "opacity": "1" } },
+                                { "target": "pagina_principal.UNIVERSOS.AERO_X.STAGE.DEVICE.COMPONENTS", "estilos": { "transform": "translateZ(-30px)", "opacity": "1" } }
                             ]
                         }
                     }
                 }
             },
 
-            "Web_App_Mobile": {
-                "nombre": "QUANTUM FINANCE OS",
-                "display": "none", "flex-direction": "column", "width": "100%", "min-height": "100vh", "background": "#0a0a0a", "transition": "all 1s", "opacity": "0", "align-items": "center", "justify-content": "center",
-
-                "DEVICE_FRAME": {
-                    "width": "380px", "height": "780px", "background": "#000", "border-radius": "50px", "border": "12px solid #1a1a1a", "position": "relative", "overflow": "hidden", "box-shadow": "0 50px 100px rgba(0,0,0,0.8)",
-
-                    "APP_SCREENS": {
+            "QUANTUM_FINANCE": {
+                "nombre": "Quantum Finance OS",
+                "display": "none", "flex-direction": "column", "width": "100%", "height": "100%", "background": "#050505", "transition": "all 1s", "opacity": "0", "align-items": "center", "justify-content": "center", "position": "absolute", "top": "0", "left": "0",
+                "MOBILE_FRAME": {
+                    "width": "360px", "height": "740px", "background": "#000", "border-radius": "45px", "border": "10px solid #1a1a1a", "position": "relative", "overflow": "hidden", "box-shadow": "0 50px 100px rgba(0,0,0,0.8)",
+                    "SCREENS": {
                         "width": "100%", "height": "100%", "position": "relative",
-
                         "DASHBOARD": {
                             "width": "100%", "height": "100%", "background": "#000", "display": "flex", "flex-direction": "column", "padding": "40px 25px", "transition": "all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1)",
-
-                            "header": { "texto": "Good Morning, Gabriel", "font-size": "14px", "color": "rgba(255,255,255,0.4)" },
-                            "balance": { "texto": "$42,500.00", "font-size": "2.5rem", "font-weight": "800", "margin-top": "10px", "color": "#fff" },
-
-                            "CHART_SIM": {
-                                "width": "100%", "height": "180px", "margin-top": "30px", "display": "flex", "align-items": "flex-end", "gap": "10px",
-                                "bar_1": { "width": "20%", "height": "40%", "background": "#3b82f6", "border-radius": "10px", "auto-animar": { "tipo": "latir", "intensidad": 5 } },
-                                "bar_2": { "width": "20%", "height": "70%", "background": "#6366f1", "border-radius": "10px", "auto-animar": { "tipo": "latir", "intensidad": 8, "duracion": 4 } },
-                                "bar_3": { "width": "20%", "height": "55%", "background": "#a855f7", "border-radius": "10px", "auto-animar": { "tipo": "latir", "intensidad": 6, "duracion": 2.5 } }
+                            "h": { "texto": "Good Morning, Gabriel", "font-size": "14px", "color": "rgba(255,255,255,0.4)" },
+                            "bal": { "texto": "$42,500.00", "font-size": "2.5rem", "font-weight": "800", "margin-top": "10px", "color": "#fff" },
+                            "CHART": {
+                                "width": "100%", "height": "180px", "margin-top": "40px", "display": "flex", "align-items": "flex-end", "gap": "10px",
+                                "b1": { "width": "20%", "height": "50%", "background": "#3b82f6", "border-radius": "8px", "auto-animar": { "tipo": "latir", "intensidad": 10 } },
+                                "b2": { "width": "20%", "height": "80%", "background": "#6366f1", "border-radius": "8px", "auto-animar": { "tipo": "latir", "intensidad": 15, "duracion": 4 } },
+                                "b3": { "width": "20%", "height": "60%", "background": "#a855f7", "border-radius": "8px", "auto-animar": { "tipo": "latir", "intensidad": 12, "duracion": 2.5 } }
                             },
-
-                            "NAV_CARDS": {
-                                "margin-top": "40px", "display": "flex", "flex-direction": "column", "gap": "15px",
-                                "card_tx": {
+                            "NAV_BTNS": {
+                                "margin-top": "50px", "display": "flex", "flex-direction": "column", "gap": "15px",
+                                "btn": {
                                     "texto": "View Transactions", "padding": "20px", "background": "rgba(255,255,255,0.05)", "border-radius": "20px", "cursor": "pointer",
                                     "hover": { "background": "rgba(255,255,255,0.1)" },
-                                    "acciones": { "click": { "tipo": "navegacion", "desde": "pagina_principal.UNIVERSOS.Web_App_Mobile.DEVICE_FRAME.APP_SCREENS", "hacia": "pagina_principal.UNIVERSOS.Web_App_Mobile.DEVICE_FRAME.APP_SCREENS.TRANSACTIONS", "efecto": "slide" } }
+                                    "acciones": { "click": { "tipo": "navegacion", "desde": "pagina_principal.UNIVERSOS.QUANTUM_FINANCE.MOBILE_FRAME.SCREENS", "hacia": "pagina_principal.UNIVERSOS.QUANTUM_FINANCE.MOBILE_FRAME.SCREENS.HISTORY", "efecto": "slide" } }
                                 }
                             }
                         },
-
-                        "TRANSACTIONS": {
+                        "HISTORY": {
                             "width": "100%", "height": "100%", "background": "#050505", "display": "none", "opacity": "0", "transform": "translateX(100%)", "flex-direction": "column", "padding": "40px 25px", "transition": "all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1)",
-
                             "back": {
                                 "texto": "← Back", "color": "#a855f7", "cursor": "pointer", "margin-bottom": "30px",
-                                "acciones": { "click": { "tipo": "navegacion", "desde": "pagina_principal.UNIVERSOS.Web_App_Mobile.DEVICE_FRAME.APP_SCREENS", "hacia": "pagina_principal.UNIVERSOS.Web_App_Mobile.DEVICE_FRAME.APP_SCREENS.DASHBOARD", "efecto": "slide" } }
+                                "acciones": { "click": { "tipo": "navegacion", "desde": "pagina_principal.UNIVERSOS.QUANTUM_FINANCE.MOBILE_FRAME.SCREENS", "hacia": "pagina_principal.UNIVERSOS.QUANTUM_FINANCE.MOBILE_FRAME.SCREENS.DASHBOARD", "efecto": "slide" } }
                             },
                             "title": { "texto": "Recent History", "font-size": "1.5rem", "font-weight": "bold" },
-                            "tx_list": [
-                                { "texto": "Apple Store - $199.00", "padding": "15px 0", "border-bottom": "1px solid #111" },
-                                { "texto": "Starbucks - $5.50", "padding": "15px 0", "border-bottom": "1px solid #111" },
-                                { "texto": "Amazon - $42.10", "padding": "15px 0", "border-bottom": "1px solid #111" }
-                            ]
+                            "l1": { "texto": "Apple Store - $199.00", "padding": "15px 0", "border-bottom": "1px solid #111" },
+                            "l2": { "texto": "Starbucks - $5.50", "padding": "15px 0", "border-bottom": "1px solid #111" }
                         }
                     }
                 }
