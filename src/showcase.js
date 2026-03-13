@@ -117,57 +117,8 @@ export async function init() {
         app.innerHTML = '';
         construir(currentContent, app, 0);
 
-        // Check if we are running inside an iframe (Editor Mode)
-        const isEditorMode = window.self !== window.top;
-
-        if (isEditorMode) {
-            // Global click interceptor for direct selection in the 3D Canvas
-            document.body.addEventListener('click', (e) => {
-                // Ignore clicks on links or elements with 'ignore-editor' class
-                if (e.target.closest('a') || e.target.closest('.ignore-editor')) return;
-
-                // Find the nearest generated container that has a dataset.path
-                const targetNode = e.target.closest('[data-path]');
-                if (targetNode) {
-                    // Prevent normal click actions (like accordions or links) while in pure edit selection mode
-                    // Only prevent if we actually holding shift or clicking to select. For now, default click selects.
-                    e.preventDefault();
-                    e.stopPropagation();
-
-                    // Send path to parent editor
-                    window.parent.postMessage({
-                        type: 'select-node',
-                        path: targetNode.dataset.path
-                    }, '*');
-
-                    // Visual Feedback in Canvas
-                    document.querySelectorAll('[data-path]').forEach(el => el.style.outline = '');
-                    targetNode.style.outline = '2px dashed #a855f7';
-                    targetNode.style.outlineOffset = '2px';
-                }
-            }, true); // Use capture phase to intercept before component logic
-        }
-
-        // Listen for live updates from editor.html
+        // Listen for live updates
         window.addEventListener('message', (e) => {
-            if (e.data && e.data.type === 'update-content') {
-                currentContent = e.data.content;
-                app.innerHTML = '';
-                // Pass empty string as initial path
-                construir(currentContent, app, 0, '');
-
-                // Re-apply highlight if a node is selected
-                if (isEditorMode && e.data.selectedPath) {
-                    setTimeout(() => {
-                        const selectedNode = document.querySelector(`[data-path="${e.data.selectedPath}"]`);
-                        if (selectedNode) {
-                            selectedNode.style.outline = '2px dashed #a855f7';
-                            selectedNode.style.outlineOffset = '2px';
-                        }
-                    }, 50);
-                }
-            }
-
             if (e.data && e.data.type === 'inject-partial') {
                 deepMerge(currentContent, e.data.partial);
                 app.innerHTML = '';
