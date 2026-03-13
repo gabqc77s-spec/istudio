@@ -1,3 +1,5 @@
 {
-  "IDX.agenticWorkspace": true
+  "IDX.agenticWorkspace": true,
+  "git.autofetch": "all",
+  "remoteHub.uncommittedChangesOnEntry": "none"
 }
