@@ -592,9 +592,40 @@
             };
         }
 
-        // --- MULTIVERSE DOCK ---
+        // --- MULTIVERSE DOCK (Skin Injector) ---
+        const THEMES = {
+            cyber: {
+                "pagina_principal": {
+                    "background": "radial-gradient(circle at 50% 10%, #0a0a2e 0%, #030014 100%)",
+                    "header_nav": { "logo": { "color": "#0ea5e9" }, "status": { "texto": "THEME: NEURO-CYBER", "color": "#0ea5e9", "border-color": "#0ea5e9" } },
+                    "seccion_1_cyber_hero": { "content_hero": { "titulo": { "color": "#fff", "text-shadow": "0 0 30px #0ea5e9" } } }
+                }
+            },
+            glass: {
+                "pagina_principal": {
+                    "background": "linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)",
+                    "header_nav": { "logo": { "color": "#0369a1" }, "status": { "texto": "THEME: LUMINA GLASS", "color": "#0369a1", "border-color": "#0369a1" } },
+                    "seccion_1_cyber_hero": { "content_hero": { "titulo": { "color": "#0f172a", "text-shadow": "none" } } }
+                }
+            },
+            organic: {
+                "pagina_principal": {
+                    "background": "linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%)",
+                    "header_nav": { "logo": { "color": "#ec4899" }, "status": { "texto": "THEME: FLUID FLOW", "color": "#ec4899", "border-color": "#ec4899" } },
+                    "seccion_1_cyber_hero": { "content_hero": { "titulo": { "color": "#1e293b", "text-shadow": "0 10px 20px rgba(0,0,0,0.05)" } } }
+                }
+            },
+            studio: {
+                "pagina_principal": {
+                    "background": "#ffffff",
+                    "header_nav": { "logo": { "color": "#000" }, "status": { "texto": "THEME: ARCHITECTURAL", "color": "#000", "border-color": "#000" } },
+                    "seccion_1_cyber_hero": { "content_hero": { "titulo": { "color": "#000", "text-shadow": "none" } } }
+                }
+            }
+        };
+
         document.querySelectorAll('.dock-item').forEach(item => {
-            item.onclick = async () => {
+            item.onclick = () => {
                 const site = item.dataset.site;
 
                 // Efecto de feedback
@@ -602,20 +633,10 @@
                 setTimeout(() => item.style.transform = 'scale(1.1) translateY(-8px)', 100);
                 setTimeout(() => item.style.transform = 'scale(1) translateY(0)', 300);
 
-                try {
-                    // Cargar el JSON del sitio seleccionado
-                    const response = await fetch(`./src/site_${site}.json`);
-                    const data = await response.json();
-
-                    if (window.inyectar_cambios_v4) {
-                        window.inyectar_cambios_v4({ partial: data, replace: true });
-
-                        // Mensaje al asistente para que sepa el cambio de contexto
-                        addMessage(`🌌 Multiverso: Cargando experiencia "${item.title}"...`, "ai");
-                    }
-                } catch (err) {
-                    console.error("Error cargando sitio del multiverso:", err);
-                    addMessage(`❌ Error al cargar "${site}": El archivo JSON parece estar vacío o corrupto.`, "ai");
+                const themePatch = THEMES[site];
+                if (themePatch && window.inyectar_cambios_v4) {
+                    window.inyectar_cambios_v4({ partial: themePatch, replace: false });
+                    addMessage(`🎨 Skin Armoniosa: Aplicando tema "${item.title}" a la arquitectura maestra...`, "ai");
                 }
             };
 
