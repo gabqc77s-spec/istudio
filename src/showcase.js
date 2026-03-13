@@ -2,7 +2,7 @@
 /* Reads content.json, builds containers, applies CSS properties directly. */
 /* Optimized for CSS 3D Space and pure data-driven DOM rendering. */
 
-const RESERVED = { nombre: true, hover: true, 'hover-hermanos': true, click: true, scroll: true, texto: true };
+const RESERVED = { nombre: true, hover: true, 'hover-hermanos': true, click: true, scroll: true, texto: true, 'seguir-mouse': true, tilt: true, acciones: true, instancias: true, 'look-at': true, 'auto-animar': true };
 
 let currentContent = null;
 
@@ -212,12 +212,226 @@ export function construir(config, parent, profundidad, pathPrefix = '') {
         initClickState(el, clickData);
     }
 
+    // --- Funcionalidad 5: Seguir mouse (Mouse tracker) ---
+    if (config['seguir-mouse']) {
+        initFollowMouse(el, config['seguir-mouse']);
+    }
+
+    // --- Funcionalidad 6: Tilt 3D (Spatial tilt) ---
+    if (config['tilt']) {
+        initTilt(el, config['tilt']);
+    }
+
+    // --- Funcionalidad 7: Acciones avanzadas (Remote control) ---
+    if (config['acciones']) {
+        initActions(el, config['acciones']);
+    }
+
+    // --- Funcionalidad 8: Instancias procedimentales ---
+    if (config['instancias']) {
+        initInstances(el, config['instancias'], profundidad + 1, pathPrefix);
+    }
+
+    // --- Funcionalidad 9: Look-at (Mirada 3D) ---
+    if (config['look-at']) {
+        initLookAt(el, config['look-at']);
+    }
+
+    // --- Funcionalidad 10: Auto-animar (Movimiento cíclico) ---
+    if (config['auto-animar']) {
+        initAutoAnimate(el, config['auto-animar']);
+    }
+
     parent.appendChild(el);
     return { el, hoverData, hoverHermanos: hoverHermanosData };
 }
 
 
 // ======= LOGICA DE INTERACCION DEL MOTOR =======
+
+function initFollowMouse(el, config) {
+    const factor = config.factor || 0.1;
+    const smooth = config.suavizado || 0.1;
+    let targetX = 0, targetY = 0;
+    let currentX = 0, currentY = 0;
+
+    window.addEventListener('mousemove', (e) => {
+        targetX = (e.clientX - window.innerWidth / 2) * factor;
+        targetY = (e.clientY - window.innerHeight / 2) * factor;
+    });
+
+    function animate() {
+        if (!el.isConnected) return; // Evitar fugas de memoria si el elemento es removido
+
+        currentX += (targetX - currentX) * smooth;
+        currentY += (targetY - currentY) * smooth;
+
+        // Aplicar manteniendo transformaciones previas si existen (como translateZ o rotate)
+        // Usamos una expresión regular más robusta para no pisar otros transforms
+        const baseTransform = el.style.transform.replace(/translate\([^)]+\)/g, '').trim();
+        el.style.transform = `${baseTransform} translate(${currentX}px, ${currentY}px)`.trim();
+
+        requestAnimationFrame(animate);
+    }
+    animate();
+}
+
+function initTilt(el, config) {
+    const max = config.max || 15;
+    const perspective = config.perspectiva || 1000;
+    const smooth = config.suavizado || 0.1;
+
+    // Aplicar perspectiva al padre si existe
+    if (el.parentElement) {
+        el.parentElement.style.perspective = `${perspective}px`;
+    }
+
+    el.addEventListener('mousemove', (e) => {
+        const rect = el.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+
+        const rotateX = ((y - centerY) / centerY) * -max;
+        const rotateY = ((x - centerX) / centerX) * max;
+
+        const baseTransform = el.style.transform.replace(/rotateX\([^)]+\)/g, '').replace(/rotateY\([^)]+\)/g, '').trim();
+        el.style.transform = `${baseTransform} rotateX(${rotateX}deg) rotateY(${rotateY}deg)`.trim();
+    });
+
+    el.addEventListener('mouseleave', () => {
+        const baseTransform = el.style.transform.replace(/rotateX\([^)]+\)/g, '').replace(/rotateY\([^)]+\)/g, '').trim();
+        el.style.transition = `transform ${smooth}s ease`;
+        el.style.transform = baseTransform;
+        setTimeout(() => el.style.transition = '', smooth * 1000);
+    });
+}
+
+function initActions(el, config) {
+    for (const eventType in config) {
+        const actionsList = Array.isArray(config[eventType]) ? config[eventType] : [config[eventType]];
+
+        el.addEventListener(eventType, () => {
+            actionsList.forEach(action => {
+                // Soporte para navegación de página completa (Page Swapper)
+                if (action.tipo === 'navegacion' && action.desde && action.hacia) {
+                    const fromEl = document.querySelector(`[data-path="${action.desde}"]`);
+                    const toEl = document.querySelector(`[data-path="${action.hacia}"]`);
+
+                    if (fromEl) {
+                        fromEl.style.opacity = '0';
+                        fromEl.style.pointerEvents = 'none';
+                        fromEl.style.transform = action.efecto === 'slide' ? 'translateY(-100%) rotateX(45deg)' : 'scale(0.8) translateZ(-500px)';
+                        setTimeout(() => fromEl.style.display = 'none', 500);
+                    }
+
+                    if (toEl) {
+                        toEl.style.display = 'flex';
+                        // Pequeño timeout para permitir que el display:flex se registre antes de la transición
+                        setTimeout(() => {
+                            toEl.style.opacity = '1';
+                            toEl.style.pointerEvents = 'auto';
+                            toEl.style.transform = 'translateY(0) rotateX(0) scale(1) translateZ(0)';
+                        }, 50);
+                    }
+                    return;
+                }
+
+                const targetEl = action.target ? document.querySelector(`[data-path="${action.target}"]`) : el;
+                if (!targetEl) return;
+
+                if (action.estilos) {
+                    for (const prop in action.estilos) {
+                        targetEl.style.setProperty(prop, action.estilos[prop]);
+                    }
+                }
+
+                if (action.texto) {
+                    targetEl.innerHTML = action.texto;
+                }
+            });
+        });
+    }
+}
+
+function initInstances(el, config, profundidad, pathPrefix) {
+    const count = config.cantidad || 1;
+    const template = config.plantilla;
+    if (!template) return;
+
+    for (let i = 0; i < count; i++) {
+        const instanceConfig = JSON.parse(JSON.stringify(template));
+
+        // Aplicar variaciones si existen (ej: dispersión aleatoria)
+        if (config.variacion) {
+            for (const prop in config.variacion) {
+                const v = config.variacion[prop];
+                if (typeof v === 'number') {
+                    const current = parseFloat(instanceConfig[prop] || 0);
+                    instanceConfig[prop] = (current + (Math.random() - 0.5) * v) + (prop.includes('width') || prop.includes('height') || prop.includes('padding') ? 'px' : '');
+                }
+            }
+        }
+
+        construir(instanceConfig, el, profundidad, `${pathPrefix}.instancia_${i}`);
+    }
+}
+
+function initLookAt(el, config) {
+    const factor = config.intensidad || 20;
+    const smooth = config.suavizado || 0.1;
+    let targetRX = 0, targetRY = 0;
+    let currentRX = 0, currentRY = 0;
+
+    window.addEventListener('mousemove', (e) => {
+        const x = (e.clientX / window.innerWidth) - 0.5;
+        const y = (e.clientY / window.innerHeight) - 0.5;
+        targetRY = x * factor;
+        targetRX = -y * factor;
+    });
+
+    function animate() {
+        if (!el.isConnected) return;
+        currentRX += (targetRX - currentRX) * smooth;
+        currentRY += (targetRY - currentRY) * smooth;
+
+        const baseTransform = el.style.transform.replace(/rotateX\([^)]+\)/g, '').replace(/rotateY\([^)]+\)/g, '').trim();
+        el.style.transform = `${baseTransform} rotateX(${currentRX}deg) rotateY(${currentRY}deg)`.trim();
+        requestAnimationFrame(animate);
+    }
+    animate();
+}
+
+function initAutoAnimate(el, config) {
+    const type = config.tipo || 'flotar'; // flotar, latir, girar
+    const duration = config.duracion || 3;
+    const intensity = config.intensidad || 10;
+
+    el.style.transition = `transform ${duration}s ease-in-out`;
+
+    let step = 0;
+    function cycle() {
+        if (!el.isConnected) return;
+        step++;
+
+        const baseTransform = el.style.transform.replace(/translateY\([^)]+\)/g, '').replace(/scale\([^)]+\)/g, '').replace(/rotateZ\([^)]+\)/g, '').trim();
+
+        if (type === 'flotar') {
+            const y = Math.sin(Date.now() / (duration * 200)) * intensity;
+            el.style.transform = `${baseTransform} translateY(${y}px)`.trim();
+        } else if (type === 'latir') {
+            const s = 1 + Math.sin(Date.now() / (duration * 200)) * (intensity / 100);
+            el.style.transform = `${baseTransform} scale(${s})`.trim();
+        } else if (type === 'girar') {
+            const r = (Date.now() / (duration * 10)) % 360;
+            el.style.transform = `${baseTransform} rotateZ(${r}deg)`.trim();
+        }
+
+        requestAnimationFrame(cycle);
+    }
+    cycle();
+}
 
 function initScrollSystem(el, scrollDir) {
     const dir = scrollDir.direccion || 'horizontal';

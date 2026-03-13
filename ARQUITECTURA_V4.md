@@ -17,6 +17,11 @@ A diferencia de los frameworks tradicionales, V4 implementa su propia lógica de
 *   **Scroll Controlado:** Un sistema de desplazamiento basado en JS que calcula límites de colisión y aplica efectos de *fade* (opacidad) dinámicos a los hijos según su posición relativa al contenedor.
 *   **Hover-Hermanos:** Permite que un elemento actúe como disparador de estilos para todos sus nodos adyacentes, permitiendo efectos complejos de enfoque y desenfoque.
 *   **Click-Toggle:** Un sistema de persistencia de estado de clics para gestionar interactividad como acordeones o interruptores sin escribir JS adicional.
+*   **Seguimiento de Mouse:** Permite que los elementos orbiten o sigan la posición del cursor con suavidad configurable.
+*   **Tilt 3D Genérico:** Efecto de inclinación espacial basado en la posición del mouse dentro del elemento, compatible con cualquier contenedor.
+*   **Acciones Remotas (Target):** El sistema más potente de V4. Permite que un evento en el Elemento A modifique el Elemento B (especificado por su `data-path`). Esto habilita la creación de arquitecturas de "Nido de Páginas" y navegación compleja 100% dirigida por datos.
+*   **Generación Procedimental (`instancias`):** Permite la replicación masiva de elementos con variaciones aleatorias controladas, eliminando la necesidad de definir manualmente cada nodo en el JSON.
+*   **Look-at y Auto-animación:** Motores de movimiento en tiempo real que permiten que la interfaz cobre vida mediante rotaciones 3D dinámicas y ciclos de animación (flotación, latido, rotación) sin depender de CSS fijo.
 
 ## 4. Integración con Inteligencia Artificial
 La edición del sitio se gestiona a través de un **Asistente IA Arquitectónico** (`ai_assistant.js`):
@@ -30,4 +35,6 @@ Todas las modificaciones propuestas por la IA pasan por un **Review Panel** (`in
 *   **Confirmación Humana:** El usuario visualiza la propuesta y decide si aplicarla o rechazarla, enviando retroalimentación inmediata a la IA en caso de rechazo.
 
 ---
+Para una guía detallada sobre cómo implementar estas funciones en el archivo de datos, consulte la **[Guía de Implementación JSON V4](./GUIA_JSON_V4.md)**.
+
 *Este motor representa la evolución final desde WebGL/React hacia una arquitectura web purista, optimizada para rendimiento y facilidad de edición generativa.*
