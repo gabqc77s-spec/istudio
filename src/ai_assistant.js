@@ -163,10 +163,7 @@ La respuesta sigue siendo la misma ya que te muestra el elemento con todas sus p
                 if (data.tool_calls && data.tool_calls.length > 0) {
                     const call = data.tool_calls[0];
                     if (call.function === "inyectar_cambios_v4") {
-                        if (window.inyectar_cambios_v4) {
-                            window.inyectar_cambios_v4(call.args);
-                            return { type: 'function', text: '🎨 ¡Cambios arquitectónicos aplicados!', data: call.args };
-                        }
+                        return { type: 'review', text: '🎨 He propuesto cambios arquitectónicos. Por favor, revísalos.', data: call.args };
                     }
                 }
             }

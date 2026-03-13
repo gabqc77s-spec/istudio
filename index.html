@@ -36,6 +36,36 @@
         🤖
     </div>
 
+    <!-- UI Panel de Revisión -->
+    <div id="review-panel" style="display: none; visibility: hidden; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 2000; background: #09090b; border: 1px solid #27272a; border-radius: 16px; width: 450px; max-height: 80vh; flex-direction: column; box-shadow: 0 30px 60px rgba(0,0,0,0.8); overflow: hidden; color: #e4e4e7;">
+        <div style="background: #18181b; padding: 15px 20px; border-bottom: 1px solid #27272a; display: flex; justify-content: space-between; align-items: center;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <span class="material-icons-round" style="color: #a855f7;">architecture</span>
+                <span style="font-weight: 700; font-size: 15px;">Validación Arquitectónica</span>
+            </div>
+            <div id="review-status-tag" style="font-size: 10px; background: #3b82f6; padding: 2px 8px; border-radius: 10px; text-transform: uppercase; font-weight: 800;">Pendiente</div>
+        </div>
+
+        <div id="review-content" style="flex: 1; overflow-y: auto; padding: 20px; font-family: monospace; font-size: 12px; line-height: 1.5;">
+            <!-- Aquí se inyectará el diff o el JSON -->
+        </div>
+
+        <div id="review-warnings" style="padding: 10px 20px; background: rgba(239, 68, 68, 0.1); border-top: 1px solid rgba(239, 68, 68, 0.2); display: none;">
+            <div style="display: flex; gap: 8px; color: #f87171;">
+                <span class="material-icons-round" style="font-size: 18px;">warning</span>
+                <div style="font-size: 11px;">
+                    <strong style="display: block; margin-bottom: 2px;">Posibles Inconsistencias:</strong>
+                    <ul id="warnings-list" style="margin: 0; padding-left: 15px;"></ul>
+                </div>
+            </div>
+        </div>
+
+        <div style="padding: 20px; border-top: 1px solid #27272a; display: flex; gap: 12px; background: #09090b;">
+            <button id="review-cancel" style="flex: 1; background: #27272a; color: #e4e4e7; border: none; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: 600;">Rechazar</button>
+            <button id="review-accept" style="flex: 2; background: #9333ea; color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: 600;">Aplicar Cambios</button>
+        </div>
+    </div>
+
     <div id="ai-panel" style="display: none; visibility: hidden; position: fixed; bottom: 90px; right: 100px; z-index: 1000; background: #0f172a; border: 1px solid #1e293b; border-radius: 16px; width: 350px; height: 450px; flex-direction: column; box-shadow: 0 20px 50px rgba(0,0,0,0.5); overflow: hidden;">
         <div style="background: #1e293b; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #334155;">
             <span style="font-weight: 600; font-size: 14px; color: #38bdf8;">Arquitecto de Impulsa</span>
@@ -290,6 +320,93 @@
         // --- LOGIC ---
         window.aiSendMessage = sendMessage;
 
+        // --- VALIDACION ---
+        const VALID_CSS_PROPS = new Set([
+            'background', 'background-color', 'background-image', 'color', 'font-size', 'font-weight',
+            'padding', 'margin', 'border', 'border-radius', 'width', 'height', 'display', 'flex-direction',
+            'align-items', 'justify-content', 'position', 'top', 'left', 'right', 'bottom', 'transform',
+            'transition', 'perspective', 'transform-style', 'box-shadow', 'text-shadow', 'opacity',
+            'z-index', 'cursor', 'overflow', 'gap', 'line-height', 'letter-spacing', 'text-align'
+        ]);
+
+        function validateProposal(obj, path = '', warnings = []) {
+            for (const key in obj) {
+                const val = obj[key];
+                const currentPath = path ? `${path}.${key}` : key;
+
+                // Si es un estilo (no es objeto o es un reservado del motor como hover)
+                if (typeof val !== 'object' || val === null) {
+                    // Ignorar reservadas del motor
+                    if (!['nombre', 'texto', 'scroll'].includes(key)) {
+                        if (!VALID_CSS_PROPS.has(key) && !key.startsWith('--')) {
+                            warnings.push(`Propiedad desconocida: "${key}" en ${path}`);
+                        }
+                    }
+                } else {
+                    // Si es un objeto pero no es un comportamiento reservado, seguimos validando
+                    if (!['hover', 'hover-hermanos', 'click'].includes(key)) {
+                        validateProposal(val, currentPath, warnings);
+                    } else if (key === 'hover' || key === 'click') {
+                        // Validar estilos dentro de hover/click
+                        validateProposal(val, currentPath, warnings);
+                    }
+                }
+            }
+            return warnings;
+        }
+
+        let pendingProposal = null;
+        const reviewPanel = document.getElementById('review-panel');
+        const reviewContent = document.getElementById('review-content');
+        const reviewWarnings = document.getElementById('review-warnings');
+        const warningsList = document.getElementById('warnings-list');
+
+        function showReview(proposal) {
+            pendingProposal = proposal;
+            const warnings = validateProposal(proposal.partial || proposal);
+
+            reviewContent.innerHTML = `<pre style="color: #a78bfa;">// Propuesta de cambio:\n${JSON.stringify(proposal, null, 2)}</pre>`;
+
+            if (warnings.length > 0) {
+                reviewWarnings.style.display = 'block';
+                warningsList.innerHTML = warnings.map(w => `<li>${w}</li>`).join('');
+                document.getElementById('review-status-tag').style.background = '#ef4444';
+                document.getElementById('review-status-tag').textContent = 'Inconsistencias';
+            } else {
+                reviewWarnings.style.display = 'none';
+                document.getElementById('review-status-tag').style.background = '#10b981';
+                document.getElementById('review-status-tag').textContent = 'Válido';
+            }
+
+            reviewPanel.style.display = 'flex';
+            reviewPanel.style.visibility = 'visible';
+        }
+
+        document.getElementById('review-accept').onclick = () => {
+            if (window.inyectar_cambios_v4 && pendingProposal) {
+                window.inyectar_cambios_v4(pendingProposal);
+                addMessage("✅ Cambio arquitectónico aplicado con éxito.", "ai");
+            }
+            closeReview();
+        };
+
+        document.getElementById('review-cancel').onclick = async () => {
+            if (pendingProposal) {
+                const reason = "El usuario ha cancelado la propuesta de cambio. Por favor, espera su instrucción para comprender qué fue lo que no fue factible o no le gustó.";
+                // Enviar mensaje automático al modelo para que sepa del rechazo
+                addMessage("❌ Propuesta rechazada por el usuario.", "user");
+                const resp = await sendMessage(reason);
+                addMessage(resp.text, "ai");
+            }
+            closeReview();
+        };
+
+        function closeReview() {
+            reviewPanel.style.display = 'none';
+            reviewPanel.style.visibility = 'hidden';
+            pendingProposal = null;
+        }
+
         async function handleAISend() {
             const text = aiInput.value.trim();
             if (!text && !attachedJsonData) return;
@@ -315,6 +432,11 @@
 
             // Add AI response
             addMessage(response.text, 'ai');
+
+            // Si es una propuesta de cambio, mostrar el panel de revisión
+            if (response.type === 'review') {
+                showReview(response.data);
+            }
         }
 
         function clearAttachment() {
