@@ -113,14 +113,17 @@ window.get_json_v4_por_path_jerarquico = (path) => {
 // Punto de entrada global compatible con AI Studio Function Calling
 window.inyectar_cambios_v4 = (input) => {
     let partial = null;
+    let replace = false;
 
-    // Caso 1: Viene el objeto de llamada completo { name, args: { partial } }
+    // Caso 1: Viene el objeto de llamada completo { name, args: { partial, replace } }
     if (input.args && input.args.partial) {
         partial = input.args.partial;
+        replace = !!input.args.replace;
     }
-    // Caso 2: Viene solo el objeto partial
+    // Caso 2: Viene solo el objeto partial/replace
     else if (input.partial) {
         partial = input.partial;
+        replace = !!input.replace;
     }
     // Caso 3: Es el JSON crudo
     else {
@@ -128,7 +131,7 @@ window.inyectar_cambios_v4 = (input) => {
     }
 
     if (partial && typeof partial === 'object') {
-        window.postMessage({ type: 'inject-partial', partial }, '*');
+        window.postMessage({ type: 'inject-partial', partial, replace }, '*');
     } else {
         console.warn("Inyector V4: El formato recibido no es un JSON válido o partial está vacío.");
     }
@@ -198,7 +201,11 @@ export async function init() {
             }
 
             if (e.data && e.data.type === 'inject-partial') {
-                deepMerge(currentContent, e.data.partial);
+                if (e.data.replace) {
+                    currentContent = e.data.partial;
+                } else {
+                    deepMerge(currentContent, e.data.partial);
+                }
                 app.innerHTML = '';
                 construir(currentContent, app, 0, '');
             }

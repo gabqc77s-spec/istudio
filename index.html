@@ -21,6 +21,10 @@
     <div id="injector-panel" style="display: none; visibility: hidden; position: fixed; bottom: 90px; right: 20px; z-index: 1000; background: #18181b; border: 1px solid #27272a; border-radius: 12px; width: 350px; padding: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
         <h3 style="margin-top: 0; font-size: 14px; color: #a855f7;">Inyectar JSON Parcial</h3>
         <textarea id="injector-data" style="width: 100%; height: 200px; background: #09090b; border: 1px solid #27272a; border-radius: 6px; color: #e4e4e7; padding: 10px; font-family: monospace; font-size: 11px; resize: vertical;" placeholder='{ "pagina_principal": { ... } }'></textarea>
+        <div style="margin: 8px 0; display: flex; align-items: center; gap: 8px; font-size: 11px; color: #9ca3af;">
+            <input type="checkbox" id="inject-replace" style="accent-color: #a855f7;">
+            <label for="inject-replace">Reemplazar estado completo (Root)</label>
+        </div>
         <div style="margin-top: 10px; display: flex; gap: 10px; flex-wrap: wrap;">
             <button id="inject-now" style="flex: 2; background: #9333ea; color: white; border: none; padding: 8px; border-radius: 6px; cursor: pointer; font-weight: 600;">Inyectar Cambios</button>
             <button id="inspect-now" style="flex: 1; background: #3b82f6; color: white; border: none; padding: 8px; border-radius: 6px; cursor: pointer; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 4px;">
@@ -230,7 +234,8 @@
         injectNowBtn.onclick = () => {
             try {
                 const input = JSON.parse(injectorData.value);
-                if (window.inyectar_cambios_v4) window.inyectar_cambios_v4(input);
+                const replace = document.getElementById('inject-replace').checked;
+                if (window.inyectar_cambios_v4) window.inyectar_cambios_v4({ partial: input, replace });
                 injectNowBtn.textContent = '¡Inyectado!';
                 injectNowBtn.style.background = '#10b981';
                 setTimeout(() => {

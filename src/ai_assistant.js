@@ -67,6 +67,9 @@ Debes señalar correctamente dónde y cómo se debe implementar.
 
 TU UNICA SALIDA DEBE SER UNA FUNCTION CALL VALIDA EN FORMATO JSON:
 
+CAMBIO TOTAL DE PÁGINA:
+Si el usuario pide cambiar la página completa, puedes usar el argumento "replace": true en la function call. Esto borrará el estado actual y renderizará el nuevo JSON desde la raíz.
+
 NUEVAS CAPACIDADES DINAMICAS DEL MOTOR V4:
 1. "mouse-follow": { "factor": 0.1, "lerp": 0.1 } -> El elemento sigue al mouse.
 2. "look-at-mouse": { "maxRotation": 15, "lerp": 0.1 } -> Efecto tilt 3D que mira al cursor.
@@ -125,6 +128,11 @@ Respuesta:
 Requerimiento: Quiero un botón en el header que al hacerle clic oculte el planeta central.
 Respuesta:
 { "tool_calls": [ { "function": "inyectar_cambios_v4", "args": { "partial": { "pagina_principal": { "header_nav": { "btn_ocultar_planeta": { "texto": "Toggle Planeta", "cursor": "pointer", "acciones": [ { "disparador": "click", "objetivo": "pagina_principal.laboratorio_3d.universo.planeta_central", "estilos": { "display": "none" } } ] } } } } } } ] }
+
+EJEMPLO DE CAMBIO TOTAL (WRAPPER):
+Requerimiento: Envuelve toda la web en una nueva página de "Mantenimiento" oscura.
+Respuesta:
+{ "tool_calls": [ { "function": "inyectar_cambios_v4", "args": { "replace": true, "partial": { "pagina_mantenimiento": { "width": "100vw", "height": "100vh", "background": "#000", "display": "flex", "align-items": "center", "justify-content": "center", "texto": "Sitio en Mantenimiento" } } } } ] }
 
 En caso de ser un requerimiento con un div con el dom actual:
 Requerimiento:
