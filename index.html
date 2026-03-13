@@ -76,7 +76,11 @@
                 isDragging = false;
                 dragStartTime = Date.now();
 
-                button.setPointerCapture(e.pointerId);
+                try {
+                    button.setPointerCapture(e.pointerId);
+                } catch (err) {
+                    console.warn("setPointerCapture failed:", err);
+                }
 
                 const onPointerMove = (me) => {
                     const dx = me.clientX - startX;
@@ -95,12 +99,16 @@
                         button.style.top = nt + 'px';
                         button.style.bottom = 'auto';
                         button.style.right = 'auto';
-                        if (panel.style.display !== 'none') updateCallback(panel, nl, nt);
+                        if (panel.style.display !== 'none' && panel.style.visibility !== 'hidden') {
+                            updateCallback(panel, nl, nt);
+                        }
                     }
                 };
 
                 const onPointerUp = (ue) => {
-                    button.releasePointerCapture(e.pointerId);
+                    try {
+                        button.releasePointerCapture(e.pointerId);
+                    } catch (err) {}
                     button.removeEventListener('pointermove', onPointerMove);
                     button.removeEventListener('pointerup', onPointerUp);
 
@@ -135,40 +143,59 @@
         }
 
         // --- INYECTOR ---
+        const injectorPanel = document.getElementById('injector-panel');
+        const injectorData = document.getElementById('injector-data');
+        const injectNowBtn = document.getElementById('inject-now');
+
         function updateInjPanel(panel, l, t) {
             panel.style.left = Math.max(10, l - 350 + 60) + 'px';
             panel.style.top = ((t - 310) < 10 ? t + 70 : t - 310) + 'px';
+            panel.style.bottom = 'auto';
+            panel.style.right = 'auto';
         }
         initFloatingUI('injector-btn', 'injector-panel', updateInjPanel, 'block');
 
         document.getElementById('close-injector').onclick = () => {
-            document.getElementById('injector-panel').style.display = 'none';
+            injectorPanel.style.display = 'none';
+            injectorPanel.style.visibility = 'hidden';
         };
 
-        document.getElementById('inject-now').onclick = () => {
-            const data = document.getElementById('injector-data');
+        injectNowBtn.onclick = () => {
             try {
-                const input = JSON.parse(data.value);
+                const input = JSON.parse(injectorData.value);
                 if (window.inyectar_cambios_v4) window.inyectar_cambios_v4(input);
-                const btn = document.getElementById('inject-now');
-                btn.textContent = '¡Inyectado!';
-                btn.style.background = '#10b981';
+                injectNowBtn.textContent = '¡Inyectado!';
+                injectNowBtn.style.background = '#10b981';
                 setTimeout(() => {
-                    btn.textContent = 'Inyectar Cambios';
-                    btn.style.background = '#9333ea';
+                    injectNowBtn.textContent = 'Inyectar Cambios';
+                    injectNowBtn.style.background = '#9333ea';
                 }, 2000);
             } catch (err) { alert('Error JSON: ' + err.message); }
         };
 
         // --- AI ASSISTANT ---
+        const aiPanel = document.getElementById('ai-panel');
+        const aiInput = document.getElementById('ai-input');
+        const aiSend = document.getElementById('ai-send');
+        const aiMessages = document.getElementById('ai-messages');
+
+        // Inicializar estados para evitar discrepancias en tests
+        aiPanel.style.display = 'none';
+        aiPanel.style.visibility = 'hidden';
+        injectorPanel.style.display = 'none';
+        injectorPanel.style.visibility = 'hidden';
+
         function updateAiPanel(panel, l, t) {
             panel.style.left = Math.max(10, l - 350 + 60) + 'px';
             panel.style.top = ((t - 460) < 10 ? t + 70 : t - 460) + 'px';
+            panel.style.bottom = 'auto';
+            panel.style.right = 'auto';
         }
         initFloatingUI('ai-bubble', 'ai-panel', updateAiPanel, 'flex');
 
         document.getElementById('close-ai').onclick = () => {
-            document.getElementById('ai-panel').style.display = 'none';
+            aiPanel.style.display = 'none';
+            aiPanel.style.visibility = 'hidden';
         };
 
         // --- LOGIC ---
