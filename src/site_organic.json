@@ -1,0 +1,189 @@
+{
+    "display": "flex",
+    "flex-direction": "column",
+    "align-items": "center",
+    "justify-content": "center",
+    "min-height": "100vh",
+    "background": "linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%)",
+    "font-family": "'Plus Jakarta Sans', sans-serif",
+    "perspective": "1200px",
+    "overflow": "hidden",
+
+    "blobs_background": {
+        "position": "absolute",
+        "top": "0",
+        "left": "0",
+        "width": "100%",
+        "height": "100%",
+        "z-index": "-1",
+        "overflow": "hidden",
+
+        "blob_1": {
+            "position": "absolute",
+            "width": "600px",
+            "height": "600px",
+            "background": "radial-gradient(circle, rgba(14, 165, 233, 0.2) 0%, rgba(14, 165, 233, 0) 70%)",
+            "border-radius": "50%",
+            "top": "-100px",
+            "right": "-100px",
+            "auto-animate": {
+                "float-amplitude": 50,
+                "float-frequency": 0.001
+            }
+        },
+
+        "blob_2": {
+            "position": "absolute",
+            "width": "500px",
+            "height": "500px",
+            "background": "radial-gradient(circle, rgba(236, 72, 153, 0.15) 0%, rgba(236, 72, 153, 0) 70%)",
+            "border-radius": "50%",
+            "bottom": "-100px",
+            "left": "-100px",
+            "auto-animate": {
+                "float-amplitude": 40,
+                "float-frequency": 0.0012
+            }
+        }
+    },
+
+    "navbar": {
+        "position": "fixed",
+        "top": "2rem",
+        "width": "90%",
+        "max-width": "1200px",
+        "height": "70px",
+        "background": "rgba(255, 255, 255, 0.4)",
+        "backdrop-filter": "blur(20px) saturate(180%)",
+        "border": "1px solid rgba(255, 255, 255, 0.5)",
+        "border-radius": "40px",
+        "display": "flex",
+        "align-items": "center",
+        "justify-content": "space-between",
+        "padding": "0 2rem",
+        "z-index": "100",
+        "box-shadow": "0 10px 30px rgba(0,0,0,0.05)",
+
+        "logo": {
+            "texto": "FLUID FLOW",
+            "font-weight": "800",
+            "letter-spacing": "0.1em",
+            "color": "#1e293b"
+        },
+
+        "nav_links": {
+            "display": "flex",
+            "gap": "2rem",
+            "item_1": { "texto": "Experience", "font-size": "0.9rem", "color": "#64748b", "cursor": "pointer" },
+            "item_2": { "texto": "Liquid UI", "font-size": "0.9rem", "color": "#64748b", "cursor": "pointer" },
+            "item_3": { "texto": "Contact", "font-size": "0.9rem", "color": "#64748b", "cursor": "pointer" }
+        }
+    },
+
+    "hero": {
+        "display": "flex",
+        "flex-direction": "column",
+        "align-items": "center",
+        "margin-top": "120px",
+        "transform-style": "preserve-3d",
+
+        "main_title": {
+            "texto": "Organic<br><span style='color: #0ea5e9'>Intelligence.</span>",
+            "font-size": "6rem",
+            "font-weight": "800",
+            "text-align": "center",
+            "line-height": "1",
+            "color": "#1e293b",
+            "look-at-mouse": { "maxRotation": 10 },
+            "transform": "translateZ(50px)"
+        },
+
+        "floating_sphere": {
+            "width": "200px",
+            "height": "200px",
+            "background": "linear-gradient(135deg, #0ea5e9, #ec4899)",
+            "border-radius": "50%",
+            "margin-top": "2rem",
+            "box-shadow": "0 20px 50px rgba(14, 165, 233, 0.3)",
+            "auto-animate": {
+                "float-amplitude": 30,
+                "float-frequency": 0.002,
+                "rotate-y": 0.5
+            },
+            "mouse-follow": { "factor": 0.05 }
+        }
+    },
+
+    "gallery_section": {
+        "width": "100%",
+        "margin-top": "100px",
+        "padding": "2rem",
+
+        "gallery_title": {
+            "texto": "Soft Elements",
+            "font-size": "1.5rem",
+            "font-weight": "600",
+            "color": "#64748b",
+            "margin-bottom": "2rem",
+            "text-align": "center"
+        },
+
+        "scroll_container": {
+            "display": "flex",
+            "gap": "2rem",
+            "padding": "2rem",
+            "scroll": {
+                "direccion": "horizontal",
+                "fade": 0.2,
+                "fade-min": 0.5,
+                "snap": true
+            },
+
+            "card": {
+                "instancias": {
+                    "cantidad": 5
+                },
+                "min-width": "300px",
+                "height": "400px",
+                "background": "rgba(255, 255, 255, 0.6)",
+                "backdrop-filter": "blur(10px)",
+                "border": "1px solid rgba(255, 255, 255, 0.8)",
+                "border-radius": "60px",
+                "display": "flex",
+                "flex-direction": "column",
+                "align-items": "center",
+                "justify-content": "center",
+                "padding": "2rem",
+                "transition": "transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.5s ease",
+
+                "hover": {
+                    "transform": "scale(1.05) translateY(-10px)",
+                    "box-shadow": "0 30px 60px rgba(0,0,0,0.1)"
+                },
+
+                "icon_blob": {
+                    "width": "100px",
+                    "height": "100px",
+                    "border-radius": "40%",
+                    "background": "linear-gradient(45deg, #f0f9ff, #e0f2fe)",
+                    "margin-bottom": "2rem",
+                    "auto-animate": { "rotate-z": 0.2 }
+                },
+
+                "card_title": {
+                    "texto": "Fluid UI",
+                    "font-weight": "700",
+                    "color": "#1e293b",
+                    "margin-bottom": "0.5rem"
+                },
+
+                "card_desc": {
+                    "texto": "Soft corners and physics-based interactions.",
+                    "font-size": "0.9rem",
+                    "color": "#64748b",
+                    "text-align": "center"
+                }
+            }
+        }
+    }
+}

@@ -13,6 +13,26 @@
         <div id="app" style="width: 100%; min-height: 100vh; position: relative; transform-style: preserve-3d;"></div>
     </div>
 
+    <!-- Multiverse Dock -->
+    <div id="multiverse-dock" style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 1100; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px; padding: 12px 24px; display: flex; gap: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); align-items: center; transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
+        <div class="dock-item" data-site="cyber" title="Neuro-Cyber" style="cursor: pointer; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; flex-direction: column; align-items: center; gap: 6px;">
+            <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #0ea5e9, #a855f7); border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 22px; box-shadow: 0 8px 16px rgba(14, 165, 233, 0.3);">⚡</div>
+            <span style="font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.08em;">Cyber</span>
+        </div>
+        <div class="dock-item" data-site="glass" title="Lumina OS" style="cursor: pointer; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; flex-direction: column; align-items: center; gap: 6px;">
+            <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #38bdf8, #6366f1); border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 22px; box-shadow: 0 8px 16px rgba(56, 189, 248, 0.3);">💎</div>
+            <span style="font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.08em;">Lumina</span>
+        </div>
+        <div class="dock-item" data-site="organic" title="Fluid Flow" style="cursor: pointer; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; flex-direction: column; align-items: center; gap: 6px;">
+            <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #10b981, #3b82f6); border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 22px; box-shadow: 0 8px 16px rgba(16, 185, 129, 0.3);">🌊</div>
+            <span style="font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.08em;">Fluid</span>
+        </div>
+        <div class="dock-item" data-site="studio" title="Architectural" style="cursor: pointer; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; flex-direction: column; align-items: center; gap: 6px;">
+            <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #f43f5e, #fb923c); border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 22px; box-shadow: 0 8px 16px rgba(244, 63, 94, 0.3);">🏛️</div>
+            <span style="font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.08em;">Studio</span>
+        </div>
+    </div>
+
     <!-- UI Inyector -->
     <div id="injector-btn" style="position: fixed; bottom: 20px; right: 20px; z-index: 1000; background: #a855f7; color: white; width: 60px; height: 60px; border-radius: 50%; cursor: move; font-size: 24px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.3); transition: transform 0.3s ease; user-select: none; touch-action: none;">
         💉
@@ -261,8 +281,10 @@
 
                 // Evento único de captura
                 const captureHandler = (e) => {
+                    if (!isSelectionMode) return;
+
                     const target = e.target.closest('[data-path]');
-                    if (target && isSelectionMode) {
+                    if (target) {
                         e.preventDefault();
                         e.stopPropagation();
 
@@ -277,10 +299,10 @@
                             target.style.outline = '4px solid #10b981';
                             setTimeout(() => target.style.outline = originalOutline, 1000);
                         }
-
-                        // Desactivar modo
-                        stopSelection();
                     }
+
+                    // Desactivar modo siempre al hacer click
+                    stopSelection();
                 };
 
                 window.addEventListener('click', captureHandler, { capture: true, once: true });
@@ -498,8 +520,10 @@
             document.body.appendChild(tip);
 
             const aiCaptureHandler = (e) => {
+                if (!isAiSelecting) return;
+
                 const target = e.target.closest('[data-path]');
-                if (target && isAiSelecting) {
+                if (target) {
                     e.preventDefault();
                     e.stopPropagation();
 
@@ -518,8 +542,10 @@
                         target.style.outline = '4px solid #3b82f6';
                         setTimeout(() => target.style.outline = originalOutline, 1000);
                     }
-                    stopAiSelection();
                 }
+
+                // Desactivar modo siempre al hacer click
+                stopAiSelection();
             };
 
             window.addEventListener('click', aiCaptureHandler, { capture: true, once: true });
@@ -565,6 +591,46 @@
                 if (e.key === 'Enter') handleAISend();
             };
         }
+
+        // --- MULTIVERSE DOCK ---
+        document.querySelectorAll('.dock-item').forEach(item => {
+            item.onclick = async () => {
+                const site = item.dataset.site;
+
+                // Efecto de feedback
+                item.style.transform = 'scale(0.85) translateY(5px)';
+                setTimeout(() => item.style.transform = 'scale(1.1) translateY(-8px)', 100);
+                setTimeout(() => item.style.transform = 'scale(1) translateY(0)', 300);
+
+                try {
+                    // Cargar el JSON del sitio seleccionado
+                    const response = await fetch(`./src/site_${site}.json`);
+                    const data = await response.json();
+
+                    if (window.inyectar_cambios_v4) {
+                        window.inyectar_cambios_v4({ partial: data, replace: true });
+
+                        // Mensaje al asistente para que sepa el cambio de contexto
+                        addMessage(`🌌 Multiverso: Cargando experiencia "${item.title}"...`, "ai");
+                    }
+                } catch (err) {
+                    console.error("Error cargando sitio del multiverso:", err);
+                    addMessage(`❌ Error al cargar "${site}": El archivo JSON parece estar vacío o corrupto.`, "ai");
+                }
+            };
+
+            // Efecto Hover Pro
+            item.onmouseenter = () => {
+                if (!item.style.transform.includes('scale(0.85)')) {
+                    item.style.transform = 'translateY(-10px) scale(1.15)';
+                    item.querySelector('span').style.color = '#fff';
+                }
+            };
+            item.onmouseleave = () => {
+                item.style.transform = 'translateY(0) scale(1)';
+                item.querySelector('span').style.color = '#94a3b8';
+            };
+        });
     </script>
 
     <script type="module" src="./src/showcase.js"></script>

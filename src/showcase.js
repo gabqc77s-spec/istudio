@@ -201,13 +201,28 @@ export async function init() {
             }
 
             if (e.data && e.data.type === 'inject-partial') {
+                // Efecto de transición profesional para cambios de sitio (replace: true)
                 if (e.data.replace) {
-                    currentContent = e.data.partial;
+                    app.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                    app.style.opacity = '0';
+                    app.style.transform = 'scale(0.95) translateZ(-50px)';
+
+                    setTimeout(() => {
+                        currentContent = e.data.partial;
+                        app.innerHTML = '';
+                        construir(currentContent, app, 0, '');
+
+                        // Forzar reflujo
+                        app.offsetHeight;
+
+                        app.style.opacity = '1';
+                        app.style.transform = 'scale(1) translateZ(0)';
+                    }, 500);
                 } else {
                     deepMerge(currentContent, e.data.partial);
+                    app.innerHTML = '';
+                    construir(currentContent, app, 0, '');
                 }
-                app.innerHTML = '';
-                construir(currentContent, app, 0, '');
             }
         });
 
@@ -395,6 +410,7 @@ function initScrollSystem(el, scrollDir) {
     const fadeZone = (scrollDir.fade !== undefined) ? scrollDir.fade : 0.15;
     const fadeInicio = (scrollDir['fade-inicio'] !== undefined) ? scrollDir['fade-inicio'] : 0;
     const fadeMin = (scrollDir['fade-min'] !== undefined) ? scrollDir['fade-min'] : 0.3;
+    const snap = scrollDir.snap || false;
 
     el.style.cursor = 'grab';
     el.style.userSelect = 'none';
@@ -514,8 +530,57 @@ function initScrollSystem(el, scrollDir) {
         applyScroll();
     });
     window.addEventListener('mouseup', () => {
-        if (dragging) { dragging = false; el.style.cursor = 'grab'; }
+        if (dragging) {
+            dragging = false;
+            el.style.cursor = 'grab';
+            if (snap) applySnap();
+        }
     });
+
+    function applySnap() {
+        // Desactivar transiciones temporales para el snap si se desea (o dejar que el CSS lo maneje)
+        // Por ahora, aplicamos el cambio y dejamos que la transición del elemento (si tiene) lo suavice.
+
+        if (useX) {
+            let bestOffset = 0;
+            let minDiff = Infinity;
+            const gap = parseFloat(getComputedStyle(el).gap) || 0;
+
+            let currentPos = 0;
+            for (let i = 0; i < el.children.length; i++) {
+                const childOffset = -currentPos;
+                const diff = Math.abs(offsetX - childOffset);
+                // Si la velocidad fuera alta, podríamos predecir el snap, pero por ahora es posición pura.
+                if (diff < minDiff) {
+                    minDiff = diff;
+                    bestOffset = childOffset;
+                }
+                currentPos += el.children[i].offsetWidth + gap;
+            }
+            offsetX = bestOffset;
+        }
+
+        if (useY) {
+            let bestOffset = 0;
+            let minDiff = Infinity;
+            const gap = parseFloat(getComputedStyle(el).gap) || 0;
+
+            let currentPos = 0;
+            for (let i = 0; i < el.children.length; i++) {
+                const childOffset = -currentPos;
+                const diff = Math.abs(offsetY - childOffset);
+                if (diff < minDiff) {
+                    minDiff = diff;
+                    bestOffset = childOffset;
+                }
+                currentPos += el.children[i].offsetHeight + gap;
+            }
+            offsetY = bestOffset;
+        }
+
+        clamp();
+        applyScroll();
+    }
 
     // Touch drag
     el.addEventListener('touchstart', (e) => {
@@ -530,7 +595,10 @@ function initScrollSystem(el, scrollDir) {
         clamp();
         applyScroll();
     }, { passive: true });
-    el.addEventListener('touchend', () => { dragging = false; });
+    el.addEventListener('touchend', () => {
+        dragging = false;
+        if (snap) applySnap();
+    });
 
     // Wheel
     el.addEventListener('wheel', (e) => {

@@ -1,0 +1,141 @@
+{
+  "display": "flex",
+  "flex-direction": "column",
+  "align-items": "center",
+  "width": "100%",
+  "min-height": "100vh",
+  "padding": "80px 40px",
+  "background": "#ffffff",
+  "color": "#000000",
+  "font-family": "'Inter', sans-serif",
+  "perspective": "2000px",
+  "overflow-x": "hidden",
+
+  "header": {
+    "position": "fixed",
+    "top": "0",
+    "left": "0",
+    "width": "100%",
+    "display": "flex",
+    "justify-content": "space-between",
+    "padding": "40px 60px",
+    "z-index": "100",
+    "logo": {
+      "texto": "V4.STUDIO",
+      "font-weight": "900",
+      "letter-spacing": "0.3em",
+      "font-size": "0.8rem",
+      "border-bottom": "2px solid #000"
+    },
+    "menu": {
+      "texto": "INDEX",
+      "font-weight": "500",
+      "font-size": "0.8rem",
+      "letter-spacing": "0.1em"
+    }
+  },
+
+  "hero": {
+    "width": "100%",
+    "max-width": "1400px",
+    "margin-top": "100px",
+    "display": "flex",
+    "flex-direction": "column",
+    "align-items": "flex-start",
+    "position": "relative",
+    "transform-style": "preserve-3d",
+
+    "title_container": {
+        "transform-style": "preserve-3d",
+        "look-at-mouse": { "maxRotation": 5 },
+        "main_title": {
+            "texto": "STRUCTURAL<br>POETRY.",
+            "font-size": "10rem",
+            "line-height": "0.8",
+            "font-weight": "900",
+            "letter-spacing": "-0.06em",
+            "transform": "translateZ(100px)",
+            "color": "#000"
+        }
+    },
+
+    "abstract_element": {
+        "position": "absolute",
+        "right": "10%",
+        "top": "0",
+        "width": "400px",
+        "height": "600px",
+        "background": "#f0f0f0",
+        "transform": "rotateY(-20deg) translateZ(-50px)",
+        "border": "1px solid #000",
+        "display": "flex",
+        "align-items": "center",
+        "justify-content": "center",
+        "auto-animate": { "rotate-y": 0.2 },
+        "inner": {
+            "width": "80%",
+            "height": "1px",
+            "background": "#000",
+            "transform": "translateZ(50px)"
+        }
+    }
+  },
+
+  "content_grid": {
+      "display": "grid",
+      "grid-template-columns": "repeat(12, 1fr)",
+      "gap": "20px",
+      "width": "100%",
+      "max-width": "1400px",
+      "margin-top": "100px",
+      "transform-style": "preserve-3d",
+
+      "item_1": {
+          "grid-column": "span 4",
+          "height": "500px",
+          "background": "#000",
+          "color": "#fff",
+          "padding": "40px",
+          "display": "flex",
+          "flex-direction": "column",
+          "justify-content": "space-between",
+          "transform": "translateZ(40px)",
+          "transition": "transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)",
+          "hover": { "transform": "translateZ(80px)" },
+          "num": { "texto": "01", "font-weight": "200", "font-size": "2rem" },
+          "label": { "texto": "MONOLITHIC / VOLUME", "font-size": "0.7rem", "letter-spacing": "0.2em" }
+      },
+      "item_2": {
+          "grid-column": "span 8",
+          "height": "500px",
+          "border": "1px solid #000",
+          "padding": "40px",
+          "transform": "translateZ(20px)",
+          "transition": "background 0.3s ease",
+          "hover": { "background": "#f8f8f8" },
+          "label": { "texto": "LIGHT & SHADOW", "font-size": "0.7rem", "letter-spacing": "0.2em", "color": "#000" },
+          "sub": { "texto": "Exploration of negative space in V4 Engine.", "font-size": "1.2rem", "margin-top": "20px", "color": "#000" }
+      }
+  },
+
+  "background_lines": {
+      "position": "fixed",
+      "top": "0",
+      "left": "0",
+      "width": "100%",
+      "height": "100%",
+      "z-index": "-1",
+      "display": "flex",
+      "justify-content": "space-around",
+      "pointer-events": "none",
+      "opacity": "0.1",
+      "instancias": {
+          "cantidad": 6,
+          "style": {
+              "width": "1px",
+              "height": "100%",
+              "background": "#000"
+          }
+      }
+  }
+}

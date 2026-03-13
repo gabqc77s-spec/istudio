@@ -1,0 +1,241 @@
+{
+    "pagina": {
+        "background": "linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #fef2f2 100%)",
+        "font-family": "'Inter', sans-serif",
+        "overflow": "hidden",
+        "perspective": "2000px",
+
+        "bg_blobs": {
+            "position": "fixed",
+            "top": "0",
+            "left": "0",
+            "width": "100%",
+            "height": "100%",
+            "z-index": "0",
+            "pointer-events": "none",
+            "instancias": [
+                {
+                    "width": "500px",
+                    "height": "500px",
+                    "background": "radial-gradient(circle, rgba(14, 165, 233, 0.15) 0%, transparent 70%)",
+                    "position": "absolute",
+                    "top": "10%",
+                    "left": "10%",
+                    "auto-animate": {
+                        "transform": "translate(100px, 50px) scale(1.2)",
+                        "duration": "15s"
+                    }
+                },
+                {
+                    "width": "600px",
+                    "height": "600px",
+                    "background": "radial-gradient(circle, rgba(236, 72, 153, 0.1) 0%, transparent 70%)",
+                    "position": "absolute",
+                    "bottom": "10%",
+                    "right": "10%",
+                    "auto-animate": {
+                        "transform": "translate(-120px, -80px) scale(1.1)",
+                        "duration": "18s"
+                    }
+                }
+            ]
+        },
+
+        "app_shell": {
+            "display": "flex",
+            "width": "100vw",
+            "height": "100vh",
+            "padding": "40px",
+            "box-sizing": "border-box",
+            "gap": "30px",
+            "position": "relative",
+            "z-index": "1",
+
+            "sidebar": {
+                "width": "280px",
+                "background": "rgba(255, 255, 255, 0.4)",
+                "backdrop-filter": "blur(20px)",
+                "border": "1px solid rgba(255, 255, 255, 0.6)",
+                "border-radius": "24px",
+                "padding": "30px",
+                "display": "flex",
+                "flex-direction": "column",
+                "gap": "20px",
+                "box-shadow": "0 10px 30px rgba(0,0,0,0.05)",
+
+                "logo": {
+                    "texto": "LUMINA<span style='font-weight: 300;'>OS</span>",
+                    "font-size": "24px",
+                    "font-weight": "800",
+                    "letter-spacing": "2px",
+                    "color": "#0369a1",
+                    "margin-bottom": "20px"
+                },
+
+                "nav_items": {
+                    "display": "flex",
+                    "flex-direction": "column",
+                    "gap": "10px",
+                    "instancias": [
+                        { "texto": "Dashboard", "active": true },
+                        { "texto": "Analytics" },
+                        { "texto": "Projects" },
+                        { "texto": "Team" },
+                        { "texto": "Settings" }
+                    ],
+                    "item": {
+                        "padding": "12px 20px",
+                        "border-radius": "12px",
+                        "cursor": "pointer",
+                        "transition": "all 0.3s ease",
+                        "color": "#64748b",
+                        "font-weight": "500",
+                        "hover": {
+                            "background": "rgba(255, 255, 255, 0.8)",
+                            "color": "#0369a1",
+                            "transform": "translateX(5px)"
+                        }
+                    }
+                }
+            },
+
+            "main_content": {
+                "flex": "1",
+                "display": "flex",
+                "flex-direction": "column",
+                "gap": "30px",
+
+                "header": {
+                    "display": "flex",
+                    "justify-content": "space-between",
+                    "align-items": "center",
+
+                    "welcome": {
+                        "display": "flex",
+                        "flex-direction": "column",
+                        "title": {
+                            "texto": "Buenos días, Alex",
+                            "font-size": "32px",
+                            "font-weight": "700",
+                            "color": "#1e293b"
+                        },
+                        "subtitle": {
+                            "texto": "Aquí tienes el resumen de hoy.",
+                            "font-size": "16px",
+                            "color": "#64748b"
+                        }
+                    },
+
+                    "actions": {
+                        "display": "flex",
+                        "gap": "15px",
+                        "button": {
+                            "padding": "12px 24px",
+                            "background": "#0284c7",
+                            "color": "white",
+                            "border-radius": "12px",
+                            "font-weight": "600",
+                            "cursor": "pointer",
+                            "box-shadow": "0 4px 12px rgba(2, 132, 199, 0.3)",
+                            "hover": {
+                                "transform": "translateY(-2px)",
+                                "box-shadow": "0 6px 16px rgba(2, 132, 199, 0.4)"
+                            },
+                            "texto": "Nuevo Proyecto"
+                        }
+                    }
+                },
+
+                "grid": {
+                    "display": "grid",
+                    "grid-template-columns": "repeat(3, 1fr)",
+                    "grid-template-rows": "200px 1fr",
+                    "gap": "20px",
+                    "flex": "1",
+
+                    "stat_card": {
+                        "instancias": [
+                            { "label": "Vistas Totales", "value": "124.8k", "trend": "+12%" },
+                            { "label": "Conversión", "value": "3.2%", "trend": "+0.5%" },
+                            { "label": "Tiempo Medio", "value": "4m 12s", "trend": "-2%" }
+                        ],
+                        "background": "rgba(255, 255, 255, 0.6)",
+                        "backdrop-filter": "blur(10px)",
+                        "border": "1px solid rgba(255, 255, 255, 0.8)",
+                        "border-radius": "20px",
+                        "padding": "24px",
+                        "display": "flex",
+                        "flex-direction": "column",
+                        "justify-content": "center",
+                        "transition": "transform 0.5s ease",
+                        "hover": {
+                            "transform": "translateZ(30px) rotateX(2deg)",
+                            "background": "rgba(255, 255, 255, 0.8)"
+                        },
+
+                        "label": {
+                            "font-size": "14px",
+                            "color": "#64748b",
+                            "margin-bottom": "8px"
+                        },
+                        "value": {
+                            "font-size": "32px",
+                            "font-weight": "800",
+                            "color": "#0f172a"
+                        }
+                    },
+
+                    "large_chart": {
+                        "grid-column": "span 2",
+                        "background": "rgba(255, 255, 255, 0.4)",
+                        "backdrop-filter": "blur(20px)",
+                        "border": "1px solid rgba(255, 255, 255, 0.6)",
+                        "border-radius": "24px",
+                        "padding": "30px",
+                        "display": "flex",
+                        "flex-direction": "column",
+                        "gap": "20px",
+
+                        "title": {
+                            "texto": "Crecimiento Mensual",
+                            "font-weight": "600"
+                        },
+                        "mock_chart": {
+                            "flex": "1",
+                            "background": "linear-gradient(to top, rgba(14, 165, 233, 0.1), transparent)",
+                            "border-radius": "12px",
+                            "border-bottom": "2px solid #0ea5e9",
+                            "position": "relative",
+                            "overflow": "hidden",
+                            "bar": {
+                                "instancias": [1,2,3,4,5,6,7,8,9,10,11,12],
+                                "position": "absolute",
+                                "bottom": "0",
+                                "width": "20px",
+                                "background": "#0ea5e9",
+                                "border-radius": "4px 4px 0 0",
+                                "auto-animate": {
+                                    "height": "random(40%, 90%)",
+                                    "duration": "2s"
+                                }
+                            }
+                        }
+                    },
+
+                    "activity": {
+                        "background": "rgba(255, 255, 255, 0.4)",
+                        "backdrop-filter": "blur(20px)",
+                        "border": "1px solid rgba(255, 255, 255, 0.6)",
+                        "border-radius": "24px",
+                        "padding": "30px",
+                        "title": {
+                            "texto": "Actividad Reciente",
+                            "font-weight": "600",
+                            "margin-bottom": "20px"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
