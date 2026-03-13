@@ -2,7 +2,19 @@
 /* Reads content.json, builds containers, applies CSS properties directly. */
 /* Optimized for CSS 3D Space and pure data-driven DOM rendering. */
 
-const RESERVED = { nombre: true, hover: true, 'hover-hermanos': true, click: true, scroll: true, texto: true };
+const RESERVED = {
+    nombre: true,
+    hover: true,
+    'hover-hermanos': true,
+    click: true,
+    scroll: true,
+    texto: true,
+    'mouse-follow': true,
+    'look-at-mouse': true,
+    'auto-animate': true,
+    'color-cycle': true,
+    'instancias': true
+};
 
 let currentContent = null;
 
@@ -189,6 +201,45 @@ export function construir(config, parent, profundidad, pathPrefix = '') {
          return;
     }
 
+    // --- Generador de Instancias ---
+    if (config.instancias && !config.__isInstance) {
+        const inst = config.instancias;
+        const cantidad = inst.cantidad || 0;
+        for (let i = 0; i < cantidad; i++) {
+            const copia = JSON.parse(JSON.stringify(config));
+            delete copia.instancias;
+            copia.__isInstance = true;
+
+            // Variaciones espaciales
+            if (inst.spread) {
+                const sx = inst.spread.x || 0;
+                const sy = inst.spread.y || 0;
+                const sz = inst.spread.z || 0;
+                const tx = (Math.random() - 0.5) * sx;
+                const ty = (Math.random() - 0.5) * sy;
+                const tz = (Math.random() - 0.5) * sz;
+                copia.transform = `${copia.transform || ''} translate3d(${tx}px, ${ty}px, ${tz}px)`.trim();
+            }
+
+            // Variaciones de rotación
+            if (inst.rotate) {
+                const rx = (Math.random() - 0.5) * (inst.rotate.x || 0);
+                const ry = (Math.random() - 0.5) * (inst.rotate.y || 0);
+                const rz = (Math.random() - 0.5) * (inst.rotate.z || 0);
+                copia.transform = `${copia.transform || ''} rotateX(${rx}deg) rotateY(${ry}deg) rotateZ(${rz}deg)`.trim();
+            }
+
+            // Variaciones de escala
+            if (inst.scale) {
+                const s = (inst.scale.min || 1) + Math.random() * ((inst.scale.max || 1) - (inst.scale.min || 1));
+                copia.transform = `${copia.transform || ''} scale(${s})`.trim();
+            }
+
+            construir(copia, parent, profundidad, `${pathPrefix}:ins[${i}]`);
+        }
+        return;
+    }
+
     const el = document.createElement('div');
     // Set base z-index for layering, though CSS 3D transform (translateZ) will primarily handle depth
     el.style.zIndex = profundidad;
@@ -259,6 +310,41 @@ export function construir(config, parent, profundidad, pathPrefix = '') {
     // --- Funcionalidad 4: Click interaction (Toggle state) ---
     if (clickData) {
         initClickState(el, clickData);
+    }
+
+    // --- Preparar Transformaciones Dinámicas ---
+    const hasDynamicTransform = config['mouse-follow'] || config['look-at-mouse'] || config['auto-animate'];
+    if (hasDynamicTransform) {
+        if (config.transform) {
+            el.style.setProperty('--base-transform', config.transform);
+        }
+        // Usar fallbacks seguros para que la propiedad transform no sea inválida
+        el.style.transform = `
+            var(--base-transform, translate3d(0,0,0))
+            var(--dyn-mouse-follow, translate3d(0,0,0))
+            var(--dyn-look-at, rotateX(0deg))
+            var(--dyn-auto-animate, rotateX(0deg))
+        `.replace(/\s+/g, ' ').trim();
+    }
+
+    // --- Funcionalidad 5: Mouse Follow ---
+    if (config['mouse-follow']) {
+        initMouseFollow(el, config['mouse-follow']);
+    }
+
+    // --- Funcionalidad 6: Look at Mouse (3D Tilt) ---
+    if (config['look-at-mouse']) {
+        initLookAtMouse(el, config['look-at-mouse']);
+    }
+
+    // --- Funcionalidad 7: Auto Animate (Loops) ---
+    if (config['auto-animate']) {
+        initAutoAnimate(el, config['auto-animate']);
+    }
+
+    // --- Funcionalidad 8: Color Cycle ---
+    if (config['color-cycle']) {
+        initColorCycle(el, config['color-cycle']);
     }
 
     parent.appendChild(el);
@@ -519,6 +605,89 @@ function initClickState(el, clickData) {
             }
         }
     });
+}
+
+function initMouseFollow(el, data) {
+    const factor = data.factor || 0.1;
+    const lerp = data.lerp || 0.1;
+    let targetX = 0, targetY = 0;
+    let currentX = 0, currentY = 0;
+
+    window.addEventListener('mousemove', (e) => {
+        targetX = (e.clientX - window.innerWidth / 2) * factor;
+        targetY = (e.clientY - window.innerHeight / 2) * factor;
+    });
+
+    function update() {
+        currentX += (targetX - currentX) * lerp;
+        currentY += (targetY - currentY) * lerp;
+        el.style.setProperty('--mouse-follow-x', `${currentX}px`);
+        el.style.setProperty('--mouse-follow-y', `${currentY}px`);
+
+        el.style.setProperty('--dyn-mouse-follow', `translate(${currentX}px, ${currentY}px)`);
+        requestAnimationFrame(update);
+    }
+    update();
+}
+
+function initLookAtMouse(el, data) {
+    const maxRot = data.maxRotation || 15;
+    const lerp = data.lerp || 0.1;
+    let targetRX = 0, targetRY = 0;
+    let currentRX = 0, currentRY = 0;
+
+    window.addEventListener('mousemove', (e) => {
+        const xPct = (e.clientX / window.innerWidth) - 0.5;
+        const yPct = (e.clientY / window.innerHeight) - 0.5;
+        targetRY = xPct * maxRot;
+        targetRX = -yPct * maxRot;
+    });
+
+    function update() {
+        currentRX += (targetRX - currentRX) * lerp;
+        currentRY += (targetRY - currentRY) * lerp;
+        el.style.setProperty('--dyn-look-at', `rotateX(${currentRX}deg) rotateY(${currentRY}deg)`);
+
+        requestAnimationFrame(update);
+    }
+    update();
+}
+
+function initAutoAnimate(el, data) {
+    const speedX = data['rotate-x'] || 0;
+    const speedY = data['rotate-y'] || 0;
+    const speedZ = data['rotate-z'] || 0;
+    const floatAmp = data['float-amplitude'] || 0;
+    const floatFreq = data['float-frequency'] || 0.002;
+
+    let rx = 0, ry = 0, rz = 0;
+
+    function update(time) {
+        rx += speedX;
+        ry += speedY;
+        rz += speedZ;
+
+        const floatY = Math.sin(time * floatFreq) * floatAmp;
+        el.style.setProperty('--dyn-auto-animate', `rotateX(${rx}deg) rotateY(${ry}deg) rotateZ(${rz}deg) translateY(${floatY}px)`);
+        requestAnimationFrame(update);
+    }
+    requestAnimationFrame(update);
+}
+
+function initColorCycle(el, data) {
+    const colors = data.colors || ['#ff0000', '#00ff00', '#0000ff'];
+    const property = data.property || 'background-color';
+    const duration = data.duration || 3000;
+    let index = 0;
+
+    el.style.transition = `${el.style.transition ? el.style.transition + ',' : ''} ${property} ${duration}ms linear`;
+
+    function nextColor() {
+        el.style.setProperty(property, colors[index]);
+        index = (index + 1) % colors.length;
+        setTimeout(nextColor, duration);
+    }
+    nextColor();
 }
 
 // Start Engine

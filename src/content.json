@@ -560,6 +560,75 @@
             }
         },
 
+        "laboratorio_3d": {
+            "nombre": "Laboratorio de Dinámicas",
+            "width": "100%",
+            "min-height": "100vh",
+            "display": "flex",
+            "flex-direction": "column",
+            "align-items": "center",
+            "justify-content": "center",
+            "perspective": "2000px",
+            "padding": "4rem",
+
+            "titulo_lab": {
+                "texto": "Laboratorio V4 Dinámico",
+                "font-size": "3rem",
+                "font-weight": "800",
+                "color": "#fff",
+                "margin-bottom": "4rem",
+                "look-at-mouse": { "maxRotation": 20 }
+            },
+
+            "universo": {
+                "nombre": "Contenedor Espacial",
+                "width": "600px",
+                "height": "400px",
+                "transform-style": "preserve-3d",
+                "display": "flex",
+                "align-items": "center",
+                "justify-content": "center",
+                "mouse-follow": { "factor": 0.05, "lerp": 0.05 },
+
+                "planeta_central": {
+                    "width": "150px",
+                    "height": "150px",
+                    "background": "radial-gradient(circle at 30% 30%, #4f46e5, #000)",
+                    "border-radius": "50%",
+                    "box-shadow": "0 0 50px rgba(79, 70, 229, 0.4)",
+                    "auto-animate": { "rotate-y": 0.5, "float-amplitude": 20 },
+                    "color-cycle": { "colors": ["rgba(79, 70, 229, 0.4)", "rgba(236, 72, 153, 0.4)", "rgba(16, 185, 129, 0.4)"], "property": "box-shadow", "duration": 4000 }
+                },
+
+                "red_estrellas": {
+                    "position": "absolute",
+                    "width": "10px",
+                    "height": "10px",
+                    "background": "#fff",
+                    "border-radius": "50%",
+                    "instancias": {
+                        "cantidad": 50,
+                        "spread": { "x": 1000, "y": 800, "z": 1000 },
+                        "scale": { "min": 0.1, "max": 0.5 }
+                    }
+                },
+
+                "satelites": {
+                    "position": "absolute",
+                    "width": "40px",
+                    "height": "40px",
+                    "background": "#9ca3af",
+                    "border-radius": "8px",
+                    "auto-animate": { "rotate-z": -1 },
+                    "instancias": {
+                        "cantidad": 3,
+                        "spread": { "x": 400, "y": 0, "z": 200 },
+                        "rotate": { "x": 360, "y": 360, "z": 360 }
+                    }
+                }
+            }
+        },
+
         "galeria_3d": {
             "nombre": "Galería Transformaciones 3D",
             "width": "100%",
