@@ -13,7 +13,8 @@ const RESERVED = {
     'look-at-mouse': true,
     'auto-animate': true,
     'color-cycle': true,
-    'instancias': true
+    'instancias': true,
+    'acciones': true
 };
 
 let currentContent = null;
@@ -363,6 +364,11 @@ export function construir(config, parent, profundidad, pathPrefix = '') {
         initColorCycle(el, config['color-cycle']);
     }
 
+    // --- Funcionalidad 9: Acciones (Cross-element interactions) ---
+    if (config['acciones']) {
+        initActions(el, config['acciones']);
+    }
+
     parent.appendChild(el);
     return { el, hoverData, hoverHermanos: hoverHermanosData };
 }
@@ -704,6 +710,50 @@ function initColorCycle(el, data) {
         setTimeout(nextColor, duration);
     }
     nextColor();
+}
+
+function initActions(el, acciones) {
+    acciones.forEach(accion => {
+        const trigger = accion.disparador || 'click';
+        const targetPath = accion.objetivo;
+        const styles = accion.estilos;
+
+        if (!targetPath || !styles) return;
+
+        let active = false;
+        let originalStyles = {};
+
+        const execute = () => {
+            const targetEl = document.querySelector(`[data-path="${targetPath}"]`);
+            if (!targetEl) {
+                console.warn(`V4 Acciones: No se encontró el objetivo "${targetPath}"`);
+                return;
+            }
+
+            active = !active;
+            if (active) {
+                for (const prop in styles) {
+                    originalStyles[prop] = targetEl.style.getPropertyValue(prop);
+                    targetEl.style.setProperty(prop, styles[prop]);
+                }
+            } else {
+                for (const prop in originalStyles) {
+                    targetEl.style.setProperty(prop, originalStyles[prop]);
+                }
+                originalStyles = {};
+            }
+        };
+
+        if (trigger === 'click') {
+            el.addEventListener('click', (e) => {
+                e.stopPropagation();
+                execute();
+            });
+        } else if (trigger === 'hover') {
+            el.addEventListener('mouseenter', execute);
+            el.addEventListener('mouseleave', execute);
+        }
+    });
 }
 
 // Start Engine
